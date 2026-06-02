@@ -136,6 +136,10 @@ button{cursor:pointer;font:inherit}
 .hero-title i{font-style:italic}
 .hero-sub{font-family:var(--serif);font-size:20px;line-height:1.45;color:var(--ink-soft);max-width:44ch;letter-spacing:-.005em;margin:0}
 .hero-brands{display:flex;flex-wrap:wrap;gap:8px;padding-top:28px;border-top:1px solid var(--rule)}
+.hero-dl-btn{align-self:flex-start;margin-top:4px;display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border:none;border-radius:999px;background:var(--ink);color:var(--bg);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .15s}
+.hero-dl-btn:hover{opacity:.85}
+.hero-dl-btn:active{transform:scale(0.96)}
+.hero-dl-btn:disabled{cursor:wait;opacity:.55}
 .hero-brand-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 7px;border-radius:999px;border:1px solid var(--rule);font-size:12px;font-weight:500;color:var(--ink-soft);background:transparent;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;letter-spacing:-.01em}
 .hero-brand-chip:hover{background:var(--bg-soft);border-color:var(--rule-strong);box-shadow:0 0 0 1px rgba(26,20,16,.08),0 1px 4px rgba(26,20,16,.06)}
 .hero-brand-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
@@ -564,6 +568,10 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
     <h1 class="hero-title" style="--stagger:1">Os <i>seis</i> temperos do Grupo <i>Ragga.</i></h1>
     <p class="hero-sub" style="--stagger:2">Referência operacional consolidada da holding e suas seis verticais. Cores oficiais, símbolos, arquitetura de marca e regras de aplicação — tudo em um único lugar.</p>
     <div class="hero-brands" id="hero-brands" style="--stagger:3"></div>
+    <button class="hero-dl-btn" id="dl-all-btn" style="--stagger:4">
+      <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M6 1.5v7"/><path d="M2.5 6.5L6 10l3.5-3.5"/><line x1="1.5" y1="11" x2="10.5" y2="11"/></svg>
+      <span class="dl-all-label">Baixar todos os assets</span>
+    </button>
   </div>
   <div class="hero-globo">
     <div class="globo-wrap">
@@ -1300,6 +1308,52 @@ async function downloadBrandZip(b, btn) {
     btn.innerHTML = origHTML;
   }
 }
+
+// ─── Download de TODOS os assets (organizado por marca) ──────────────────────
+async function downloadAllZip(btn) {
+  const label = btn.querySelector('.dl-all-label');
+  const origLabel = label ? label.textContent : '';
+  btn.disabled = true;
+  try {
+    const zip = new JSZip();
+    const root = zip.folder('Ragga - Assets de Marca');
+    let done = 0;
+    for (const b of BRANDS) {
+      const folder = root.folder(b.name);          // uma pasta por marca
+      const svgFolder = folder.folder('SVG');
+      const pngFolder = folder.folder('PNG');
+      for (const { file } of LOGO_FILES[b.id].variants) {
+        const svgText = await fetch(`${LOGO_BASE}${file}`).then(r => r.text());
+        svgFolder.file(file, svgText);
+        const pngName = file.replace(/\.svg$/i, '.png');
+        try {
+          const pngResp = await fetch(`${LOGO_BASE}${pngName}`);
+          if (pngResp.ok) pngFolder.file(pngName, await pngResp.blob());
+        } catch (e) { /* png ausente — ignora */ }
+      }
+      done++;
+      if (label) label.textContent = `Compactando… ${done}/${BRANDS.length}`;
+    }
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const ts = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    const ver = pad(MANUAL_VERSION);
+    if (label) label.textContent = 'Gerando arquivo…';
+    const content = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `ragga-assets-marca_v${ver}_${ts}.zip`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } finally {
+    btn.disabled = false;
+    if (label) label.textContent = origLabel;
+  }
+}
+(function initDownloadAll() {
+  const btn = document.getElementById('dl-all-btn');
+  if (btn) btn.addEventListener('click', () => downloadAllZip(btn));
+})();
 
 // ─── Verticals ───────────────────────────────────────────────────────────────
 (function buildVerticals() {
