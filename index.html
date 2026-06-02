@@ -1637,17 +1637,18 @@ async function downloadAllZip(btn) {
   applyFont(active ? active.dataset.font : 'display');
 })();
 
-// ─── Temas do testador — fundo = keycolor da vertical, texto claro (OKLCH) ───
-// Frases-conceito por vertical (fonte: Notion · Identidade Visual — referência rápida)
+// ─── Temas do testador — claro/escuro + cor da vertical, com frase-conceito ──
+// Frases por vertical (fonte: Notion · Brandbook Grupo Ragga V2 — promessa de cada vertical)
 const THEME_PHRASE = {
   holding: 'Seis temperos, uma só panela.',
-  foods:   'Sem sal, comida não existe.',
-  gestao:  'Perfuma a panela inteira sem aparecer.',
-  insumos: 'Raiz, base, brasilidade.',
-  mkt:     'A agência que acende o fogo.',
-  social:  'Pouco insumo, muito impacto.',
-  franquia:'O sabor não muda da matriz à unidade.',
+  foods:   'Prato no ponto. Atendimento que acolhe. Sempre.',
+  insumos: 'Prazo cumprido. Qualidade sem surpresa.',
+  mkt:     'Comunicação verdadeira. Resultado mensurável.',
+  gestao:  'Processo que funciona. Gente que cresce.',
+  social:  'Impacto real. Sem ostentação.',
+  franquia:'Método que viaja. Cultura que não fica pra trás.',
 };
+const DEFAULT_HTML = 'Os seis temperos do Grupo <em>Ragga.</em>';
 (function typeThemes() {
   const stage = document.getElementById('type-stage');
   const wrap  = document.getElementById('type-themes');
@@ -1656,58 +1657,70 @@ const THEME_PHRASE = {
   const readout = document.getElementById('size-readout');
   function setSize(px) { stage.style.fontSize = px + 'px'; if (slider) slider.value = px; if (readout) readout.textContent = px; }
 
-  function setActive(btn) {
-    wrap.querySelectorAll('.type-theme').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  let mode = 'light';     // 'light' | 'dark'
+  let current = null;     // vertical selecionada (ou null = papel neutro)
+
+  // aplica fundo/texto conforme modo + cor. Cada vertical tem versão clara e escura (OKLCH).
+  function applyTheme() {
+    if (!current) {
+      stage.style.background = mode === 'dark' ? '#0e0c0a' : '';
+      stage.style.color      = mode === 'dark' ? '#f0e9dd' : '';
+      return;
+    }
+    const k = current.hex;
+    if (mode === 'dark') {
+      // escuro: fundo na keycolor cheia, texto branco tingido no matiz
+      stage.style.background = k;
+      stage.style.color = current.on || '#fff';
+      stage.style.color = `oklch(from ${k} 0.97 0.045 h)`;
+    } else {
+      // claro: fundo tinta clara do matiz, texto na cor (versão funda e legível)
+      stage.style.background = current.on || '#fff';
+      stage.style.background = `oklch(from ${k} 0.97 0.03 h)`;
+      stage.style.color = k;
+      stage.style.color = `oklch(from ${k} 0.46 0.15 h)`;
+    }
   }
+
+  const modeBtns = [], colorBtns = [];
+  function setModeActive(btn) { modeBtns.forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  function setColorActive(btn) { colorBtns.forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); }
 
   const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
   const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
 
-  // Claro (dia) — papel padrão do manual
   const light = el('button', 'type-theme type-theme-icon');
-  light.dataset.mode = 'light';
-  light.title = 'Tema claro';
-  light.innerHTML = SUN;
-  light.classList.add('active');
-  light.addEventListener('click', () => {
-    stage.style.background = '';
-    stage.style.color = '';
-    setActive(light);
-  });
-  wrap.appendChild(light);
+  light.dataset.mode = 'light'; light.title = 'Claro'; light.innerHTML = SUN; light.classList.add('active');
+  light.addEventListener('click', () => { mode = 'light'; setModeActive(light); applyTheme(); });
+  modeBtns.push(light); wrap.appendChild(light);
 
-  // Escuro (noite) — papel escuro
   const dark = el('button', 'type-theme type-theme-icon');
-  dark.dataset.mode = 'dark';
-  dark.title = 'Tema escuro';
-  dark.innerHTML = MOON;
-  dark.addEventListener('click', () => {
-    stage.style.background = '#0e0c0a';
-    stage.style.color = '#f0e9dd';
-    setActive(dark);
-  });
-  wrap.appendChild(dark);
+  dark.dataset.mode = 'dark'; dark.title = 'Escuro'; dark.innerHTML = MOON;
+  dark.addEventListener('click', () => { mode = 'dark'; setModeActive(dark); applyTheme(); });
+  modeBtns.push(dark); wrap.appendChild(dark);
 
   // separador — claro/escuro fica à parte das cores
   wrap.appendChild(el('span', 'type-themes-sep'));
   wrap.appendChild(el('span', 'type-themes-label', 'Cores'));
 
-  // um tema por vertical — cada cor carrega sua frase-conceito
+  // cada vertical: clica → carrega cor (no modo atual) + frase. Reclique → volta ao papel.
   BRANDS.forEach(b => {
     const sw = el('button', 'type-theme');
     sw.title = b.name;
     sw.style.setProperty('--sw', b.hex);
     sw.addEventListener('click', () => {
-      stage.style.background = b.hex;
-      // texto claro: tom da marca (fallback) → branco tingido no matiz via OKLCH
-      stage.style.color = b.on || '#fff';
-      stage.style.color = `oklch(from ${b.hex} 0.97 0.045 h)`;
-      const phrase = THEME_PHRASE[b.id];
-      if (phrase) { stage.textContent = phrase; setSize(52); }
-      setActive(sw);
+      if (current === b) {                       // desmarca → papel neutro + texto padrão
+        current = null;
+        stage.innerHTML = DEFAULT_HTML; setSize(80);
+        setColorActive(null);
+      } else {
+        current = b;
+        stage.textContent = THEME_PHRASE[b.id] || b.name; setSize(42);
+        setColorActive(sw);
+      }
+      applyTheme();
     });
-    wrap.appendChild(sw);
+    colorBtns.push(sw); wrap.appendChild(sw);
   });
 })();
 
