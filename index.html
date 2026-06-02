@@ -426,7 +426,14 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
 .type-size-wrap{display:flex;align-items:center;gap:10px;margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-muted);white-space:nowrap}
 .type-px{opacity:.5}
 .type-size-slider{width:100px;accent-color:var(--c-holding);cursor:pointer}
-.type-stage{padding:52px 40px 60px;min-height:200px;font-family:var(--serif);font-size:80px;font-weight:300;line-height:1;letter-spacing:-.035em;outline:none;word-break:break-word;color:var(--ink);transition:font-family .2s,letter-spacing .2s}
+.type-themes{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}
+.type-themes-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-right:2px}
+.type-theme{width:26px;height:26px;border-radius:50%;border:2px solid transparent;background:var(--sw,var(--bg));cursor:pointer;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);transition:transform .14s cubic-bezier(.2,0,0,1),border-color .14s}
+.type-theme:hover{transform:scale(1.14)}
+.type-theme:active{transform:scale(.94)}
+.type-theme.active{border-color:var(--ink)}
+.type-theme[data-default]{box-shadow:inset 0 0 0 1px var(--rule-strong)}
+.type-stage{padding:52px 40px 60px;min-height:200px;font-family:var(--serif);font-size:80px;font-weight:300;line-height:1;letter-spacing:-.035em;outline:none;word-break:break-word;color:var(--ink);transition:font-family .2s,letter-spacing .2s,background .35s cubic-bezier(.4,0,.2,1),color .35s cubic-bezier(.4,0,.2,1)}
 .type-stage:focus{background:color-mix(in oklch,var(--c-holding) 3%,var(--bg))}
 .type-stage em{font-style:italic}
 .type-section-label{margin-bottom:16px}
@@ -702,6 +709,7 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
           <button class="type-font-tab" data-font="sans">Instrument Sans</button>
         </div>
         <select class="type-weight-select" id="type-weight-select"></select>
+        <div class="type-themes" id="type-themes"><span class="type-themes-label">Tema</span></div>
         <div class="type-size-wrap">
           <span id="size-readout">80</span><span class="type-px">px</span>
           <input type="range" id="type-size-slider" min="14" max="160" value="80" class="type-size-slider">
@@ -1623,6 +1631,45 @@ async function downloadAllZip(btn) {
 
   const active = document.querySelector('.type-font-tab.active');
   applyFont(active ? active.dataset.font : 'display');
+})();
+
+// ─── Temas do testador — fundo = keycolor da vertical, texto claro (OKLCH) ───
+(function typeThemes() {
+  const stage = document.getElementById('type-stage');
+  const wrap  = document.getElementById('type-themes');
+  if (!stage || !wrap) return;
+
+  function setActive(btn) {
+    wrap.querySelectorAll('.type-theme').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // padrão (papel) — reseta para o tema do manual
+  const def = el('button', 'type-theme');
+  def.dataset.default = '1';
+  def.title = 'Padrão (papel)';
+  def.classList.add('active');
+  def.addEventListener('click', () => {
+    stage.style.background = '';
+    stage.style.color = '';
+    setActive(def);
+  });
+  wrap.appendChild(def);
+
+  // um tema por vertical
+  BRANDS.forEach(b => {
+    const sw = el('button', 'type-theme');
+    sw.title = b.name;
+    sw.style.setProperty('--sw', b.hex);
+    sw.addEventListener('click', () => {
+      stage.style.background = b.hex;
+      // texto claro: tom da marca (fallback) → branco tingido no matiz via OKLCH
+      stage.style.color = b.on || '#fff';
+      stage.style.color = `oklch(from ${b.hex} 0.97 0.045 h)`;
+      setActive(sw);
+    });
+    wrap.appendChild(sw);
+  });
 })();
 
 
