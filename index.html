@@ -1395,12 +1395,11 @@ async function downloadAllZip(btn) {
     const now = new Date();
     const pad = n => String(n).padStart(2, '0');
     const ts = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-    const ver = pad(MANUAL_VERSION);
     if (label) label.textContent = 'Gerando arquivo…';
     const content = await zip.generateAsync({ type: 'blob' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(content);
-    a.download = `ragga-arquivos-de-marca_v${ver}_${ts}.zip`;
+    a.download = `ragga-arquivos-de-marca_${ts}.zip`;
     a.click();
     URL.revokeObjectURL(a.href);
   } finally {
@@ -1551,22 +1550,18 @@ async function downloadAllZip(btn) {
   });
 })();
 
-// ─── Versionamento ───────────────────────────────────────────────────────────
-// Esquema híbrido: REVISÃO manual (nº inteiro) + CalVer automático (data/hora).
-//  • MANUAL_VERSION  → incremente +1 a cada revisão publicada de assets/conteúdo.
-//  • data/hora       → automática via document.lastModified (carimbo da última alteração).
-// Padrão usado por brand guidelines/design systems: "versão N · data da última atualização".
-const MANUAL_VERSION = 3;
+// ─── Versionamento (CalVer automático) ───────────────────────────────────────
+// A versão É a data da última alteração: AAAA.MM.DD (ex. 2026.06.03), + horário.
+// Tudo derivado de document.lastModified — sem número manual, sem build:
+// cada deploy/edição do arquivo atualiza versão e carimbo sozinho.
 (function versionStamp() {
   const p = n => String(n).padStart(2, '0');
-  // versão (sempre 2 dígitos: 03, 04, …)
-  const ver = p(MANUAL_VERSION);
-  document.querySelectorAll('.js-version').forEach(el => { el.textContent = ver; });
-  // data/hora da última modificação do arquivo
   let d = new Date(document.lastModified);
   if (isNaN(d.getTime())) d = new Date();
-  const txt = `${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()} · ${p(d.getHours())}:${p(d.getMinutes())}`;
-  document.querySelectorAll('.js-date').forEach(el => { el.textContent = txt; });
+  const calver = `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}`;
+  const time   = `${p(d.getHours())}:${p(d.getMinutes())}`;
+  document.querySelectorAll('.js-version').forEach(el => { el.textContent = calver; });
+  document.querySelectorAll('.js-date').forEach(el => { el.textContent = time; });
 })();
 
 // ─── Type Tester ─────────────────────────────────────────────────────────────
