@@ -320,6 +320,18 @@ button{cursor:pointer;font:inherit}
 .man-line em{font-style:normal;color:var(--ink-muted)}
 .man-cap{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin-top:32px}
 
+/* ── Ferramentas ── */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:8px}
+.tool-card{display:flex;flex-direction:column;gap:18px;padding:32px 28px;border:1px solid var(--rule);border-radius:16px;background:var(--bg);text-decoration:none;color:inherit;transition:border-color .18s,box-shadow .18s,transform .18s}
+.tool-card:hover{border-color:var(--rule-strong);box-shadow:0 8px 30px rgba(26,20,16,.09);transform:translateY(-3px)}
+.tool-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--bg-soft);color:var(--ink);flex-shrink:0}
+.tool-body{flex:1;display:flex;flex-direction:column}
+.tool-name{font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+.tool-desc{font-size:14px;line-height:1.6;color:var(--ink-soft)}
+.tool-host{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--ink-muted);margin-top:12px}
+.tool-cta{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin-top:auto;padding:11px 20px;border-radius:999px;background:var(--ink);color:var(--bg);font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;transition:gap .18s}
+.tool-card:hover .tool-cta{gap:12px}
+
 /* ── Toast ── */
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;z-index:999;pointer-events:none;opacity:0;transition:opacity .24s}
 .toast.show{opacity:1}
@@ -776,6 +788,51 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
   </div>
 </section>
 
+<!-- FERRAMENTAS -->
+<section id="ferramentas" class="section">
+  <div class="sec-inner">
+    <div class="sec-head rv">
+      <div class="sec-num">§ 09</div>
+      <div>
+        <h2 class="sec-title">Ferramentas <em>de marca</em></h2>
+        <p class="sec-lede">Aplicativos criados para o dia a dia das equipes — geram peças já dentro do padrão Ragga, sem precisar abrir um editor.</p>
+      </div>
+    </div>
+
+    <div class="tools-grid">
+      <a class="tool-card rv" href="https://padroes-ragga.vercel.app" target="_blank" rel="noopener">
+        <div class="tool-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="1.9"/><circle cx="12" cy="5" r="1.9"/><circle cx="19" cy="5" r="1.9"/><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/><circle cx="5" cy="19" r="1.9"/><circle cx="12" cy="19" r="1.9"/><circle cx="19" cy="19" r="1.9"/></svg></div>
+        <div class="tool-body">
+          <div class="tool-name">Padrões Ragga</div>
+          <div class="tool-desc">Gerador de padrões e estampas a partir da identidade microscópica de cada vertical. Cria texturas e fundos de marca prontos para aplicar em peças.</div>
+          <div class="tool-host">padroes-ragga.vercel.app</div>
+        </div>
+        <span class="tool-cta">Abrir ferramenta <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M3.5 8.5l5-5"/><path d="M4.5 3.5h4v4"/></svg></span>
+      </a>
+
+      <a class="tool-card rv" style="--rd:.12s" href="https://whatsapp-ragga.vercel.app" target="_blank" rel="noopener">
+        <div class="tool-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+        <div class="tool-body">
+          <div class="tool-name">Foto para WhatsApp</div>
+          <div class="tool-desc">Cria a foto de perfil institucional do WhatsApp. Faça upload da imagem, ajuste o enquadramento e baixe em 1080×1080 já dentro da moldura da marca.</div>
+          <div class="tool-host">whatsapp-ragga.vercel.app</div>
+        </div>
+        <span class="tool-cta">Abrir ferramenta <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M3.5 8.5l5-5"/><path d="M4.5 3.5h4v4"/></svg></span>
+      </a>
+
+      <a class="tool-card rv" style="--rd:.24s" href="https://assinatura-ragga.vercel.app" target="_blank" rel="noopener">
+        <div class="tool-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg></div>
+        <div class="tool-body">
+          <div class="tool-name">Assinatura de E-mail</div>
+          <div class="tool-desc">Gera assinaturas de e-mail padronizadas. Preencha seus dados, escolha sua vertical e copie &amp; cole no Gmail — tipografia e cores sempre consistentes.</div>
+          <div class="tool-host">assinatura-ragga.vercel.app</div>
+        </div>
+        <span class="tool-cta">Abrir ferramenta <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M3.5 8.5l5-5"/><path d="M4.5 3.5h4v4"/></svg></span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- MANIFESTO -->
 <section class="manifesto">
   <div class="man-line">Marketing <em>abre.</em><br>Venda <em>reina.</em><br>Caixa <em>canta.</em></div>
@@ -961,6 +1018,7 @@ const NAV = [
   ]},
   { group:'Referência', items:[
     {id:'tipografia',label:'Tipografia',num:'08'},
+    {id:'ferramentas',label:'Ferramentas',num:'09'},
   ]},
 ];
 
