@@ -436,6 +436,7 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
 .type-theme-icon svg{width:14px;height:14px}
 .type-theme-icon[data-mode="light"]{background:#fdfbf6;color:#1a1410;box-shadow:inset 0 0 0 1px var(--rule-strong)}
 .type-theme-icon[data-mode="dark"]{background:#0e0c0a;color:#f0e9dd;box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.type-themes-sep{width:1px;align-self:stretch;min-height:18px;background:var(--rule-strong);margin:0 5px}
 .type-stage{padding:52px 40px 60px;min-height:200px;font-family:var(--serif);font-size:80px;font-weight:300;line-height:1;letter-spacing:-.035em;outline:none;word-break:break-word;color:var(--ink);transition:font-family .2s,letter-spacing .2s,background .35s cubic-bezier(.4,0,.2,1),color .35s cubic-bezier(.4,0,.2,1)}
 .type-stage:focus{background:color-mix(in oklch,var(--c-holding) 3%,var(--bg))}
 .type-stage em{font-style:italic}
@@ -1637,10 +1638,23 @@ async function downloadAllZip(btn) {
 })();
 
 // ─── Temas do testador — fundo = keycolor da vertical, texto claro (OKLCH) ───
+// Frases-conceito por vertical (fonte: Notion · Identidade Visual — referência rápida)
+const THEME_PHRASE = {
+  holding: 'Seis temperos, uma só panela.',
+  foods:   'Sem sal, comida não existe.',
+  gestao:  'Perfuma a panela inteira sem aparecer.',
+  insumos: 'Raiz, base, brasilidade.',
+  mkt:     'A agência que acende o fogo.',
+  social:  'Pouco insumo, muito impacto.',
+  franquia:'O sabor não muda da matriz à unidade.',
+};
 (function typeThemes() {
   const stage = document.getElementById('type-stage');
   const wrap  = document.getElementById('type-themes');
   if (!stage || !wrap) return;
+  const slider  = document.getElementById('type-size-slider');
+  const readout = document.getElementById('size-readout');
+  function setSize(px) { stage.style.fontSize = px + 'px'; if (slider) slider.value = px; if (readout) readout.textContent = px; }
 
   function setActive(btn) {
     wrap.querySelectorAll('.type-theme').forEach(b => b.classList.remove('active'));
@@ -1675,7 +1689,11 @@ async function downloadAllZip(btn) {
   });
   wrap.appendChild(dark);
 
-  // um tema por vertical
+  // separador — claro/escuro fica à parte das cores
+  wrap.appendChild(el('span', 'type-themes-sep'));
+  wrap.appendChild(el('span', 'type-themes-label', 'Cores'));
+
+  // um tema por vertical — cada cor carrega sua frase-conceito
   BRANDS.forEach(b => {
     const sw = el('button', 'type-theme');
     sw.title = b.name;
@@ -1685,6 +1703,8 @@ async function downloadAllZip(btn) {
       // texto claro: tom da marca (fallback) → branco tingido no matiz via OKLCH
       stage.style.color = b.on || '#fff';
       stage.style.color = `oklch(from ${b.hex} 0.97 0.045 h)`;
+      const phrase = THEME_PHRASE[b.id];
+      if (phrase) { stage.textContent = phrase; setSize(52); }
       setActive(sw);
     });
     wrap.appendChild(sw);
