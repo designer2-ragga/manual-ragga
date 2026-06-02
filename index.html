@@ -1612,7 +1612,8 @@ async function downloadAllZip(btn) {
       weightSel.appendChild(o);
     });
     weightSel.value = font === 'sans' ? '600' : '400';
-    weightSel.disabled = WEIGHTS[font].length < 2;
+    // Dotties tem só um peso (Heavy) → esconde o seletor; Instrument mostra
+    weightSel.style.display = WEIGHTS[font].length < 2 ? 'none' : '';
     stage.style.fontWeight = weightSel.value;
     stage.style.letterSpacing = font === 'display' ? '0' : '-.03em';
   }
