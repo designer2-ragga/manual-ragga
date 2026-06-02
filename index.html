@@ -539,7 +539,7 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
 /* ── Mobile ── */
 @media(max-width:600px){
   .section{padding:64px 20px}
-  .hero{padding:32px 20px;gap:32px}
+  .hero{height:auto;max-height:none;overflow:visible;padding:88px 20px 56px;gap:32px}
   .sec-head{grid-template-columns:40px 1fr;gap:12px}
   .tempero-grid{grid-template-columns:1fr}
   .logos-grid{gap:12px}
@@ -550,7 +550,7 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
   .v-name{font-size:clamp(34px,8vw,48px)}
   .hero-title{font-size:clamp(28px,8vw,48px)}
   .hero-sub{font-size:17px}
-  .type-stage{font-size:48px!important}
+  .type-stage{padding:32px 22px 40px}
   .about-cols{grid-template-columns:1fr;gap:40px}
   .archi-holding{min-width:0;width:100%;max-width:100%;padding:20px 24px}
   .archi-cols{grid-template-columns:1fr;gap:16px}
@@ -565,6 +565,23 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
   .type-scale-meta{flex-direction:row;align-items:baseline;gap:10px;flex-wrap:wrap}
   .type-dl-card{padding:28px 24px}
   .t-card{padding:20px 16px}
+  /* ── Mobile: alvos de toque e controles do testador (preceitos de UI) ── */
+  .type-playground-bar{gap:12px;padding:14px 16px}
+  .type-font-tabs{width:100%}
+  .type-font-tab{flex:1;text-align:center;padding:12px 10px}
+  .type-themes{width:100%;gap:10px}
+  .type-theme{width:34px;height:34px}
+  .type-theme-icon svg{width:16px;height:16px}
+  .type-weight-select{font-size:16px;padding:9px 12px}        /* 16px evita zoom no iOS */
+  .type-size-wrap{width:100%;margin-left:0;gap:12px}
+  .type-size-slider{flex:1;width:auto;height:26px}
+  .logos-bg-toggle button{padding:12px 18px}
+  .v-dl-btn,.dl-btn,.type-dl-btn,.tool-cta{padding:13px 22px}
+  .hero-brand-chip{padding:10px 14px 10px 10px}
+  .hero-dl-btn{padding:15px 24px}
+  .mobile-menu-btn{width:42px;height:42px}
+  .sidebar.nav-open .nav-btn{padding:12px 12px;border-radius:12px}
+  .sidebar.nav-open .nav-label{padding:10px 12px 4px}
 }
 </style>
 </head>
@@ -1636,6 +1653,11 @@ async function downloadAllZip(btn) {
 
   const active = document.querySelector('.type-font-tab.active');
   applyFont(active ? active.dataset.font : 'display');
+
+  // tamanho inicial menor no mobile (80px estoura em telas pequenas)
+  if (window.matchMedia('(max-width:600px)').matches) {
+    slider.value = 44; stage.style.fontSize = '44px'; readout.textContent = '44';
+  }
 })();
 
 // ─── Temas do testador — claro/escuro + cor da vertical, com frase-conceito ──
