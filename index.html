@@ -1314,8 +1314,8 @@ async function downloadBrandZip(b, btn) {
     const grid = document.getElementById(`logos-${b.id}`);
     grid.innerHTML = '';
     const isNeg = bgMode === 'negative';
-    // box com stroke visível, contrastando com o fundo da seção
-    const boxBg     = isNeg ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.015)';
+    // box sem shade: fundo = keycolor da seção (igual ao tema); só o stroke define o box
+    const boxBg     = isNeg ? b.hex : '#ffffff';
     const boxStroke = isNeg ? '1px solid rgba(255,255,255,0.32)' : '1px solid rgba(0,0,0,0.18)';
     const imgFilter = isNeg ? 'brightness(0) invert(1)' : 'none';
     // todas as versões oficiais da marca (símbolo · verticais · horizontal)
