@@ -1654,10 +1654,6 @@ const DEFAULT_HTML = 'Os seis temperos do Grupo <em>Ragga.</em>';
   const stage = document.getElementById('type-stage');
   const wrap  = document.getElementById('type-themes');
   if (!stage || !wrap) return;
-  const slider  = document.getElementById('type-size-slider');
-  const readout = document.getElementById('size-readout');
-  function setSize(px) { stage.style.fontSize = px + 'px'; if (slider) slider.value = px; if (readout) readout.textContent = px; }
-
   let mode = 'light';     // 'light' | 'dark'
   let current = null;     // vertical selecionada (ou null = papel neutro)
 
@@ -1712,11 +1708,11 @@ const DEFAULT_HTML = 'Os seis temperos do Grupo <em>Ragga.</em>';
     sw.addEventListener('click', () => {
       if (current === b) {                       // desmarca → papel neutro + texto padrão
         current = null;
-        stage.innerHTML = DEFAULT_HTML; setSize(80);
+        stage.innerHTML = DEFAULT_HTML;
         setColorActive(null);
       } else {
         current = b;
-        stage.textContent = THEME_PHRASE[b.id] || b.name; setSize(42);
+        stage.textContent = THEME_PHRASE[b.id] || b.name;
         setColorActive(sw);
       }
       applyTheme();
