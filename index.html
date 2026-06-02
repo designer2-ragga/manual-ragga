@@ -570,7 +570,7 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
     <div class="hero-brands" id="hero-brands" style="--stagger:3"></div>
     <button class="hero-dl-btn" id="dl-all-btn" style="--stagger:4">
       <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M6 1.5v7"/><path d="M2.5 6.5L6 10l3.5-3.5"/><line x1="1.5" y1="11" x2="10.5" y2="11"/></svg>
-      <span class="dl-all-label">Baixar todos os assets</span>
+      <span class="dl-all-label">Baixar todos os arquivos de marca</span>
     </button>
   </div>
   <div class="hero-globo">
@@ -1316,7 +1316,7 @@ async function downloadAllZip(btn) {
   btn.disabled = true;
   try {
     const zip = new JSZip();
-    const root = zip.folder('Ragga - Assets de Marca');
+    const root = zip.folder('Ragga - Arquivos de Marca');
     let done = 0;
     for (const b of BRANDS) {
       const folder = root.folder(b.name);          // uma pasta por marca
@@ -1342,7 +1342,7 @@ async function downloadAllZip(btn) {
     const content = await zip.generateAsync({ type: 'blob' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(content);
-    a.download = `ragga-assets-marca_v${ver}_${ts}.zip`;
+    a.download = `ragga-arquivos-de-marca_v${ver}_${ts}.zip`;
     a.click();
     URL.revokeObjectURL(a.href);
   } finally {
