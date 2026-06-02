@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Marca · Grupo Ragga</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f3ec;--bg-soft:#efeae0;--ink:#1a1410;--ink-soft:#4a423b;--ink-muted:#8a8278;
+  --rule:rgba(26,20,16,.12);--rule-strong:rgba(26,20,16,.22);
+  --serif:"Plus Jakarta Sans",system-ui,sans-serif;
+  --sans:"Plus Jakarta Sans",system-ui,sans-serif;
+  --mono:"Plus Jakarta Sans",system-ui,sans-serif;
+  --content-max:1080px;--sidebar-w:260px;--sidebar-collapsed:60px;
+  --c-holding:#2D1B4E;
+}
+[data-theme=dark]{
+  --bg:#0e0c0a;--bg-soft:#1c1814;--ink:#f0e9dd;--ink-soft:#c8bfb2;--ink-muted:#8a8178;
+  --rule:rgba(240,233,221,.13);--rule-strong:rgba(240,233,221,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .5s,color .5s}
+h1,h2,h3{font-family:var(--serif);font-weight:300;letter-spacing:-.03em;line-height:1.08}
+h1{font-weight:700}
+p{max-width:60ch;margin-bottom:1em}
+button{cursor:pointer;font:inherit}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+
+/* ── Layout ── */
+.app{display:block;min-height:100vh}
+.main{margin-left:var(--sidebar-w)}
+
+/* ── Sidebar ── */
+.sidebar{
+  position:fixed;top:0;left:0;height:100vh;
+  width:var(--sidebar-w);
+  padding:28px 16px 24px;
+  border-right:1px solid var(--rule);
+  display:flex;flex-direction:column;gap:24px;
+  background:var(--bg);z-index:50;overflow:hidden
+}
+.sidebar-brand{padding-bottom:20px;border-bottom:1px solid var(--rule);height:40px}
+.sidebar-icon{display:none}
+.sidebar-logo{display:block;width:100%;max-width:160px;height:auto;object-fit:contain}
+.sidebar-nav{opacity:1}
+.sidebar-ver{opacity:1}
+[data-theme=dark] .sidebar-logo{filter:invert(1)}
+.sidebar-ver{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-muted);margin-top:auto;padding-top:16px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.sidebar-ver-text{line-height:1.6}
+.sidebar-history-btn{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;border:1px solid var(--rule);background:transparent;color:var(--ink-muted);cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s;padding:0}
+.sidebar-history-btn:hover{border-color:var(--rule-strong);color:var(--ink)}
+.version-pill{display:inline-flex;align-items:center;padding:4px 9px;border:1px solid var(--rule);border-radius:999px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);gap:6px}
+.sidebar .version-pill{margin-top:10px}
+.version-pill-dot{width:5px;height:5px;border-radius:50%;background:var(--c-holding);flex-shrink:0}
+.sidebar-nav{display:flex;flex-direction:column;flex:1;overflow-y:auto;gap:2px;margin:0 -8px;padding:0 8px}
+.nav-group{margin-bottom:14px}
+.nav-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);padding:6px 10px;display:block}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:12px;font-size:13.5px;color:var(--ink-soft);border:none;background:transparent;text-align:left;width:100%;transition:background .15s,color .15s}
+/* non-brand items: border hover + filled active */
+.nav-btn:not([data-brand]):hover{
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+}
+.nav-btn:not([data-brand]).active{
+  background: var(--bg-soft);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--rule-strong);
+}
+/* brand items: solid keycolor */
+.nav-btn[data-brand]:hover,.nav-btn[data-brand].active{
+  background: var(--key);
+  color: #fff;
+}
+.nav-num{font-family:var(--mono);font-size:10px;letter-spacing:.06em;min-width:18px;transition:color .15s}
+/* brand nav numbers: keycolor at rest, white on hover/active */
+.nav-btn[data-brand] .nav-num{color:var(--key)}
+.nav-btn[data-brand]:hover .nav-num,.nav-btn[data-brand].active .nav-num{
+  color: #fff;
+  opacity:.7;
+}
+/* ── Sidebar changelog ── */
+.sidebar-changelog{border-top:1px solid var(--rule);padding-top:20px;display:flex;flex-direction:column;gap:18px}
+.scl-header{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-muted)}
+.scl-list{display:flex;flex-direction:column;position:relative;padding-left:22px}
+.scl-list::before{content:'';position:absolute;left:4px;top:7px;bottom:28px;width:1px;background:var(--rule)}
+.scl-entry{position:relative;padding-bottom:20px}
+.scl-entry:last-child{padding-bottom:0}
+.scl-entry::before{content:'';position:absolute;left:-22px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--rule-strong)}
+.scl-current::before{background:var(--c-holding);box-shadow:0 0 0 3px color-mix(in oklch,var(--c-holding) 22%,transparent)}
+.scl-planned::before{background:var(--bg);border:1.5px solid var(--rule-strong)}
+.scl-ver{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--ink);line-height:1;margin-bottom:3px}
+.scl-date{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-muted);margin-bottom:8px;text-transform:uppercase}
+.scl-items{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+.scl-items li{font-size:11px;color:var(--ink-soft);line-height:1.45;padding-left:12px;position:relative}
+.scl-items li::before{content:'↳';position:absolute;left:0;opacity:.4;font-family:var(--mono)}
+.scl-planned .scl-ver,.scl-planned .scl-date,.scl-planned .scl-items li{opacity:.45}
+.scl-status{display:flex;flex-direction:column;gap:6px;padding-top:4px;border-top:1px solid var(--rule)}
+.scl-status-row{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.scl-status-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0;box-shadow:0 0 0 2px color-mix(in oklch,#4ade80 28%,transparent)}
+.scl-status-meta{font-family:var(--mono);font-size:9px;color:var(--ink-muted);letter-spacing:.04em;line-height:1.6}
+
+/* ── Main ── */
+.main{min-width:0}
+.section{padding:96px clamp(32px,6vw,80px);border-bottom:1px solid var(--rule)}
+.sec-inner{max-width:var(--content-max);margin:0 auto}
+#temperos .sec-inner,#arquitetura .sec-inner{max-width:none}
+.sec-head{display:grid;grid-template-columns:80px 1fr;gap:24px;margin-bottom:56px;padding-bottom:24px;border-bottom:1px solid var(--rule)}
+.sec-num{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink-muted);padding-top:8px}
+.sec-title{font-size:clamp(36px,4.5vw,56px);line-height:1;font-weight:700}
+.sec-title em{font-style:italic;color:var(--ink-soft)}
+.sec-lede{font-family:var(--serif);font-size:22px;line-height:1.35;color:var(--ink-soft);margin-top:24px;max-width:56ch;letter-spacing:-.01em}
+
+/* ── Hero ── */
+.hero{height:100vh;max-height:100vh;overflow:hidden;display:grid;grid-template-columns:1.05fr 1fr;gap:64px;padding:40px clamp(32px,6vw,80px);align-items:center}
+.hero-text{display:flex;flex-direction:column;gap:20px}
+.hero-text .version-pill{align-self:flex-start}
+.hero-title{font-size:clamp(28px,4vw,56px);line-height:.92;letter-spacing:-.035em}
+.hero-title i{font-style:italic}
+.hero-sub{font-family:var(--serif);font-size:20px;line-height:1.45;color:var(--ink-soft);max-width:44ch;letter-spacing:-.005em;margin:0}
+.hero-brands{display:flex;flex-wrap:wrap;gap:8px;padding-top:28px;border-top:1px solid var(--rule)}
+.hero-brand-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 7px;border-radius:999px;border:1px solid var(--rule);font-size:12px;font-weight:500;color:var(--ink-soft);background:transparent;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;letter-spacing:-.01em}
+.hero-brand-chip:hover{background:var(--bg-soft);border-color:var(--rule-strong);box-shadow:0 0 0 1px rgba(26,20,16,.08),0 1px 4px rgba(26,20,16,.06)}
+.hero-brand-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.hero-globo{display:flex;align-items:center;justify-content:center}
+
+/* ── Globo ── */
+.globo-wrap{width:100%;max-width:520px;aspect-ratio:1}
+.globo-wrap svg{width:100%;height:100%;overflow:visible}
+.orbit-ring{fill:none;stroke:var(--rule);stroke-width:1;stroke-dasharray:2 4}
+@keyframes spin{to{transform:rotate(360deg)}}
+.orbit-g{animation:spin 60s linear infinite;transform-origin:260px 260px}
+
+/* ── Tempero grid ── */
+.tempero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;transition:background .3s ease,border-color .3s ease}
+.t-card{background:var(--bg);padding:32px 28px;display:flex;flex-direction:column;gap:20px;min-height:280px;border:none;text-align:left;color:var(--ink);transition:background .25s,color .25s,box-shadow .25s,opacity .3s ease}
+.t-card:hover{background:var(--key,var(--bg-soft));color:#fff;box-shadow:none}
+.t-card-top{display:flex;justify-content:space-between;align-items:flex-start}
+.t-num{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-muted);transition:color .25s}
+.t-card:hover .t-num{color:rgba(255,255,255,.55)}
+.t-dot{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .25s}
+.t-dot img{width:30px;height:30px;object-fit:contain;transition:filter .25s}
+.t-card:hover .t-dot{transform:scale(1.08) rotate(8deg);border-color:rgba(255,255,255,.6)}
+.t-card:hover .t-dot img{filter:brightness(0) invert(1)}
+.t-name{font-family:var(--serif);font-size:26px;letter-spacing:-.02em;line-height:1.05}
+.t-role{font-size:13px;color:var(--ink-soft);margin-top:4px;transition:color .25s}
+.t-card:hover .t-role{color:rgba(255,255,255,.7)}
+.t-foot{margin-top:auto;display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.t-tempero{text-transform:uppercase;color:var(--ink-soft);transition:color .25s}
+.t-card:hover .t-tempero{color:rgba(255,255,255,.6)}
+.t-hex{color:var(--ink-muted);transition:color .25s}
+.t-card:hover .t-hex{color:rgba(255,255,255,.55)}
+
+/* ── Vertical ── */
+.vertical{padding:80px clamp(32px,6vw,80px) 100px;min-height:100vh;display:flex;flex-direction:column;transition:background .55s cubic-bezier(.4,0,.2,1),color .55s cubic-bezier(.4,0,.2,1)}
+.v-head{display:grid;grid-template-columns:80px 1fr auto;gap:24px;padding-bottom:32px;align-items:end;margin-bottom:0}
+.v-num{font-family:var(--mono);font-size:11px;letter-spacing:.14em;opacity:.7}
+.v-name{font-size:clamp(48px,6vw,80px);line-height:.95;letter-spacing:-.03em;font-weight:700}
+.v-badge{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;border-radius:999px;border:1px solid}
+.v-badge-dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.9;display:inline-block}
+.v-body{display:grid;grid-template-columns:1.2fr 1fr;gap:80px;padding-top:56px;flex:1}
+.v-role{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.65;margin-bottom:16px}
+.v-desc{font-family:var(--serif);font-size:22px;line-height:1.35;letter-spacing:-.01em;margin-bottom:32px}
+.v-use{font-size:14px;line-height:1.55;opacity:.8;max-width:50ch}
+.v-nota{margin-top:24px;padding:16px;border-left:2px solid;font-size:13px;opacity:.85;font-family:var(--serif);font-style:italic}
+.codes-title{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.65;margin-bottom:16px}
+.codes{border-top:1px solid}
+.code-row{position:relative;overflow:hidden;display:grid;grid-template-columns:110px 1fr;align-items:center;padding:18px 16px;border-bottom:1px solid;gap:16px;cursor:pointer;margin:0 -16px;transition:background .18s}
+.code-row>*{transition:opacity .18s}
+.code-row:hover{background:#ffffff}
+.code-row:hover>.code-label,.code-row:hover>.code-val{opacity:0}
+.vertical .code-row:hover{background:color-mix(in srgb,var(--key) 72%,#000)}
+.code-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.65}
+.code-val{font-family:var(--mono);font-size:15px;letter-spacing:.02em}
+.code-copy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--key);background:transparent;border:none;padding:0;border-radius:0;opacity:0;transition:opacity .18s;pointer-events:none}
+.vertical .code-copy{color:#fff}
+.code-row:hover .code-copy{opacity:1}
+.code-copy.copied{opacity:1}
+.dl-btn{display:inline-flex;align-items:center;gap:8px;margin-top:28px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:transparent;border:1px solid;color:inherit;padding:10px 16px;border-radius:999px;cursor:pointer;transition:opacity .15s}
+.dl-btn:hover{opacity:.75}
+
+/* ── Logos ── */
+.logos-block{padding-top:20px;padding-bottom:64px;border-bottom:1px solid;margin-bottom:64px}
+.logos-head{display:flex;justify-content:flex-end;align-items:center;margin-bottom:64px}
+.logos-bg-toggle{display:inline-flex;border:1px solid;border-radius:999px;padding:3px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.logos-bg-toggle button{background:transparent;color:inherit;border:none;padding:7px 14px;border-radius:999px;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+.logos-bg-toggle button.active{background:currentColor}
+.logos-bg-toggle button.active span{mix-blend-mode:difference;color:#fff}
+.logos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;align-items:start}
+.logo-slot-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative}
+.logo-slot-wrap.wide{grid-column:span 2}
+.logo-slot{border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;width:100%;aspect-ratio:1}
+.logo-slot-wrap.wide .logo-slot{aspect-ratio:2/1}
+.logo-slot img{max-width:72%;max-height:72%;object-fit:contain;display:block}
+.logo-slot-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.55;text-align:center}
+/* full-color light mode overrides */
+.vertical.v-light .v-name{color:var(--key)}
+.vertical.v-light .codes,.vertical.v-light .code-row,.vertical.v-light .logos-block{border-color:var(--rule)!important}
+.vertical.v-light .v-head{border-bottom-color:var(--rule)!important}
+/* spice dict */
+.v-spice-def{margin-top:28px;padding-top:20px;border-top:1px solid;font-family:var(--mono);font-size:11px;line-height:1.6;letter-spacing:.01em;opacity:.7;font-style:italic}
+/* brand download button */
+.v-dl-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:10px 22px;border-radius:999px;border:none;background:#ffffff;color:#000000;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .55s cubic-bezier(.4,0,.2,1),color .55s,opacity .15s}
+.v-dl-btn:disabled{cursor:wait}
+.v-dl-btn:hover{opacity:.75}
+.vertical.v-light .v-dl-btn{background:var(--key);color:#ffffff}
+
+/* ── Architecture ── */
+.archi-tree{display:flex;flex-direction:column;align-items:center;padding:32px 0;position:relative}
+.archi-holding{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 40px;border:1px solid var(--rule);border-radius:8px;background:var(--bg);min-width:320px;text-align:center;color:inherit;font:inherit}
+.archi-hold-dot{width:52px;height:52px;border-radius:50%;border:1.5px solid #2D1B4E;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.archi-hold-dot img{width:30px;height:30px;object-fit:contain}
+.archi-hold-name{font-family:var(--serif);font-size:22px;letter-spacing:-.02em}
+.archi-hold-meta{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
+.archi-line{width:1px;height:56px;background:var(--rule-strong)}
+.archi-bar{width:100%;height:1px;background:var(--rule-strong)}
+.archi-cols{display:grid;grid-template-columns:repeat(6,1fr);width:100%}
+.archi-col{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;background:transparent;border:none;color:inherit;font:inherit;position:relative}
+.archi-col::before{content:"";width:1px;height:32px;background:var(--rule-strong);margin-bottom:12px;display:block}
+.archi-col-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid oklch(from var(--dot-color,#888) l c h)}
+.archi-col-dot img{width:26px;height:26px;object-fit:contain}
+.archi-col-name{font-family:var(--serif);font-size:14px;letter-spacing:-.01em;line-height:1.15;padding:0 4px}
+.archi-col-spice{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
+/* ── Architecture reveal ── */
+.archi-reveal{opacity:0;transform:translateY(-10px)}
+.archi-tree.revealed .archi-reveal{animation:archi-in .6s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--rd,0s)}
+@keyframes archi-in{to{opacity:1;transform:translateY(0)}}
+
+/* ── Palette ── */
+.palette{display:flex;flex-direction:column;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.pal-row{display:grid;grid-template-columns:220px 1fr 360px;background:var(--bg);align-items:stretch;min-height:156px}
+.pal-swatch{display:flex;flex-direction:column;justify-content:space-between;padding:18px 20px}
+.pal-swatch-num{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+.pal-swatch-name{font-family:var(--serif);font-style:italic;font-size:24px;line-height:1.1;letter-spacing:-.01em}
+.pal-info{padding:22px 28px;display:flex;flex-direction:column;justify-content:center;gap:8px;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
+.pal-brand{font-family:var(--serif);font-size:26px;line-height:1.1;letter-spacing:-.015em}
+.pal-brand em{font-style:italic}
+.pal-desc{font-size:12.5px;line-height:1.5;color:var(--ink-muted);max-width:52ch}
+.pal-specs{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1px;background:var(--rule)}
+.pal-spec{background:var(--bg);padding:12px 16px;display:flex;flex-direction:column;justify-content:center;gap:4px;border:none;text-align:left;font:inherit;color:inherit;transition:background .12s}
+.pal-spec:hover{background:var(--bg-soft)}
+.pal-spec.copied{background:var(--ink)}
+.pal-spec.copied .spec-label,.pal-spec.copied .spec-val{color:var(--bg)}
+.spec-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted)}
+.spec-val{font-family:var(--mono);font-size:13px;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Checklist ── */
+.checklist{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+.chk-item{display:grid;grid-template-columns:32px 1fr 32px;gap:20px;padding:22px 0;border-bottom:1px solid var(--rule);align-items:start;cursor:pointer;transition:padding-left .22s}
+.chk-item:hover{padding-left:8px}
+.chk-item.checked .chk-text{color:var(--ink-muted)}
+.chk-num{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-muted);padding-top:4px}
+.chk-text{font-family:var(--serif);font-size:19px;line-height:1.45;letter-spacing:-.005em}
+.chk-box{width:22px;height:22px;border:1px solid var(--rule-strong);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-top:2px;transition:background .18s,border-color .18s;flex-shrink:0}
+.chk-item.checked .chk-box{background:var(--ink);border-color:var(--ink)}
+.chk-item.checked .chk-box svg{stroke:#fff}
+
+/* ── Typography ── */
+.type-spec{display:grid;grid-template-columns:200px 1fr;gap:32px;padding:32px 0;border-top:1px solid var(--rule);align-items:start}
+.type-label{display:flex;flex-direction:column;gap:4px}
+.type-name{font-family:var(--serif);font-size:18px;letter-spacing:-.01em}
+.type-role{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted)}
+.type-sample{display:flex;flex-direction:column;gap:12px}
+.sample-display{font-family:var(--serif);font-size:72px;line-height:.95;letter-spacing:-.03em}
+.sample-display em{font-style:italic}
+.sample-body{font-family:var(--sans);font-size:17px;line-height:1.5;max-width:60ch}
+.sample-mono{font-family:var(--mono);font-size:14px;letter-spacing:.02em}
+.type-weights{display:flex;flex-wrap:wrap;gap:24px;margin-top:8px;padding-top:16px;border-top:1px solid var(--rule)}
+.type-weight{font-size:22px;letter-spacing:-.01em}
+
+/* ── Downloads ── */
+.downloads{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.dl-card{background:var(--bg);padding:28px 24px;display:flex;flex-direction:column;gap:16px;border:none;text-align:left;font:inherit;color:inherit;transition:background .18s}
+.dl-card:hover{background:var(--bg-soft)}
+.dl-head{display:flex;justify-content:space-between;align-items:center}
+.dl-dot{width:36px;height:36px;border-radius:50%}
+.dl-name{font-family:var(--serif);font-size:22px;letter-spacing:-.02em}
+.dl-role{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin-top:2px}
+.dl-files{display:flex;flex-direction:column;margin-top:8px;border-top:1px solid var(--rule)}
+.dl-file{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink-soft)}
+.dl-file:last-child{border-bottom:none}
+.dl-ext{opacity:.5}
+
+/* ── Gov list ── */
+.gov-list{border-top:1px solid var(--rule)}
+.gov-item{display:grid;grid-template-columns:56px 1fr;gap:24px;padding:24px 12px;border-bottom:1px solid var(--rule);align-items:start;position:relative;margin:0 -12px;cursor:default;border-radius:4px;transition:background .22s cubic-bezier(.2,0,0,1),box-shadow .22s cubic-bezier(.2,0,0,1)}
+.gov-item::before{content:'';position:absolute;left:0;top:16%;bottom:16%;width:2px;background:var(--ink);border-radius:2px;transform:scaleY(0);transform-origin:center;transition:transform .22s cubic-bezier(.2,0,0,1),opacity .22s cubic-bezier(.2,0,0,1);opacity:0}
+.gov-item:hover{background:rgba(255,255,255,.05);box-shadow:0 1px 0 var(--rule)}
+.gov-item:hover::before{transform:scaleY(1);opacity:1}
+.gov-num{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-muted);padding-top:4px;transition:color .22s cubic-bezier(.2,0,0,1),transform .22s cubic-bezier(.2,0,0,1)}
+.gov-item:hover .gov-num{color:var(--ink);transform:translateX(10px)}
+.gov-text{font-family:var(--serif);font-size:19px;line-height:1.45;letter-spacing:-.005em;transition:transform .22s cubic-bezier(.2,0,0,1)}
+.gov-item:hover .gov-text{transform:translateX(10px)}
+
+/* ── Manifesto ── */
+.manifesto{padding:96px clamp(32px,6vw,80px);text-align:center;border-bottom:1px solid var(--rule)}
+.man-line{font-family:var(--serif);font-size:clamp(36px,5vw,64px);line-height:1.15;letter-spacing:-.025em;font-style:italic}
+.man-line em{font-style:normal;color:var(--ink-muted)}
+.man-cap{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin-top:32px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;z-index:999;pointer-events:none;opacity:0;transition:opacity .24s}
+.toast.show{opacity:1}
+
+/* ── Details ──────────────────────────────────────────────────────────────── */
+
+/* text-wrap: balance prevents awkward single-word last lines on headings */
+h1,h2,h3,.sec-title,.v-name,.man-line,.pal-brand,.logos-title-text,.t-name,.gov-text,.chk-text,.hero-title{text-wrap:balance}
+/* text-wrap: pretty prevents orphaned words in body copy */
+p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
+
+/* tabular nums keep digit widths equal — prevents layout shift in live values */
+.nav-num,.v-num,.t-num,.t-hex,.code-val,.spec-val,.pal-swatch-num,.sec-num,.chk-num,.gov-num,.dl-ext,.version-pill{font-variant-numeric:tabular-nums}
+
+/* staggered entrance — nav items and hero elements fade up on load */
+@keyframes fade-up{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.nav-btn{animation:fade-up .22s ease both;animation-delay:calc(var(--stagger,0)*28ms)}
+.hero-text>*{animation:fade-up .38s ease both;animation-delay:calc(var(--stagger,0)*85ms)}
+.hero-brand-chip{animation:fade-up .28s ease both;animation-delay:calc(var(--stagger,0)*40ms)}
+.hero-globo{animation:fade-up .55s cubic-bezier(.22,1,.36,1) both;animation-delay:.18s}
+
+/* ── Scroll reveal ── */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .72s cubic-bezier(.22,1,.36,1),transform .72s cubic-bezier(.22,1,.36,1);transition-delay:var(--rd,0s)}
+.rv.in{opacity:1;transform:none}
+
+/* three-layer shadows on interactive card hover — depth without harsh borders */
+.t-card{transition:background .2s,box-shadow .2s}
+.t-card:hover{box-shadow:0 0 0 1px rgba(26,20,16,.06),0 2px 6px rgba(26,20,16,.06),0 4px 14px rgba(26,20,16,.04)}
+.archi-holding{transition:background .35s cubic-bezier(.4,0,.2,1),color .35s,border-color .35s,box-shadow .35s}
+.archi-holding:hover{background:#2D1B4E;color:#F4ECE0;border-color:#2D1B4E;box-shadow:0 4px 24px color-mix(in oklch,#2D1B4E 35%,transparent)}
+.archi-holding:hover .archi-hold-dot{border-color:rgba(244,236,224,.8)}
+.archi-hold-dot img{transition:filter .35s}
+.archi-holding:hover .archi-hold-dot img{filter:brightness(0) invert(1)}
+.archi-hold-dot{transition:border-color .35s}
+.archi-hold-meta{transition:color .35s}
+.archi-holding:hover .archi-hold-meta{color:rgba(244,236,224,.55)}
+.dl-card{transition:background .18s,box-shadow .18s}
+.dl-card:hover{box-shadow:0 0 0 1px rgba(26,20,16,.06),0 2px 6px rgba(26,20,16,.04)}
+[data-theme=dark] .t-card:hover{box-shadow:0 0 0 1px rgba(240,233,221,.06),0 2px 6px rgba(240,233,221,.03)}
+[data-theme=dark] .archi-holding:hover{box-shadow:0 0 0 1px rgba(240,233,221,.08),0 2px 8px rgba(240,233,221,.04)}
+[data-theme=dark] .dl-card:hover{box-shadow:0 0 0 1px rgba(240,233,221,.06),0 2px 6px rgba(240,233,221,.03)}
+
+/* checklist hover gets subtle bg fill */
+.chk-item{transition:padding-left .22s,background .15s}
+.chk-item:hover{background:var(--bg-soft)}
+
+
+/* concentric border-radius — inner palette spec cells match outer container's 6px */
+.pal-spec{border-radius:6px}
+
+/* ── Dark mode oklch adaptations ────────────────────────────────────────────
+   Brand colors are never changed. Only UI chrome (borders, bg) adapts.
+   oklch lightness floor at 0.65 ensures any brand color is readable as a
+   border on a dark background while preserving its hue and chroma exactly. */
+[data-theme=dark] .archi-col-dot,
+[data-theme=dark] .t-dot{
+  border-color: oklch(from var(--dot-color,#888) clamp(0.65,l,1) c h);
+}
+[data-theme=dark] .archi-hold-dot{
+  border-color: oklch(from var(--c-holding) clamp(0.65,l,1) c h);
+}
+/* holding icon is dark purple — switch to white in dark mode */
+[data-theme=dark] .archi-hold-dot img{
+  filter: brightness(0) invert(1);
+  opacity: .85;
+}
+/* archi-holding card needs a surface to read against dark bg */
+[data-theme=dark] .archi-holding{
+  background: var(--bg-soft);
+}
+
+/* ── Type Tester ── */
+.type-playground{border:1px solid var(--rule);border-radius:16px;overflow:hidden;margin-bottom:72px}
+.type-playground-bar{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.type-font-tabs{display:inline-flex;background:var(--bg-soft);border-radius:10px;padding:3px;gap:2px}
+.type-font-tab{padding:6px 14px;border-radius:8px;border:none;background:transparent;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted);cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}
+.type-font-tab.active{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgba(26,20,16,.1)}
+.type-weight-select{font-family:var(--mono);font-size:10px;letter-spacing:.06em;border:1px solid var(--rule);border-radius:8px;background:var(--bg);color:var(--ink-soft);padding:5px 10px;cursor:pointer;outline:none}
+.type-size-wrap{display:flex;align-items:center;gap:10px;margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink-muted);white-space:nowrap}
+.type-px{opacity:.5}
+.type-size-slider{width:100px;accent-color:var(--c-holding);cursor:pointer}
+.type-stage{padding:52px 40px 60px;min-height:200px;font-family:var(--serif);font-size:80px;font-weight:300;line-height:1;letter-spacing:-.035em;outline:none;word-break:break-word;color:var(--ink);transition:font-family .2s,letter-spacing .2s}
+.type-stage:focus{background:color-mix(in oklch,var(--c-holding) 3%,var(--bg))}
+.type-stage em{font-style:italic}
+.type-section-label{margin-bottom:16px}
+.type-scale{border-top:1px solid var(--rule);margin-bottom:80px}
+.type-scale-row{display:grid;grid-template-columns:140px 1fr;gap:24px;align-items:start;padding:28px 0;border-bottom:1px solid var(--rule)}
+.type-scale-meta{display:flex;flex-direction:column;gap:5px;padding-top:8px}
+.type-scale-sz{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--ink);line-height:1}
+.type-scale-fn{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);line-height:1.4}
+.type-weights-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+.type-weight-cell{background:var(--bg);padding:24px 20px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;min-height:130px}
+.type-weight-sample{font-size:38px;line-height:1;letter-spacing:-.02em;color:var(--ink)}
+.type-weight-num{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--ink);line-height:1}
+.type-weight-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.type-pairing-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:16px;overflow:hidden;margin-bottom:8px}
+.type-pair-card{background:var(--bg);padding:36px 32px;display:flex;flex-direction:column;gap:14px;min-height:260px}
+.type-pair-chip{display:inline-flex;align-self:flex-start;padding:3px 10px;border-radius:999px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.type-pair-foot{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink-muted);margin-top:auto;border-top:1px solid var(--rule);padding-top:14px;text-transform:uppercase}
+.type-dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:16px;overflow:hidden}
+.type-dl-card{background:var(--bg);padding:40px 36px;display:flex;flex-direction:column;gap:20px}
+.type-dl-name{font-size:24px;letter-spacing:-.015em;margin-bottom:4px;font-weight:400}
+.type-dl-role{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px}
+.type-dl-desc{font-size:13px;line-height:1.55;color:var(--ink-soft)}
+.type-dl-btn{display:inline-flex;align-items:center;gap:8px;margin-top:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:inherit;padding:10px 18px;border:1px solid var(--rule-strong);border-radius:999px;text-decoration:none;transition:background .15s,border-color .15s;align-self:flex-start}
+.type-dl-btn:hover{background:var(--bg-soft)}
+
+/* ── Mobile menu button (hidden on desktop) ── */
+.mobile-menu-btn{display:none}
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.nav-overlay.visible{display:block}
+
+/* ── Responsive ── */
+@media(max-width:960px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:relative;height:auto}
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-globo{max-width:380px;margin:0 auto}
+  .tempero-grid{grid-template-columns:1fr 1fr}
+  .v-body{grid-template-columns:1fr;gap:48px}
+  .v-head{grid-template-columns:80px 1fr}
+  .v-badge{display:none}
+  .archi-cols{grid-template-columns:repeat(2,1fr);gap:32px}
+  .archi-bar{display:none}
+  .archi-col::before{display:none}
+  .downloads{grid-template-columns:1fr}
+  .type-spec{grid-template-columns:1fr}
+  .pal-row{grid-template-columns:1fr}
+  .pal-info{border-left:none;border-right:none;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .type-pairing-grid{grid-template-columns:1fr}
+  .type-dl-grid{grid-template-columns:1fr}
+  .sobre-cols{grid-template-columns:1fr!important;gap:40px!important}
+}
+
+/* ── Tablet/Mobile sidebar → hamburger header ── */
+@media(max-width:760px){
+  .main{margin-left:0}
+  .sidebar{
+    position:sticky;top:0;height:auto;width:100%!important;
+    flex-direction:row;align-items:center;
+    padding:12px 20px;
+    border-right:none;border-bottom:1px solid var(--rule);
+    z-index:100;gap:0;overflow:visible;
+    box-shadow:none!important;
+    transition:none
+  }
+  .sidebar-brand{padding-bottom:0;border-bottom:none;height:auto;flex:1;display:flex;align-items:center;gap:12px}
+  .sidebar-icon{position:static;width:28px;height:28px;opacity:1!important}
+  .sidebar-logo{max-width:140px;opacity:1!important}
+  .sidebar-nav{display:none;opacity:1!important}
+  .sidebar-ver{display:none;opacity:1!important}
+  .mobile-menu-btn{
+    display:flex;align-items:center;justify-content:center;
+    width:38px;height:38px;flex-shrink:0;
+    border:1px solid var(--rule);border-radius:10px;
+    background:transparent;color:var(--ink);cursor:pointer;
+    transition:background .15s,border-color .15s
+  }
+  .mobile-menu-btn:hover{background:var(--bg-soft);border-color:var(--rule-strong)}
+  /* Open state — sidebar slides in as drawer */
+  .sidebar.nav-open{
+    position:fixed;top:0;left:0;
+    width:100vw;height:100vh;
+    flex-direction:column;align-items:stretch;
+    padding:24px 20px 20px;overflow-y:auto;
+    z-index:200;box-shadow:6px 0 32px rgba(0,0,0,.15)
+  }
+  .sidebar.nav-open .sidebar-brand{border-bottom:1px solid var(--rule);padding-bottom:16px;margin-bottom:4px;flex:none}
+  .sidebar.nav-open .sidebar-nav,.sidebar.nav-open .sidebar-ver{display:flex}
+  .sidebar.nav-open .sidebar-logo{max-width:140px}
+  .sidebar.nav-open .mobile-menu-btn{margin-left:auto}
+  .main{min-height:calc(100vh - 62px)}
+}
+
+/* ── Mobile ── */
+@media(max-width:600px){
+  .section{padding:64px 20px}
+  .hero{padding:32px 20px;gap:32px}
+  .sec-head{grid-template-columns:40px 1fr;gap:12px}
+  .tempero-grid{grid-template-columns:1fr}
+  .logos-grid{grid-template-columns:1fr 1fr}
+  .logo-slot-wrap.wide{grid-column:1/-1}
+  .sample-display{font-size:48px}
+  .sec-title{font-size:clamp(26px,7vw,36px)}
+  .v-name{font-size:clamp(34px,8vw,48px)}
+  .hero-title{font-size:clamp(28px,8vw,48px)}
+  .hero-sub{font-size:17px}
+  .type-stage{font-size:48px!important}
+  .about-cols{grid-template-columns:1fr;gap:40px}
+  .archi-holding{min-width:0;width:100%;max-width:100%;padding:20px 24px}
+  .archi-cols{grid-template-columns:1fr;gap:16px}
+  .v-head{grid-template-columns:1fr;gap:4px;padding-bottom:24px}
+  .v-num{font-size:11px}
+  .gov-item{gap:14px;padding:18px 10px}
+  .gov-text{font-size:16px}
+  .code-row{grid-template-columns:90px 1fr;gap:8px;padding:15px 14px}
+  .hero-globo{max-width:280px}
+  .type-pair-card{padding:24px 20px;min-height:auto}
+  .type-dl-card{padding:28px 24px}
+  .t-card{padding:20px 16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div class="nav-overlay" id="nav-overlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <img src="assets-logos/marca/Grupo_Icone.svg" class="sidebar-icon" alt="">
+    <img src="assets-logos/marca/Grupo_Horizontal.svg" class="sidebar-logo" alt="Grupo Ragga">
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu" style="margin-left:auto">
+      <svg id="menu-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="2" y1="5" x2="14" y2="5"/><line x1="2" y1="11" x2="14" y2="11"/></svg>
+      <svg id="close-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="display:none"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+    </button>
+  </div>
+  <nav class="sidebar-nav" id="sidebar-nav"></nav>
+  <div class="sidebar-ver">
+    <div class="sidebar-ver-text"><strong>Manual de Identidade Visual</strong><br>Versão 01 · 12-05-2026</div>
+    <button class="sidebar-history-btn" title="Ver histórico de versões" onclick="alert('Em breve: histórico de versões.')">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.5 8a5.5 5.5 0 1 0 1.1-3.3"/>
+        <path d="M2.5 3.5V7H6"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="main">
+
+<!-- HERO -->
+<section id="capa" class="hero">
+  <div class="hero-text">
+    <div class="version-pill" id="hero-pill" style="--stagger:0"><span class="version-pill-dot"></span>Manual de Identidade Visual · v01 · 12-05-2026</div>
+    <h1 class="hero-title" style="--stagger:1">Os <i>seis</i> temperos do Grupo <i>Ragga.</i></h1>
+    <p class="hero-sub" style="--stagger:2">Referência operacional consolidada da holding e suas seis verticais. Cores oficiais, símbolos, arquitetura de marca e regras de aplicação — tudo em um único lugar.</p>
+    <div class="hero-brands" id="hero-brands" style="--stagger:3"></div>
+  </div>
+  <div class="hero-globo">
+    <div class="globo-wrap">
+      <svg viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="260" cy="260" r="180" class="orbit-ring"/>
+        <circle cx="260" cy="260" r="78" fill="#2D1B4E"/>
+        <image href="assets-logos/marca/Grupo_Icone.svg" x="218" y="218" width="84" height="84" style="filter:brightness(0)invert(1)" />
+        <g class="orbit-g" id="orbit-dots"></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre" class="section" style="background:#0e0c0a;color:rgba(255,255,255,0.85);--rule:rgba(255,255,255,.12);--rule-strong:rgba(255,255,255,.22);--ink:rgba(255,255,255,0.85);--ink-soft:rgba(255,255,255,0.6);--ink-muted:rgba(255,255,255,0.38)">
+  <div class="sec-inner">
+    <div class="sec-head rv">
+      <div class="sec-num">§ 01</div>
+      <div>
+        <h2 class="sec-title">Sobre <em>este</em> manual</h2>
+        <p class="sec-lede">Este documento consolida as identidades visuais oficiais da holding Grupo Ragga e suas seis verticais — Os 6 Temperos — extraídas dos brandbooks individuais.</p>
+      </div>
+    </div>
+    <div class="sobre-cols rv" style="display:grid;grid-template-columns:1fr 1fr;gap:64px;--rd:.18s">
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px">O que contém</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+          <li style="display:flex;gap:12px;font-size:15px;line-height:1.5"><span style="font-family:var(--mono);color:var(--ink-muted);font-size:11px;padding-top:4px">01</span>Identidade e papel da marca dentro do sistema.</li>
+          <li style="display:flex;gap:12px;font-size:15px;line-height:1.5"><span style="font-family:var(--mono);color:var(--ink-muted);font-size:11px;padding-top:4px">02</span>Símbolo (tempero) isolado, em alta resolução.</li>
+          <li style="display:flex;gap:12px;font-size:15px;line-height:1.5"><span style="font-family:var(--mono);color:var(--ink-muted);font-size:11px;padding-top:4px">03</span>As 4 versões oficiais do logo — vertical e horizontal · positivo e negativo.</li>
+          <li style="display:flex;gap:12px;font-size:15px;line-height:1.5"><span style="font-family:var(--mono);color:var(--ink-muted);font-size:11px;padding-top:4px">04</span>Códigos de cor oficiais — HEX, RGB, CMYK e Pantone sugerido.</li>
+        </ul>
+        <p style="margin-top:32px;font-size:13px;color:var(--ink-muted);line-height:1.5">Os arquivos-mestre (PDF de cada vertical) seguem como fonte da verdade para aplicação dos logos.</p>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px">Governança de marca</div>
+        <div class="gov-list">
+          <div class="gov-item"><div class="gov-num">01</div><div class="gov-text">A vertical de restaurantes assina oficialmente como "Ragga Restaurantes" na identidade visual.</div></div>
+          <div class="gov-item"><div class="gov-num">02</div><div class="gov-text">A franqueadora assina oficialmente como "Ragga FRANQUIA" no brandbook.</div></div>
+          <div class="gov-item"><div class="gov-num">03</div><div class="gov-text">Recomendamos alinhar o uso textual com a direção antes de publicações externas para garantir consistência.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARQUITETURA -->
+<section id="arquitetura" class="section">
+  <div class="sec-inner">
+    <div class="sec-head rv">
+      <div class="sec-num">§ 02</div>
+      <div>
+        <h2 class="sec-title">Arquitetura <em>de marca</em></h2>
+        <p class="sec-lede">O Grupo Ragga opera como holding de seis verticais integradas. Cada vertical tem cor e símbolo próprios, mas todas convergem para a marca-mãe.</p>
+      </div>
+    </div>
+    <div class="archi-tree">
+      <button class="archi-holding" onclick="navTo('holding')">
+        <div class="archi-hold-dot"><img src="assets-logos/marca/Grupo_Icone.svg" alt="Grupo Ragga"></div>
+        <div class="archi-hold-name">Grupo Ragga</div>
+        <div class="archi-hold-meta">Holding</div>
+      </button>
+      <div class="archi-line"></div>
+      <div class="archi-bar"></div>
+      <div class="archi-cols" id="archi-cols"></div>
+    </div>
+  </div>
+</section>
+
+<!-- OVERVIEW -->
+<section id="temperos" class="section">
+  <div class="sec-inner">
+    <div class="sec-head rv">
+      <div class="sec-num">§ 03</div>
+      <div>
+        <h2 class="sec-title">As <em>seis verticais</em></h2>
+        <p class="sec-lede">Cada vertical do Grupo Ragga é representada por um tempero. Juntos, os seis compõem o globo da holding.</p>
+      </div>
+    </div>
+    <div class="tempero-grid rv" id="tempero-grid" style="--rd:.18s"></div>
+  </div>
+</section>
+
+<!-- VERTICALS (injected by JS) -->
+<div id="verticals"></div>
+
+<!-- TIPOGRAFIA -->
+<section id="tipografia" class="section">
+  <div class="sec-inner">
+    <div class="sec-head rv">
+      <div class="sec-num">§ 08</div>
+      <div>
+        <h2 class="sec-title">Sistema <em>tipográfico</em></h2>
+        <p class="sec-lede">Dois tipos. Uma voz. Escreva, ajuste o tamanho e explore os pesos das fontes oficiais do manual.</p>
+      </div>
+    </div>
+
+    <!-- Playground -->
+    <div class="type-playground rv" style="--rd:.15s">
+      <div class="type-playground-bar">
+        <div class="type-font-tabs">
+          <button class="type-font-tab active" style="cursor:default">Plus Jakarta Sans</button>
+        </div>
+        <select class="type-weight-select" id="type-weight-select">
+          <option value="300">Light 300</option>
+          <option value="400">Regular 400</option>
+          <option value="500">Medium 500</option>
+          <option value="600">SemiBold 600</option>
+          <option value="700">Bold 700</option>
+        </select>
+        <div class="type-size-wrap">
+          <span id="size-readout">80</span><span class="type-px">px</span>
+          <input type="range" id="type-size-slider" min="14" max="160" value="80" class="type-size-slider">
+        </div>
+      </div>
+      <div class="type-stage" id="type-stage" contenteditable="true" spellcheck="false">Os seis temperos do Grupo <em>Ragga.</em></div>
+    </div>
+
+    <!-- Escala -->
+    <div class="type-section-label rv" style="--rd:.28s"><span class="eyebrow">Escala tipográfica</span></div>
+    <div class="type-scale rv" style="--rd:.36s">
+      <div class="type-scale-row">
+        <div class="type-scale-meta">
+          <span class="type-scale-sz">H1</span>
+          <span class="type-scale-fn">Plus Jakarta Sans · Light</span>
+          <span class="type-scale-fn">80px · Título</span>
+        </div>
+        <div style="font-family:var(--sans);font-size:80px;font-weight:300;line-height:.95;letter-spacing:-.035em">Os seis temperos do Grupo <em>Ragga.</em></div>
+      </div>
+      <div class="type-scale-row">
+        <div class="type-scale-meta">
+          <span class="type-scale-sz">H2</span>
+          <span class="type-scale-fn">Plus Jakarta Sans · Light Italic</span>
+          <span class="type-scale-fn">40px · Subtítulo</span>
+        </div>
+        <div style="font-family:var(--sans);font-size:40px;font-weight:300;line-height:1.08;letter-spacing:-.025em;font-style:italic">Marketing abre. Venda reina. Caixa canta.</div>
+      </div>
+      <div class="type-scale-row">
+        <div class="type-scale-meta">
+          <span class="type-scale-sz">H3</span>
+          <span class="type-scale-fn">Plus Jakarta Sans · Regular</span>
+          <span class="type-scale-fn">16px · Mancha de texto</span>
+        </div>
+        <div style="font-family:var(--sans);font-size:16px;font-weight:400;line-height:1.65;max-width:68ch">O Grupo Ragga opera como holding de seis verticais integradas — Os 6 Temperos. Cada vertical tem cor, símbolo e voz próprios, mas todas convergem para a marca-mãe. Do campo à mesa, da ideia à franquia: sal, louro, alho, pimenta, manjericão e orégano compõem o globo.</div>
+      </div>
+      <div class="type-scale-row">
+        <div class="type-scale-meta">
+          <span class="type-scale-sz">H4</span>
+          <span class="type-scale-fn">Plus Jakarta Sans · Light</span>
+          <span class="type-scale-fn">11px · Legenda fina</span>
+        </div>
+        <div style="font-family:var(--sans);font-size:11px;font-weight:300;line-height:1.7;letter-spacing:.02em;color:var(--ink-muted);max-width:68ch">sal, s.m. (Sodium chloride). Mineral essencial; base e equilíbrio de qualquer receita. Sem ele, nenhum prato existe. · Ragga Restaurantes · Londrina–PR · Vertical de Restaurantes · Tempero 01/06</div>
+      </div>
+    </div>
+
+    <!-- Combinação -->
+    <div class="type-section-label"><span class="eyebrow">Combinação — Newsreader + Plus Jakarta Sans</span></div>
+    <div class="type-pairing-grid">
+      <div class="type-pair-card">
+        <div><div class="type-pair-chip" style="background:#B81A20;color:#FFEFEA">Ragga Restaurantes</div></div>
+        <div style="font-family:var(--sans);font-size:32px;font-weight:300;line-height:1.1;letter-spacing:-.025em">O <em>sal</em> está na base de tudo.</div>
+        <div style="font-family:var(--sans);font-size:14px;line-height:1.6;color:var(--ink-soft)">A vertical de restaurantes opera com identidade própria, enraizada no sabor e na presença. Cardápios, fachadas e comunicação de PDV.</div>
+        <div class="type-pair-foot">Ragga Restaurantes · #B81A20</div>
+      </div>
+      <div class="type-pair-card">
+        <div><div class="type-pair-chip" style="background:#2D1B4E;color:#F4ECE0">Grupo Ragga</div></div>
+        <div style="font-family:var(--sans);font-size:32px;font-weight:300;line-height:1.1;letter-spacing:-.025em">Seis marcas. <em>Um propósito.</em></div>
+        <div style="font-family:var(--sans);font-size:14px;line-height:1.6;color:var(--ink-soft)">A holding reúne os seis temperos sob uma única identidade institucional. Comunicações corporativas, imprensa e mercado.</div>
+        <div class="type-pair-foot">Grupo Ragga · Holding · #2D1B4E</div>
+      </div>
+      <div class="type-pair-card">
+        <div><div class="type-pair-chip" style="background:#E86820;color:#FFF2E8">Ragga MKT + Vendas</div></div>
+        <div style="font-family:var(--sans);font-size:32px;font-weight:300;line-height:1.1;letter-spacing:-.025em">A <em>pimenta</em> que transforma.</div>
+        <div style="font-family:var(--sans);font-size:14px;line-height:1.6;color:var(--ink-soft)">Agência in-house de campanhas, anúncios e assets comerciais para todas as verticais do grupo Ragga.</div>
+        <div class="type-pair-foot">Ragga MKT + Vendas · #E86820</div>
+      </div>
+      <div class="type-pair-card">
+        <div><div class="type-pair-chip" style="background:#93B629;color:#F4FFE0">Ragga Franquia</div></div>
+        <div style="font-family:var(--sans);font-size:32px;font-weight:300;line-height:1.1;letter-spacing:-.025em">O <em>orégano</em> que se expande.</div>
+        <div style="font-family:var(--sans);font-size:14px;line-height:1.6;color:var(--ink-soft)">A franqueadora replica o sistema Ragga com assinatura própria — o aroma persistente que marca presença em toda expansão.</div>
+        <div class="type-pair-foot">Ragga Franquia · #93B629</div>
+      </div>
+    </div>
+
+    <!-- Download -->
+    <div class="type-section-label" style="margin-top:80px"><span class="eyebrow">Baixar a fonte</span></div>
+    <div class="type-dl-grid" style="grid-template-columns:1fr">
+      <div class="type-dl-card" style="flex-direction:row;align-items:center;gap:48px">
+        <div style="font-family:var(--sans);font-size:72px;font-weight:300;line-height:1;letter-spacing:-.03em;color:var(--ink);flex-shrink:0">Aa<span style="font-weight:600">Bb</span><em style="font-style:italic;font-weight:300">Cc</em></div>
+        <div style="flex:1">
+          <div class="type-dl-name">Plus Jakarta Sans</div>
+          <div class="type-dl-role">Títulos · Texto · Interface · Código técnico · Display</div>
+          <div class="type-dl-desc">Sans humanista de alta legibilidade e personalidade versátil — funciona do Light 300 ao Bold 700, do corpo à headline, do digital ao impresso. Fonte oficial do sistema de identidade do Grupo Ragga.</div>
+          <a class="type-dl-btn" style="margin-top:16px" href="https://fonts.google.com/specimen/Plus+Jakarta+Sans" target="_blank" rel="noopener">↓ &nbsp;Baixar no Google Fonts</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <p style="font-size:13px;color:var(--ink-muted)">Gratuita e de uso livre via Google Fonts. Para projetos de impressão ou licenciamento corporativo, verificar os termos da SIL Open Font License.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="man-line">Marketing <em>abre.</em><br>Venda <em>reina.</em><br>Caixa <em>canta.</em></div>
+  <div class="man-cap">Princípio operacional do Grupo Ragga · Londrina–PR</div>
+</section>
+
+</main>
+</div>
+
+<div class="toast" id="toast">Copiado para a área de transferência</div>
+
+<script>
+// ─── Data ────────────────────────────────────────────────────────────────────
+const BRANDS = [
+  { id:'holding', name:'Grupo Ragga',            role:'Holding',                    spice:'Globo',      index:'01',
+    hex:'#2D1B4E', rgb:'45, 27, 78',        cmyk:'93%, 100%, 37%, 36%', pantone:'2765 C / 2755 C',
+    on:'#F4ECE0',
+    desc:'Marca-mãe. Soma dos seis temperos. Identidade institucional e voz corporativa.',
+    use:'Comunicações institucionais, mercado, imprensa, materiais corporativos.' },
+  { id:'foods',   name:'Ragga Restaurantes',       role:'Vertical de Restaurantes',   spice:'Sal',        index:'02',
+    spiceDesc:'sal, s.m. (Sodium chloride). Mineral essencial; base e equilíbrio de qualquer receita. Sem ele, nenhum prato existe.',
+    hex:'#B81A20', rgb:'184, 26, 32',       cmyk:'19%, 100%, 100%, 10%', pantone:'186 C / 187 C',
+    on:'#FFEFEA',
+    desc:'Operação de restaurantes. O sal: presença, sabor, base de tudo.',
+    use:'Cardápios, fachadas, materiais de PDV, comunicação dos restaurantes.' },
+  { id:'gestao',  name:'Ragga Gestão + Educação', role:'Vertical de Gestão & Educação', spice:'Louro',   index:'03',
+    spiceDesc:'louro, s.m. (Laurus nobilis). Folha aromática e amadeirada, símbolo de sabedoria e conquista desde a Antiguidade.',
+    hex:'#1E40AF', rgb:'30, 64, 175',       cmyk:'94%, 84%, 0%, 0%',    pantone:'293 C',
+    on:'#EAF0FF',
+    desc:'Conhecimento e processo. O louro: tradição, base aromática, refinamento.',
+    use:'Cursos, treinamentos, consultorias, materiais educativos.' },
+  { id:'insumos', name:'Ragga Insumos',           role:'Vertical de Insumos',        spice:'Alho',       index:'04',
+    spiceDesc:'alho, s.m. (Allium sativum). Bulbo de aroma intenso e sabor potente; presente na base de quase toda cozinha do mundo.',
+    hex:'#D4A010', rgb:'212, 160, 16',      cmyk:'18%, 36%, 100%, 1%',  pantone:'1245 C / 7555 C',
+    on:'#FFF8E6',
+    desc:'Matéria-prima e distribuição. O alho: potência, intensidade, fundação.',
+    use:'Catálogos B2B, embalagens de insumos, comunicação para cozinhas.' },
+  { id:'mkt',     name:'Ragga MKT + Vendas',      role:'Agência in-house',           spice:'Pimenta',    index:'05',
+    spiceDesc:'pimenta, s.f. (Capsicum spp.). Fruto de sabor ardente e cor vibrante; capaz de transformar qualquer prato com impacto.',
+    hex:'#E86820', rgb:'232, 104, 32',      cmyk:'4%, 73%, 100%, 0%',   pantone:'7579 C / 1585 C',
+    on:'#FFF2E8',
+    desc:'Marketing e vendas. A pimenta: calor, energia, vontade de provocar.',
+    use:'Campanhas, anúncios, comunicação comercial, assets de venda.' },
+  { id:'social',  name:'Ragga Social',            role:'Vertical Social',            spice:'Manjericão', index:'06',
+    spiceDesc:'manjericão, s.m. (Ocimum basilicum). Erva de perfume fresco e intenso; símbolo de hospitalidade e presença gentil.',
+    hex:'#8A2040', rgb:'138, 32, 64',       cmyk:'33%, 97%, 61%, 27%',  pantone:'7421 C / 209 C',
+    on:'#FFEDF1',
+    desc:'Impacto e comunidade. O manjericão: frescor, generosidade, presença gentil.',
+    use:'Projetos sociais, ações comunitárias, comunicação institucional de impacto.' },
+  { id:'franquia',name:'Ragga Franquia',          role:'Franqueadora',               spice:'Orégano',    index:'07',
+    spiceDesc:'orégano, s.m. (Origanum vulgare). Erva de aroma persistente e expansivo; marca registrada da culinária mediterrânea.',
+    hex:'#93B629', rgb:'147, 182, 41',      cmyk:'48%, 11%, 100%, 0%',  pantone:'376 C',
+    on:'#F4FFE0',
+    desc:'Expansão e replicação. O orégano: assinatura, identidade, marca registrada.',
+    use:'Documentação de franqueados, comunicação de expansão, materiais comerciais B2B.',
+    nota:'Assina oficialmente como “Ragga FRANQUIA”.' },
+];
+
+const CHECKLIST = [
+  'Antes de qualquer arte: identificar a vertical responsável pela peça e usar a cor + símbolo correspondentes.',
+  'Usar SEMPRE o HEX oficial — não aproximar nem retirar de capturas de tela.',
+  'Para impressão, especificar Pantone sugerido e conferir em guia físico antes de fechar arte.',
+  'Comunicações da holding (institucional, mercado, imprensa) usam a paleta do Grupo Ragga (#2D1B4E).',
+  'Comunicações de vertical específica usam a cor da vertical, com endosso visual da holding quando aplicável.',
+  'Arquivos-mestre dos 4 layouts (vertical/horizontal · positivo/negativo) ficam na pasta de marca e não devem ser editados.',
+  'Discrepâncias de nomenclatura (Foods vs Restaurantes / Franquia vs Franqueadora): alinhar com a direção antes de publicar.',
+];
+
+// ─── Logo helpers (global) ───────────────────────────────────────────────────
+// Manifesto de marca — todas as versões oficiais por vertical (pasta assets-logos/marca/)
+const LOGO_BASE = 'assets-logos/marca/';
+const LOGO_FILES = {
+  holding: { symbol:'Grupo_Icone.svg', horizontal:'Grupo_Horizontal.svg', variants:[
+    { file:'Grupo_Icone.svg',         label:'Símbolo' },
+    { file:'Grupo_Vertical_Fit_A.svg',label:'Vertical · Fit A' },
+    { file:'Grupo_Vertical_Fit_B.svg',label:'Vertical · Fit B' },
+    { file:'Grupo_Horizontal.svg',    label:'Horizontal', wide:true },
+  ]},
+  foods: { symbol:'Restaurantes_Icone.svg', horizontal:'Restaurantes_Horizontal.svg', variants:[
+    { file:'Restaurantes_Icone.svg',         label:'Símbolo' },
+    { file:'Restaurantes_Vertical_Fit.svg',  label:'Vertical · Fit' },
+    { file:'Restaurantes_Vertical_Fixo.svg', label:'Vertical · Fixo' },
+    { file:'Restaurantes_Horizontal.svg',    label:'Horizontal', wide:true },
+  ]},
+  gestao: { symbol:'Gestao_Icone.svg', horizontal:'Gestao_Horizontal.svg', variants:[
+    { file:'Gestao_Icone.svg',                label:'Símbolo' },
+    { file:'Gestao_Vertical_Fit.svg',         label:'Vertical · Fit' },
+    { file:'Gestao_Vertical_Fit_Quebra.svg',  label:'Vertical · Fit Quebra' },
+    { file:'Gestao_Vertical_Fixo_Inline.svg', label:'Vertical · Fixo Inline' },
+    { file:'Gestao_Vertical_Fixo_Quebra.svg', label:'Vertical · Fixo Quebra' },
+    { file:'Gestao_Horizontal.svg',           label:'Horizontal', wide:true },
+  ]},
+  insumos: { symbol:'Insumos_Icone.svg', horizontal:'Insumos_Horizontal.svg', variants:[
+    { file:'Insumos_Icone.svg',         label:'Símbolo' },
+    { file:'Insumos_Vertical_Fit.svg',  label:'Vertical · Fit' },
+    { file:'Insumos_Vertical_Fixo.svg', label:'Vertical · Fixo' },
+    { file:'Insumos_Horizontal.svg',    label:'Horizontal', wide:true },
+  ]},
+  mkt: { symbol:'MKT_Icone.svg', horizontal:'MKT_Horizontal.svg', variants:[
+    { file:'MKT_Icone.svg',                label:'Símbolo' },
+    { file:'MKT_Vertical_Fit.svg',         label:'Vertical · Fit' },
+    { file:'MKT_Vertical_Fixo_Inline.svg', label:'Vertical · Fixo Inline' },
+    { file:'MKT_Vertical_Fixo_Quebra.svg', label:'Vertical · Fixo Quebra' },
+    { file:'MKT_Horizontal.svg',           label:'Horizontal', wide:true },
+  ]},
+  social: { symbol:'Social_Icone.svg', horizontal:'Social_Horizontal.svg', variants:[
+    { file:'Social_Icone.svg',        label:'Símbolo' },
+    { file:'Social_Vertical_Fit.svg', label:'Vertical · Fit' },
+    { file:'Social_Horizontal.svg',   label:'Horizontal', wide:true },
+  ]},
+  franquia: { symbol:'Franquia_Icone.svg', horizontal:'Franquia_Vertical_Horizontal.svg', variants:[
+    { file:'Franquia_Icone.svg',              label:'Símbolo' },
+    { file:'Franquia_Vertical_Fit.svg',       label:'Vertical · Fit' },
+    { file:'Franquia_Vertical_Fixo.svg',      label:'Vertical · Fixo' },
+    { file:'Franquia_Vertical_Horizontal.svg',label:'Horizontal', wide:true },
+  ]},
+};
+function getLogoSymbol(brandId) { return 'marca/' + LOGO_FILES[brandId].symbol; }
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function el(tag, cls, html) {
+  const d = document.createElement(tag);
+  if (cls) d.className = cls;
+  if (html !== undefined) d.innerHTML = html;
+  return d;
+}
+function navTo(id) {
+  const s = document.getElementById(id);
+  if (s) s.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// toast
+let toastTimer;
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+function copyText(val) {
+  navigator.clipboard?.writeText(val).catch(()=>{});
+  showToast();
+}
+
+// ─── Globo ───────────────────────────────────────────────────────────────────
+(function buildGlobo() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const g = document.getElementById('orbit-dots');
+  const cx = 260, cy = 260, r = 180;
+  const temperos = BRANDS.slice(1);
+  temperos.forEach((b, i) => {
+    const angle = (i / temperos.length) * Math.PI * 2 - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    const group = document.createElementNS(ns, 'g');
+    group.setAttribute('transform', `translate(${x},${y})`);
+    group.style.cursor = 'pointer';
+    group.addEventListener('click', () => navTo(b.id));
+    // symbol image only — no backing circle
+    const img = document.createElementNS(ns, 'image');
+    img.setAttribute('href', `assets-logos/${getLogoSymbol(b.id)}`);
+    img.setAttribute('x', '-22'); img.setAttribute('y', '-22');
+    img.setAttribute('width', '44'); img.setAttribute('height', '44');
+    img.style.transition = 'transform .22s ease';
+    img.style.transformOrigin = '0px 0px';
+    group.addEventListener('mouseenter', () => img.style.transform = 'scale(1.2)');
+    group.addEventListener('mouseleave', () => img.style.transform = 'scale(1)');
+    group.appendChild(img);
+    g.appendChild(group);
+  });
+})();
+
+// ─── Sidebar nav ─────────────────────────────────────────────────────────────
+const NAV = [
+  { group:'Introdução', items:[
+    {id:'capa',label:'Capa',num:'00'},
+    {id:'sobre',label:'Sobre o manual',num:'01'},
+    {id:'arquitetura',label:'Arquitetura de marca',num:'02'},
+  ]},
+  { group:'Marcas', items:[
+    {id:'temperos',label:'As verticais',num:'03'},
+    ...BRANDS.map(b => ({id:b.id, label:b.name, num:b.index, color:b.hex})),
+  ]},
+  { group:'Referência', items:[
+    {id:'tipografia',label:'Tipografia',num:'08'},
+  ]},
+];
+
+(function buildNav() {
+  const nav = document.getElementById('sidebar-nav');
+  let stagger = 0;
+  NAV.forEach(group => {
+    const wrap = el('div','nav-group');
+    const title = el('div','nav-label', group.group);
+    wrap.appendChild(title);
+    group.items.forEach(item => {
+      const btn = el('button','nav-btn');
+      btn.dataset.id = item.id;
+      btn.style.setProperty('--key', item.color || '');
+      if (item.color) btn.dataset.brand = '1';
+      btn.style.setProperty('--stagger', stagger++);
+      btn.innerHTML = `<span class="nav-num">${item.num}</span><span>${item.label}</span>`;
+      btn.addEventListener('click', () => navTo(item.id));
+      wrap.appendChild(btn);
+    });
+    nav.appendChild(wrap);
+  });
+})();
+
+// ─── Hero pill sync + brand chips ────────────────────────────────────────────
+(function buildHero() {
+
+  // brand chips
+  const container = document.getElementById('hero-brands');
+  if (!container) return;
+  BRANDS.slice(1).forEach((b, i) => {
+    const chip = el('button', 'hero-brand-chip');
+    chip.style.setProperty('--stagger', i);
+    chip.innerHTML = `<span class="hero-brand-dot" style="background:${b.hex}"></span>${b.name}<span style="color:var(--ink-muted);font-weight:400"> · ${b.spice}</span>`;
+    chip.addEventListener('click', () => navTo(b.id));
+    container.appendChild(chip);
+  });
+})();
+
+// ─── Theme (aplica preferência salva) ─────────────────────────────────────────
+(function themeToggle() {
+  const theme = localStorage.getItem('ragga-theme') || 'light';
+  document.documentElement.dataset.theme = theme;
+})();
+
+// ─── Architecture cols ────────────────────────────────────────────────────────
+(function buildArchi() {
+  const container = document.getElementById('archi-cols');
+  BRANDS.slice(1).forEach(b => {
+    const col = el('button','archi-col');
+    col.innerHTML = `
+      <div class="archi-col-dot" style="--dot-color:${b.hex}"><img src="assets-logos/${getLogoSymbol(b.id)}" alt="${b.name}"></div>
+      <div class="archi-col-name">${b.name}</div>`;
+    col.addEventListener('click', () => navTo(b.id));
+    container.appendChild(col);
+  });
+
+  const tree     = document.querySelector('.archi-tree');
+  const holdCard = tree.querySelector('.archi-holding');
+  const lineEl   = tree.querySelector('.archi-line');
+  const barEl    = tree.querySelector('.archi-bar');
+  const cols     = tree.querySelectorAll('.archi-col');
+
+  // ── Scroll reveal ─────────────────────────────────────────────────────────
+  holdCard.classList.add('archi-reveal'); holdCard.style.setProperty('--rd','0s');
+  lineEl.classList.add('archi-reveal');   lineEl.style.setProperty('--rd','.15s');
+  barEl.classList.add('archi-reveal');    barEl.style.setProperty('--rd','.28s');
+  cols.forEach((col, i) => {
+    col.classList.add('archi-reveal');
+    col.style.setProperty('--rd', `${.42 + i * .3}s`);
+  });
+
+  const revObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { tree.classList.add('revealed'); revObs.disconnect(); }
+  }, { threshold: 0.15 });
+  revObs.observe(tree);
+
+  // ── SVG highlight paths ──────────────────────────────────────────────────
+  const ns  = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:2';
+  tree.appendChild(svg);
+
+  const brandList = BRANDS.slice(1);
+  const pathEls   = brandList.map(b => {
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', b.hex);
+    p.setAttribute('stroke-width', '2');
+    p.setAttribute('stroke-linecap', 'round');
+    p.setAttribute('stroke-linejoin', 'round');
+    p.style.opacity = '0';
+    svg.appendChild(p);
+    return p;
+  });
+
+  cols.forEach((col, i) => {
+    const b = brandList[i];
+    const pathEl = pathEls[i];
+    let leaveTimer;
+
+    function activate() {
+      clearTimeout(leaveTimer);
+      const tr    = tree.getBoundingClientRect();
+      const holdR = holdCard.getBoundingClientRect();
+      const barR  = barEl.getBoundingClientRect();
+      const dotR  = col.querySelector('.archi-col-dot').getBoundingClientRect();
+
+      const hx   = holdR.left + holdR.width  / 2 - tr.left;
+      const hy   = holdR.bottom - tr.top;
+      const barY = barR.top    + barR.height / 2 - tr.top;
+      const cx   = dotR.left   + dotR.width  / 2 - tr.left;
+      const cy   = dotR.top - tr.top;
+
+      // Path starts at brand dot, traces up to holding card
+      const d = `M${cx},${cy} L${cx},${barY} L${hx},${barY} L${hx},${hy}`;
+      pathEl.style.transition = 'none';
+      pathEl.setAttribute('d', d);
+      const L = pathEl.getTotalLength();
+      pathEl.style.strokeDasharray = L;
+      pathEl.style.strokeDashoffset = L;
+      pathEl.style.opacity = '1';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        pathEl.style.transition = 'stroke-dashoffset .5s cubic-bezier(.4,0,.2,1)';
+        pathEl.style.strokeDashoffset = '0';
+      }));
+
+      holdCard.style.boxShadow = `0 0 0 1.5px ${b.hex}, 0 3px 16px color-mix(in oklch,${b.hex} 28%,transparent)`;
+    }
+
+    function deactivate() {
+      pathEl.style.transition = 'opacity .2s ease';
+      pathEl.style.opacity = '0';
+      holdCard.style.boxShadow = '';
+      leaveTimer = setTimeout(() => {
+        pathEl.style.strokeDashoffset = pathEl.style.strokeDasharray;
+      }, 220);
+    }
+
+    col.addEventListener('mouseenter', activate);
+    col.addEventListener('mouseleave', deactivate);
+    col.addEventListener('touchstart', activate, { passive: true });
+    col.addEventListener('touchend',   () => setTimeout(deactivate, 700), { passive: true });
+  });
+
+  // ── Holding card hover — draw all paths left→right then unify to holding color ──
+  const holdTimers = [];
+
+  function activateHolding() {
+    holdTimers.forEach(clearTimeout); holdTimers.length = 0;
+    const STEP = 160, DRAW = 420;
+
+    cols.forEach((col, i) => {
+      holdTimers.push(setTimeout(() => {
+        const b      = brandList[i];
+        const pathEl = pathEls[i];
+        const tr     = tree.getBoundingClientRect();
+        const holdR  = holdCard.getBoundingClientRect();
+        const barR   = barEl.getBoundingClientRect();
+        const dotR   = col.querySelector('.archi-col-dot').getBoundingClientRect();
+
+        const hx   = holdR.left + holdR.width  / 2 - tr.left;
+        const hy   = holdR.bottom - tr.top;
+        const barY = barR.top    + barR.height / 2 - tr.top;
+        const cx   = dotR.left   + dotR.width  / 2 - tr.left;
+        const cy   = dotR.top - tr.top;
+
+        pathEl.style.transition = 'none';
+        pathEl.setAttribute('stroke', b.hex);
+        pathEl.setAttribute('d', `M${hx},${hy} L${hx},${barY} L${cx},${barY} L${cx},${cy}`);
+        const L = pathEl.getTotalLength();
+        pathEl.style.strokeDasharray = L;
+        pathEl.style.strokeDashoffset = L;
+        pathEl.style.opacity = '1';
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          pathEl.style.transition = `stroke-dashoffset ${DRAW}ms cubic-bezier(.4,0,.2,1)`;
+          pathEl.style.strokeDashoffset = '0';
+        }));
+      }, i * STEP));
+    });
+
+    // After last path finishes, all converge to holding color
+    holdTimers.push(setTimeout(() => {
+      pathEls.forEach(p => {
+        p.style.transition = 'stroke .45s ease';
+        p.setAttribute('stroke', '#2D1B4E');
+      });
+    }, (brandList.length - 1) * STEP + DRAW + 60));
+  }
+
+  function deactivateHolding() {
+    holdTimers.forEach(clearTimeout); holdTimers.length = 0;
+    pathEls.forEach((p, i) => {
+      p.style.transition = 'opacity .2s ease';
+      p.style.opacity = '0';
+    });
+    setTimeout(() => {
+      brandList.forEach((b, i) => {
+        pathEls[i].setAttribute('stroke', b.hex);
+        pathEls[i].style.strokeDashoffset = pathEls[i].style.strokeDasharray;
+      });
+    }, 220);
+  }
+
+  holdCard.addEventListener('mouseenter', activateHolding);
+  holdCard.addEventListener('mouseleave', deactivateHolding);
+  holdCard.addEventListener('touchstart', activateHolding, { passive: true });
+  holdCard.addEventListener('touchend', () => setTimeout(deactivateHolding, 1800), { passive: true });
+})();
+
+// ─── Tempero grid ─────────────────────────────────────────────────────────────
+(function buildGrid() {
+  const grid = document.getElementById('tempero-grid');
+  BRANDS.slice(1).forEach((b, i) => {
+    const card = el('button','t-card');
+    card.style.setProperty('--key', b.hex);
+    card.innerHTML = `
+      <div class="t-card-top">
+        <div class="t-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="t-dot" style="--dot-color:${b.hex}"><img src="assets-logos/${getLogoSymbol(b.id)}" alt="${b.name}"></div>
+      </div>
+      <div>
+        <div class="t-name">${b.name}</div>
+        <div class="t-role">${b.role}</div>
+      </div>
+      <div class="t-foot">
+        <div class="t-tempero">${b.spice}</div>
+        <div class="t-hex">${b.hex}</div>
+      </div>`;
+    card.addEventListener('click', () => navTo(b.id));
+    grid.appendChild(card);
+  });
+})();
+
+// ─── Tempero grid hover — gap lines change to brand key color ─────────────────
+(function temperoHover() {
+  const gridEl = document.getElementById('tempero-grid');
+  const cards  = Array.from(gridEl.querySelectorAll('.t-card'));
+  const brands = BRANDS.slice(1);
+
+  cards.forEach((card, i) => {
+    const b = brands[i];
+
+    card.addEventListener('mouseenter', () => {
+      gridEl.style.background = b.hex;
+    });
+    card.addEventListener('mouseleave', () => {
+      gridEl.style.background = '';
+    });
+    card.addEventListener('touchstart', () => {
+      gridEl.style.background = b.hex;
+    }, { passive: true });
+    card.addEventListener('touchend', () => {
+      setTimeout(() => { gridEl.style.background = ''; }, 700);
+    }, { passive: true });
+  });
+})();
+
+// ─── ASE generator (Adobe Swatch Exchange) ────────────────────────────────────
+function generateASE(name, hex) {
+  const r = parseInt(hex.slice(1,3),16)/255;
+  const g = parseInt(hex.slice(3,5),16)/255;
+  const bv = parseInt(hex.slice(5,7),16)/255;
+  const chars = [...name,'\0'];
+  const nameBytes = new Uint8Array(chars.length*2);
+  chars.forEach((c,i)=>{const code=c.charCodeAt(0);nameBytes[i*2]=code>>8&0xFF;nameBytes[i*2+1]=code&0xFF;});
+  const blockLen = 2 + nameBytes.length + 4 + 12 + 2;
+  const buf = new ArrayBuffer(12 + 6 + blockLen);
+  const v = new DataView(buf); let o=0;
+  [0x41,0x53,0x45,0x46].forEach(x=>v.setUint8(o++,x));
+  v.setUint16(o,1,false);o+=2; v.setUint16(o,0,false);o+=2;
+  v.setUint32(o,1,false);o+=4;
+  v.setUint16(o,0x0001,false);o+=2; v.setUint32(o,blockLen,false);o+=4;
+  v.setUint16(o,chars.length,false);o+=2;
+  nameBytes.forEach(x=>v.setUint8(o++,x));
+  [0x52,0x47,0x42,0x20].forEach(x=>v.setUint8(o++,x));
+  v.setFloat32(o,r,false);o+=4; v.setFloat32(o,g,false);o+=4; v.setFloat32(o,bv,false);o+=4;
+  v.setUint16(o,0,false);
+  return new Uint8Array(buf);
+}
+
+// ─── Brand ZIP download ───────────────────────────────────────────────────────
+function svgToPngBlob(svgText) {
+  return new Promise(resolve => {
+    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+    const svgEl = doc.querySelector('svg');
+    let vbW = 512, vbH = 512;
+    const vb = svgEl?.getAttribute('viewBox');
+    if (vb) {
+      const p = vb.trim().split(/[\s,]+/);
+      vbW = parseFloat(p[2]) || 512;
+      vbH = parseFloat(p[3]) || 512;
+    } else {
+      vbW = parseFloat(svgEl?.getAttribute('width')) || 512;
+      vbH = parseFloat(svgEl?.getAttribute('height')) || 512;
+    }
+    const maxDim = 1024;
+    const scale = maxDim / Math.max(vbW, vbH);
+    const cw = Math.round(vbW * scale), ch = Math.round(vbH * scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = cw; canvas.height = ch;
+    const img = new Image();
+    const blob = new Blob([svgText], {type:'image/svg+xml'});
+    const url = URL.createObjectURL(blob);
+    img.onload = () => {
+      canvas.getContext('2d').drawImage(img, 0, 0, cw, ch);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(resolve, 'image/png');
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+
+async function downloadBrandZip(b, btn) {
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.style.opacity = '.45';
+  try {
+    const zip = new JSZip();
+    const folder = zip.folder(`ragga-${b.id}`);
+    const svgFolder = folder.folder('SVG');
+    const pngFolder = folder.folder('PNG');
+    for (const { file } of LOGO_FILES[b.id].variants) {
+      const svgText = await fetch(`${LOGO_BASE}${file}`).then(r => r.text());
+      svgFolder.file(file, svgText);
+      const pngName = file.replace(/\.svg$/i, '.png');
+      try {
+        const pngResp = await fetch(`${LOGO_BASE}${pngName}`);
+        if (pngResp.ok) pngFolder.file(pngName, await pngResp.blob());
+      } catch (e) { /* png ausente — ignora */ }
+    }
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const content = await zip.generateAsync({type:'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `ragga-${b.id}_${ts}.zip`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.innerHTML = origHTML;
+  }
+}
+
+// ─── Verticals ───────────────────────────────────────────────────────────────
+(function buildVerticals() {
+  const container = document.getElementById('verticals');
+  const NEG_BG = '#1A4731';
+
+  function renderLogos(b, bgMode) {
+    const grid = document.getElementById(`logos-${b.id}`);
+    grid.innerHTML = '';
+    const isNeg = bgMode === 'negative';
+    const bg = isNeg ? b.hex : '#ffffff';
+    const imgFilter = isNeg ? 'brightness(0) invert(1)' : 'none';
+    // todas as versões oficiais da marca (símbolo · verticais · horizontal)
+    LOGO_FILES[b.id].variants.forEach(({ file, label, wide }) => {
+      const wrap = el('div','logo-slot-wrap' + (wide ? ' wide' : ''));
+      const slot = el('div','logo-slot');
+      slot.style.background = bg;
+      const img = el('img');
+      img.src = `${LOGO_BASE}${file}`;
+      img.alt = `${b.name} ${label}`;
+      img.style.cssText = 'max-width:72%;max-height:72%;object-fit:contain;display:block;transition:filter .3s';
+      img.style.filter = imgFilter;
+      slot.appendChild(img);
+      wrap.appendChild(slot);
+      const lbl = el('div','logo-slot-label');
+      lbl.textContent = label;
+      wrap.appendChild(lbl);
+      grid.appendChild(wrap);
+    });
+  }
+
+  BRANDS.forEach(b => {
+    const sec = el('section','vertical');
+    sec.id = b.id;
+    sec.style.background = b.hex;
+    sec.style.color = 'rgba(255,255,255,0.85)';
+
+    const alpha22 = hexAlpha(b.on, 0.22);
+    const alpha30 = hexAlpha(b.on, 0.30);
+    const alpha50 = hexAlpha(b.on, 0.50);
+    const alpha14 = hexAlpha(b.on, 0.14);
+
+    sec.innerHTML = `
+      <div class="v-head rv" style="border-bottom:1px solid ${alpha22}">
+        <div class="v-num">${b.index} / 07</div>
+        <h2 class="v-name">${b.name}</h2>
+        <button class="v-dl-btn" id="vdl-${b.id}"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M6 1.5v7"/><path d="M2.5 6.5L6 10l3.5-3.5"/><line x1="1.5" y1="11" x2="10.5" y2="11"/></svg>Baixar Arquivos</button>
+      </div>
+      <div class="logos-block rv" style="border-color:${alpha22};--rd:.18s">
+        <div class="logos-head">
+          <div class="logos-bg-toggle" style="border-color:${alpha30}" id="bgtoggle-${b.id}">
+            <button class="active" data-bg="negative"><span>Negativo</span></button>
+            <button data-bg="color"><span>Colorido</span></button>
+          </div>
+        </div>
+        <div class="logos-grid" id="logos-${b.id}"></div>
+      </div>
+      <div class="v-body rv" style="--rd:.32s">
+        <div>
+          <div class="v-role">${b.role}</div>
+          <div class="v-desc">${b.desc}</div>
+          <div class="v-use">${b.use}</div>
+          ${b.nota ? `<div class="v-nota" style="border-color:${alpha50}">${b.nota}</div>` : ''}
+          ${b.spiceDesc ? `<div class="v-spice-def" style="border-color:${alpha22}">${b.spiceDesc}</div>` : ''}
+        </div>
+        <div>
+          <div class="codes-title">Códigos oficiais de cor</div>
+          <div class="codes" style="border-color:${alpha22}" id="codes-${b.id}"></div>
+        </div>
+      </div>`;
+
+    container.appendChild(sec);
+
+    // Color codes — entire row is clickable
+    const codesEl = sec.querySelector(`#codes-${b.id}`);
+    [['HEX',b.hex],['RGB',b.rgb],['CMYK',b.cmyk],['Pantone',b.pantone]].forEach(([label,val]) => {
+      const row = el('div','code-row');
+      row.style.borderColor = alpha14;
+      row.innerHTML = `
+        <div class="code-label">${label}</div>
+        <div class="code-val">${val}</div>
+        <div class="code-copy" style="border-color:${alpha30}">Copiar código de cor</div>`;
+      const indicator = row.querySelector('.code-copy');
+      row.addEventListener('click', () => {
+        copyText(val);
+        indicator.textContent = '✓ Copiado';
+        indicator.classList.add('copied');
+        setTimeout(() => { indicator.textContent = 'Copiar código de cor'; indicator.classList.remove('copied'); }, 1600);
+      });
+      codesEl.appendChild(row);
+    });
+
+    // Download ASE button
+    const dlBtn = el('button','dl-btn');
+    dlBtn.style.borderColor = alpha30;
+    dlBtn.innerHTML = '↓ &nbsp;Baixar paleta .ase';
+    dlBtn.addEventListener('click', () => {
+      const ase = generateASE(b.name, b.hex);
+      const blob = new Blob([ase], { type:'application/octet-stream' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ragga-${b.id}.ase`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+    codesEl.after(dlBtn);
+
+    // Header download button — builds ZIP with SVG + PNG
+    const vdlBtn = sec.querySelector(`#vdl-${b.id}`);
+    vdlBtn.addEventListener('click', () => downloadBrandZip(b, vdlBtn));
+
+    // set --key for v-light CSS rules
+    sec.style.setProperty('--key', b.hex);
+
+    // Bg toggle
+    renderLogos(b, 'negative');
+    sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
+      const btn = e.target.closest('button[data-bg]');
+      if (!btn) return;
+      const bgMode = btn.dataset.bg;
+      sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(b2 => b2.classList.remove('active'));
+      btn.classList.add('active');
+      if (bgMode === 'color') {
+        sec.style.background = '#ffffff';
+        sec.style.color = 'var(--ink)';
+        sec.classList.add('v-light');
+      } else {
+        sec.style.background = b.hex;
+        sec.style.color = b.on;
+        sec.classList.remove('v-light');
+      }
+      renderLogos(b, bgMode);
+    });
+  });
+})();
+
+// ─── Type Tester ─────────────────────────────────────────────────────────────
+(function typeTester() {
+  const stage = document.getElementById('type-stage');
+  const slider = document.getElementById('type-size-slider');
+  const readout = document.getElementById('size-readout');
+  const weightSel = document.getElementById('type-weight-select');
+  const tabs = document.querySelectorAll('.type-font-tab');
+
+  slider.addEventListener('input', () => {
+    stage.style.fontSize = slider.value + 'px';
+    readout.textContent = slider.value;
+  });
+  weightSel.addEventListener('change', () => {
+    stage.style.fontWeight = weightSel.value;
+  });
+})();
+
+
+// ─── Scroll spy (runs after all sections exist in DOM) ───────────────────────
+(function scrollSpy() {
+  const allIds = NAV.flatMap(g => g.items.map(i => i.id));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll(`.nav-btn[data-id="${e.target.id}"]`).forEach(b => b.classList.add('active'));
+    });
+  }, { rootMargin:'-30% 0px -55% 0px', threshold:0.1 });
+  allIds.forEach(id => { const s = document.getElementById(id); if (s) obs.observe(s); });
+})();
+
+// ─── Mobile menu ─────────────────────────────────────────────────────────────
+(function mobileMenu() {
+  const sidebar  = document.getElementById('sidebar');
+  const overlay  = document.getElementById('nav-overlay');
+  const btn      = document.getElementById('mobile-menu-btn');
+  const menuIcon = document.getElementById('menu-icon');
+  const closeIcon= document.getElementById('close-icon');
+  function open()  { sidebar.classList.add('nav-open'); overlay.classList.add('visible'); menuIcon.style.display='none'; closeIcon.style.display=''; document.body.style.overflow='hidden'; }
+  function close() { sidebar.classList.remove('nav-open'); overlay.classList.remove('visible'); menuIcon.style.display=''; closeIcon.style.display='none'; document.body.style.overflow=''; }
+  btn.addEventListener('click', () => sidebar.classList.contains('nav-open') ? close() : open());
+  overlay.addEventListener('click', close);
+  document.getElementById('sidebar-nav').addEventListener('click', e => { if (e.target.closest('.nav-btn')) close(); });
+})();
+
+// ─── Scroll reveal ───────────────────────────────────────────────────────────
+(function setupReveal() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      obs.unobserve(e.target);
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -48px 0px' });
+  document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+})();
+
+// ─── Util: hex with alpha ─────────────────────────────────────────────────────
+function hexAlpha(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+</script>
+</body>
+</html>
