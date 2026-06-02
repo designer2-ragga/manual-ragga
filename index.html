@@ -331,6 +331,19 @@ button{cursor:pointer;font:inherit}
 .tool-host{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:rgba(255,255,255,.6);margin-top:12px}
 .tool-cta{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin-top:auto;padding:11px 20px;border-radius:999px;background:#fff;color:var(--card,var(--ink));font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;transition:gap .18s}
 .tool-card:hover .tool-cta{gap:12px}
+.tool-card:active{transform:translateY(-1px) scale(.99)}
+
+/* ── Micro-interações (make-interfaces-feel-better) ── */
+/* feedback tátil no clique: transições específicas (nunca transition:all) + scale .96 */
+.nav-btn,.type-font-tab,.logos-bg-toggle button,.sidebar-history-btn,.mobile-menu-btn{transition:background .15s,color .15s,border-color .15s,box-shadow .15s,transform .14s cubic-bezier(.2,0,0,1)}
+.hero-brand-chip{transition:background .15s,border-color .15s,box-shadow .15s,transform .14s cubic-bezier(.2,0,0,1)}
+.dl-btn{transition:opacity .15s,transform .14s cubic-bezier(.2,0,0,1)}
+.type-dl-btn{transition:background .15s,border-color .15s,transform .14s cubic-bezier(.2,0,0,1)}
+.v-dl-btn{transition:background .55s cubic-bezier(.4,0,.2,1),color .55s,opacity .15s,transform .14s cubic-bezier(.2,0,0,1)}
+.nav-btn:active,.hero-brand-chip:active,.v-dl-btn:active,.dl-btn:active,.type-dl-btn:active,.type-font-tab:active,.logos-bg-toggle button:active,.sidebar-history-btn:active,.mobile-menu-btn:active{transform:scale(.96)}
+/* área de toque mínima ~40px no botão de histórico (visual 26px) */
+.sidebar-history-btn{position:relative}
+.sidebar-history-btn::after{content:'';position:absolute;inset:-7px}
 
 /* ── Toast ── */
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;z-index:999;pointer-events:none;opacity:0;transition:opacity .24s}
