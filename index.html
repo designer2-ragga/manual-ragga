@@ -322,15 +322,16 @@ button{cursor:pointer;font:inherit}
 
 /* ── Ferramentas ── */
 .tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:8px}
-.tool-card{display:flex;flex-direction:column;gap:18px;padding:32px 28px;border-radius:16px;background:var(--card,var(--bg-soft));color:#fff;text-decoration:none;transition:box-shadow .2s,transform .2s}
-.tool-card:hover{transform:translateY(-3px);box-shadow:0 12px 34px color-mix(in srgb,var(--card,#000) 38%,transparent)}
-.tool-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);color:#fff;flex-shrink:0}
+/* tema claro com stroke na keycolor (sem fill) */
+.tool-card{display:flex;flex-direction:column;gap:16px;padding:30px 28px;border-radius:16px;background:var(--bg);border:1.5px solid var(--card,var(--rule-strong));color:var(--ink);text-decoration:none;transition:box-shadow .2s,transform .2s}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(26,20,16,.10)}
+.tool-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:transparent;border:1.5px solid var(--card,var(--rule-strong));color:var(--card,var(--ink));flex-shrink:0}
 .tool-body{flex:1;display:flex;flex-direction:column}
-.tool-name{font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;color:#fff}
-.tool-desc{font-size:14px;line-height:1.6;color:rgba(255,255,255,.82)}
-.tool-host{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:rgba(255,255,255,.6);margin-top:12px}
-.tool-cta{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin-top:auto;padding:11px 20px;border-radius:999px;background:#fff;color:var(--card,var(--ink));font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;transition:gap .18s}
-.tool-card:hover .tool-cta{gap:12px}
+.tool-name{font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;color:var(--card,var(--ink))}
+.tool-desc{font-size:14px;line-height:1.6;color:var(--ink-soft)}
+.tool-host{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--ink-muted);margin-top:12px}
+.tool-cta{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;margin-top:auto;padding:11px 20px;border-radius:999px;background:transparent;border:1.5px solid var(--card,var(--rule-strong));color:var(--card,var(--ink));font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;transition:gap .18s,background .18s,color .18s}
+.tool-card:hover .tool-cta{background:var(--card,var(--ink));color:#fff;gap:12px}
 .tool-card:active{transform:translateY(-1px) scale(.99)}
 
 /* ── Micro-interações (make-interfaces-feel-better) ── */
