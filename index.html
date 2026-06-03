@@ -485,14 +485,15 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
 .type-pair-card[data-mode="dark"] .pair-card-toggle:hover{background:rgba(255,255,255,.16)}
 .type-pair-card[data-mode="light"] .pair-card-toggle:hover{background:rgba(0,0,0,.06)}
 
-.type-dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.12);border:none;border-radius:16px;overflow:hidden}
-.type-dl-card{background:#0e0c0a;padding:40px 36px;display:flex;flex-direction:column;gap:20px;color:#f0e9dd}
-.type-dl-aa{color:#f0e9dd}
-.type-dl-name{font-size:24px;letter-spacing:-.015em;margin-bottom:4px;font-weight:400;color:#f0e9dd}
-.type-dl-role{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px}
-.type-dl-desc{font-size:13px;line-height:1.55;color:rgba(255,255,255,.72)}
-.type-dl-btn{display:inline-flex;align-items:center;gap:8px;margin-top:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#f0e9dd;padding:11px 18px;border:1px solid rgba(255,255,255,.28);border-radius:999px;text-decoration:none;transition:background .15s,border-color .15s;align-self:flex-start}
-.type-dl-btn:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.5)}
+.type-dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;border-radius:0;overflow:visible}
+.type-dl-card{background:var(--bg);border:1px solid var(--rule);border-radius:16px;padding:34px 32px;display:flex;flex-direction:column;gap:8px;color:var(--ink)}
+.type-dl-aa{color:var(--ink)}
+.type-dl-sample{font-size:17px;line-height:1.3;color:var(--ink-muted);word-break:break-word;padding-bottom:22px;margin-bottom:18px;border-bottom:1px solid var(--rule)}
+.type-dl-name{font-size:22px;letter-spacing:-.015em;margin-bottom:4px;font-weight:600;color:var(--ink)}
+.type-dl-role{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px}
+.type-dl-desc{font-size:13px;line-height:1.55;color:var(--ink-soft)}
+.type-dl-btn{display:inline-flex;align-items:center;gap:8px;margin-top:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);padding:11px 18px;border:1px solid var(--rule-strong);border-radius:999px;text-decoration:none;transition:background .15s,border-color .15s;align-self:flex-start}
+.type-dl-btn:hover{background:var(--bg-soft);border-color:var(--ink)}
 
 /* ── Mobile menu button (hidden on desktop) ── */
 .mobile-menu-btn{display:none}
@@ -841,8 +842,9 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
     <div class="type-section-label" style="margin-top:80px"><span class="eyebrow">Baixar as fontes</span></div>
     <div class="type-dl-grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
       <div class="type-dl-card">
-        <div class="type-dl-aa" style="font-family:var(--display);font-size:64px;font-weight:400;line-height:1">Aa<em style="font-style:italic">Bb</em></div>
-        <div style="margin-top:20px">
+        <div class="type-dl-aa" style="font-family:var(--display);font-size:54px;font-weight:400;line-height:1">Aa<em style="font-style:italic">Bb</em></div>
+        <div class="type-dl-sample" style="font-family:var(--display)">ABCDEFGHIJKLM<br>abcdefghijklm 0123456789</div>
+        <div>
           <div class="type-dl-name">Dotties Vanilla Heavy</div>
           <div class="type-dl-role">Display · Títulos H1 · Capas</div>
           <div class="type-dl-desc">Tipo de display com textura pontilhada e presença marcante. Reservada para o H1 — a voz de abertura da marca. Usar com moderação e em tamanho generoso, sempre como ponto focal.</div>
@@ -850,8 +852,9 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
         </div>
       </div>
       <div class="type-dl-card">
-        <div class="type-dl-aa" style="font-family:var(--sans);font-size:64px;font-weight:400;line-height:1;letter-spacing:-.02em">Aa<span style="font-weight:600">Bb</span><em style="font-style:italic">Cc</em></div>
-        <div style="margin-top:20px">
+        <div class="type-dl-aa" style="font-family:var(--sans);font-size:54px;font-weight:400;line-height:1;letter-spacing:-.02em">Aa<span style="font-weight:600">Bb</span><em style="font-style:italic">Cc</em></div>
+        <div class="type-dl-sample" style="font-family:var(--sans)">ABCDEFGHIJKLM<br>abcdefghijklm 0123456789</div>
+        <div>
           <div class="type-dl-name">Instrument Sans</div>
           <div class="type-dl-role">Texto · Subtítulos · Interface · Rótulos</div>
           <div class="type-dl-desc">Grotesca contemporânea, limpa e de alta legibilidade — do corpo de texto aos subtítulos. Funciona do Regular 400 ao Bold 700, com itálicos. A base de leitura de todo o manual.</div>
