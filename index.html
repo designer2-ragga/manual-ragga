@@ -456,7 +456,8 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
 .type-pairing-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
 .type-pair-card{
   border-radius:16px;padding:28px 28px 32px;display:flex;flex-direction:column;gap:14px;min-height:260px;
-  transition:background .32s cubic-bezier(.4,0,.2,1),color .32s;
+  border:1.5px solid transparent;
+  transition:background .32s cubic-bezier(.4,0,.2,1),color .32s,border-color .32s;
   --fg:var(--ink);--fg-soft:var(--ink-soft);--fg-mut:var(--ink-muted);--rule-c:var(--rule)
 }
 .pair-card-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:2px}
@@ -471,19 +472,18 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
   --fg:#fff;--fg-soft:rgba(255,255,255,.84);--fg-mut:rgba(255,255,255,.6);--rule-c:rgba(255,255,255,.22)
 }
 .type-pair-card[data-mode="dark"] .type-pair-chip{background:rgba(255,255,255,.16);color:#fff}
-/* CLARO — fundo em tinta clara do matiz, texto na keycolor (igual ao testador) */
+/* CLARO — fundo em tinta clara do matiz, texto na keycolor + borda keycolor (não confunde com o fundo) */
 .type-pair-card[data-mode="light"]{
-  background:var(--key-light);
+  background:var(--key-light);border-color:var(--key);
   --fg:var(--key-deep);--fg-soft:var(--key-deep);--fg-mut:var(--key-mut);--rule-c:var(--key-rule)
 }
 .type-pair-card[data-mode="light"] .type-pair-chip{background:var(--key);color:#fff}
-/* radio de tema dentro do card */
-.pair-card-toggle{display:inline-flex;border:1px solid var(--rule-c);border-radius:999px;padding:3px;gap:2px;flex-shrink:0}
-.pair-card-toggle button{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--fg);border-radius:999px;cursor:pointer;opacity:.5;padding:0;transition:opacity .15s,background .15s}
-.pair-card-toggle button svg{width:14px;height:14px}
-.pair-card-toggle button.active{opacity:1}
-.type-pair-card[data-mode="dark"] .pair-card-toggle button.active{background:rgba(255,255,255,.2)}
-.type-pair-card[data-mode="light"] .pair-card-toggle button.active{background:rgba(0,0,0,.07)}
+/* toggle de tema — botão único que alterna claro/escuro */
+.pair-card-toggle{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--rule-c);border-radius:999px;background:transparent;color:var(--fg);cursor:pointer;flex-shrink:0;padding:0;transition:background .15s,border-color .15s,transform .14s cubic-bezier(.2,0,0,1)}
+.pair-card-toggle svg{width:15px;height:15px}
+.pair-card-toggle:active{transform:scale(.94)}
+.type-pair-card[data-mode="dark"] .pair-card-toggle:hover{background:rgba(255,255,255,.16)}
+.type-pair-card[data-mode="light"] .pair-card-toggle:hover{background:rgba(0,0,0,.06)}
 
 .type-dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.12);border:none;border-radius:16px;overflow:hidden}
 .type-dl-card{background:#0e0c0a;padding:40px 36px;display:flex;flex-direction:column;gap:20px;color:#f0e9dd}
@@ -607,7 +607,7 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
   .type-size-wrap{width:100%;margin-left:0;gap:12px}
   .type-size-slider{flex:1;width:auto;height:26px}
   .logos-bg-toggle button{padding:12px 18px}
-  .pair-card-toggle button{width:34px;height:34px}
+  .pair-card-toggle{width:40px;height:40px}
   .v-dl-btn,.dl-btn,.type-dl-btn,.tool-cta{padding:13px 22px}
   .hero-brand-chip{padding:10px 14px 10px 10px}
   .hero-dl-btn{padding:15px 24px}
@@ -1783,22 +1783,20 @@ const DEFAULT_HTML = 'Os seis temperos do Grupo <em>Ragga.</em>';
   document.querySelectorAll('#pair-grid .type-pair-card').forEach(card => {
     const bar = card.querySelector('.pair-card-bar');
     if (!bar) return;
-    const tog = el('div', 'pair-card-toggle');
-    [['light', SUN, 'Tema claro'], ['dark', MOON, 'Tema escuro']].forEach(([mode, svg, label]) => {
-      const b = el('button', '', svg);
-      b.type = 'button';
-      b.dataset.mode = mode;
-      b.setAttribute('aria-label', label);
-      b.title = label;
-      if (card.dataset.mode === mode) b.classList.add('active');
-      b.addEventListener('click', () => {
-        card.dataset.mode = mode;
-        tog.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-      });
-      tog.appendChild(b);
+    const btn = el('button', 'pair-card-toggle');
+    btn.type = 'button';
+    function render() {
+      const dark = card.dataset.mode === 'dark';
+      btn.innerHTML = dark ? SUN : MOON;            // escuro→sol (vai p/ claro) · claro→lua (vai p/ escuro)
+      const label = dark ? 'Mudar para tema claro' : 'Mudar para tema escuro';
+      btn.title = label; btn.setAttribute('aria-label', label);
+    }
+    btn.addEventListener('click', () => {
+      card.dataset.mode = card.dataset.mode === 'dark' ? 'light' : 'dark';
+      render();
     });
-    bar.appendChild(tog);
+    render();
+    bar.appendChild(btn);
   });
 })();
 
