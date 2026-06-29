@@ -190,7 +190,7 @@ button{cursor:pointer;font:inherit}
 .code-row>*{transition:opacity .18s}
 .code-row:hover{background:#ffffff}
 .code-row:hover>.code-label,.code-row:hover>.code-val{opacity:0}
-.vertical .code-row:hover{background:color-mix(in srgb,var(--key) 72%,#000)}
+.vertical .code-row:hover{background:color-mix(in srgb,var(--hov,var(--key)) 72%,#000)}
 .code-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.65}
 .code-val{font-family:var(--mono);font-size:15px;letter-spacing:.02em}
 .code-copy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--key);background:transparent;border:none;padding:0;border-radius:0;opacity:0;transition:opacity .18s;pointer-events:none}
@@ -221,6 +221,31 @@ button{cursor:pointer;font:inherit}
 .vertical.v-light .v-head{border-bottom-color:var(--rule)!important}
 /* spice dict */
 .v-spice-def{margin-top:28px;padding-top:20px;border-top:1px solid;font-family:var(--mono);font-size:11px;line-height:1.6;letter-spacing:.01em;opacity:.7;font-style:italic}
+/* marcas comerciais */
+.v-tag{align-self:end;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;border-radius:999px;opacity:.8;white-space:nowrap}
+.pal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.14);border-radius:10px;overflow:hidden}
+.pal-swatch{display:flex;align-items:center;gap:12px;padding:13px 14px;background:#0E0C0A;border:none;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:background .15s}
+.pal-swatch:hover{background:rgba(255,255,255,.06)}
+.pal-chip{width:34px;height:34px;border-radius:8px;flex-shrink:0;border:1px solid rgba(255,255,255,.2)}
+.pal-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pal-name{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pal-hex{font-family:var(--mono);font-size:10px;letter-spacing:.06em;opacity:.6;text-transform:uppercase}
+@media(max-width:700px){.pal-grid{grid-template-columns:1fr}}
+.rob-pal{display:flex;flex-direction:column;gap:10px}
+.rob-swatch{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid;border-radius:10px;cursor:pointer;color:inherit;font:inherit;text-align:left;background:transparent;transition:background .15s}
+.rob-swatch:hover{background:rgba(255,255,255,.08)}
+.vertical.v-light .rob-swatch:hover{background:rgba(0,0,0,.04)}
+.rob-chip{width:40px;height:40px;border-radius:8px;border:1px solid rgba(0,0,0,.12)}
+.rob-meta{display:flex;flex-direction:column;gap:3px;min-width:0}
+.rob-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rob-codes{font-family:var(--mono);font-size:10px;letter-spacing:.04em;opacity:.7;text-transform:uppercase}
+.rob-hex{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.04em}
+.isa-picker{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.isa-chip{width:42px;height:42px;border-radius:9px;flex-shrink:0;border:1px solid rgba(255,255,255,.22);transition:background .2s}
+.isa-select{flex:1;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.06);color:inherit;border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:13px 40px 13px 15px;font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;transition:border-color .15s}
+.isa-select:hover{border-color:rgba(255,255,255,.4)}
+.isa-select:focus{outline:none;border-color:rgba(255,255,255,.55)}
+.isa-select option{color:#111}
 /* brand download button */
 .v-dl-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:10px 22px;border-radius:999px;border:none;background:#ffffff;color:#000000;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .55s cubic-bezier(.4,0,.2,1),color .55s,opacity .15s}
 .v-dl-btn:disabled{cursor:wait}
@@ -744,6 +769,22 @@ p,.hero-sub,.v-desc,.v-use,.v-nota,.pal-desc,.sec-lede{text-wrap:pretty}
 <!-- VERTICALS (injected by JS) -->
 <div id="verticals"></div>
 
+<!-- MARCAS COMERCIAIS -->
+<section id="comerciais-intro" class="section">
+  <div class="sec-inner">
+    <div class="sec-head rv">
+      <div class="sec-num">§ 04</div>
+      <div>
+        <h2 class="sec-title">As <em>marcas comerciais</em></h2>
+        <p class="sec-lede">Marcas operadas pelo grupo, com identidade própria. Cada uma com seus logos, cores e regras de aplicação — no mesmo padrão das verticais.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMERCIAL BRANDS (injected by JS) -->
+<div id="comerciais"></div>
+
 <!-- TIPOGRAFIA -->
 <section id="tipografia" class="section">
   <div class="sec-inner">
@@ -968,6 +1009,53 @@ const BRANDS = [
     nota:'Assina oficialmente como “Ragga FRANQUIA”.' },
 ];
 
+// ─── Marcas comerciais (operadas pelo grupo, identidade própria) ──────────────
+const COMERCIAIS = [
+  {
+    id:'isaias', mode:'palette', name:'Isaías', index:'04', tag:'12 categorias',
+    bg:'#0E0C0A', accent:'#FEBF24',
+    role:'Marca comercial · Restaurante multi-cozinha',
+    desc:'Identidade modular por categoria de menu. A marca não tem cor-chave única — tem uma keypalette: fundo preto com a wordmark, e uma cor própria para cada categoria.',
+    use:'Cardápios, sinalização de PDV, delivery e comunicação segmentada por categoria.',
+    paletteTitle:'Keypalette · uma cor por categoria',
+    logoBase:'assets-logos/comerciais/isaias/', filePrefix:'isaias-',
+    palette:[
+      { name:'Bebidas',                slug:'bebidas',    hex:'#F05B7D' },
+      { name:'Burgers',                slug:'burgers',    hex:'#58595B' },
+      { name:'Culinária Brasileira',   slug:'brasileira', hex:'#231F20' },
+      { name:'Culinária Chinesa',      slug:'chinesa',    hex:'#841618' },
+      { name:'Culinária Japonesa',     slug:'japonesa',   hex:'#560A3B' },
+      { name:'Massas',                 slug:'massas',     hex:'#A66B25' },
+      { name:'Pizzas',                 slug:'pizzas',     hex:'#FEBF24' },
+      { name:'Pokês',                  slug:'pokes',      hex:'#52C1B5' },
+      { name:'Porções e Aperitivos',   slug:'porcoes',    hex:'#024059' },
+      { name:'Risotos',                slug:'risotos',    hex:'#E87D60' },
+      { name:'Saladas / Vegetarianos', slug:'saladas',    hex:'#188152' },
+      { name:'Sobremesas / Menu Kids', slug:'sobremesas', hex:'#F37021' },
+    ],
+  },
+  {
+    id:'robs', mode:'single', name:"Rob's", index:'05', tag:'fundo vermelho + branco',
+    key:'#ED3334', on:'#FFECEC',
+    role:'Marca comercial · Hot dogs · Marmitas · Sorvetes',
+    desc:'Marca de cor única. Aplicação padrão sobre fundo vermelho com a marca em branco; em full color sobre fundo claro.',
+    use:'Fachadas, embalagens, cardápios e comunicação de PDV das operações Rob\'s.',
+    paletteTitle:'Cores da marca',
+    logoBase:'assets-logos/comerciais/robs/',
+    variants:[
+      { file:'logo-robs-circular.svg',    label:'Circular',          selfBg:true },
+      { file:'logo-robs-circular-sm.svg', label:'Circular compacto', selfBg:true },
+      { file:'logo-robs-dogs.svg',        label:'Dogs',              selfBg:true },
+      { file:'logo-robs-wordmark.svg', whiteFile:'logo-robs-wordmark-w.svg', label:'Wordmark' },
+    ],
+    colors:[
+      { name:'Vermelho', hex:'#ED3334', rgb:'237, 51, 52',  cmyk:'0, 89, 77, 0', key:true },
+      { name:'Amarelo',  hex:'#E3C529', rgb:'227, 197, 41', cmyk:'14, 18, 89, 2' },
+      { name:'Laranja',  hex:'#E37025', rgb:'227, 112, 37', cmyk:'7, 65, 92, 0' },
+    ],
+  },
+];
+
 const CHECKLIST = [
   'Antes de qualquer arte: identificar a vertical responsável pela peça e usar a cor + símbolo correspondentes.',
   'Usar SEMPRE o HEX oficial — não aproximar nem retirar de capturas de tela.',
@@ -1092,6 +1180,10 @@ const NAV = [
   { group:'Marcas', items:[
     {id:'temperos',label:'As verticais',num:'03'},
     ...BRANDS.map(b => ({id:b.id, label:b.name, num:b.index, color:b.hex})),
+  ]},
+  { group:'Marcas comerciais', items:[
+    {id:'comerciais-intro',label:'Marcas comerciais',num:'04'},
+    ...COMERCIAIS.map(b => ({id:b.id, label:b.name, num:b.index})),
   ]},
   { group:'Referência', items:[
     {id:'tipografia',label:'Tipografia',num:'08'},
@@ -1625,6 +1717,177 @@ async function downloadAllZip(btn) {
       renderLogos(b, bgMode);
     });
   });
+})();
+
+// ─── Marcas comerciais ───────────────────────────────────────────────────────
+(function buildComerciais() {
+  const container = document.getElementById('comerciais');
+  if (!container || typeof COMERCIAIS === 'undefined') return;
+
+  function hexToRgb(h){ h = h.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+  function rgbToCmyk(r,g,bl){ r/=255; g/=255; bl/=255; const k = 1 - Math.max(r,g,bl); if (k >= 0.9999) return [0,0,0,100]; const c=(1-r-k)/(1-k), m=(1-g-k)/(1-k), y=(1-bl-k)/(1-k); return [c,m,y,k].map(v=>Math.round(v*100)); }
+
+  // shared color-codes area: dropdown + códigos oficiais; hover follows selection via --hov
+  function colorAreaMarkup(b, codesBorder){
+    return `
+        <div>
+          <div class="codes-title">Códigos oficiais de cor</div>
+          <div class="isa-picker">
+            <span class="isa-chip" id="isa-chip-${b.id}"></span>
+            <select class="isa-select" id="isa-select-${b.id}" aria-label="Selecionar cor"></select>
+          </div>
+          <div class="codes" id="codes-${b.id}" style="border-color:${codesBorder}"></div>
+        </div>`;
+  }
+  function wireColorCodes(sec, b, colors, opts){
+    const sel = sec.querySelector(`#isa-select-${b.id}`);
+    const chip = sec.querySelector(`#isa-chip-${b.id}`);
+    const codesEl = sec.querySelector(`#codes-${b.id}`);
+    colors.forEach((c,i) => { const o = document.createElement('option'); o.value = i; o.textContent = c.name; sel.appendChild(o); });
+    function render(idx){
+      const c = colors[idx];
+      chip.style.background = c.hex;
+      sec.style.setProperty('--hov', c.hex);
+      const [r,g,bl] = hexToRgb(c.hex);
+      const rgb = c.rgb || `${r}, ${g}, ${bl}`;
+      const ck = c.cmyk || rgbToCmyk(r,g,bl).join(', ');
+      const rows = [['HEX', c.hex.toUpperCase()], ['RGB', rgb], ['CMYK', ck]];
+      codesEl.innerHTML = '';
+      rows.forEach(([label,val]) => {
+        const row = el('div','code-row');
+        row.style.borderColor = opts.rowBorder;
+        row.innerHTML = `<div class="code-label">${label}</div><div class="code-val">${val}</div><div class="code-copy" style="border-color:${opts.copyBorder}">Copiar código de cor</div>`;
+        const ind = row.querySelector('.code-copy');
+        row.addEventListener('click', () => { copyText(val); ind.textContent = '✓ Copiado'; ind.classList.add('copied'); setTimeout(() => { ind.textContent = 'Copiar código de cor'; ind.classList.remove('copied'); }, 1600); });
+        codesEl.appendChild(row);
+      });
+    }
+    sel.addEventListener('change', () => render(+sel.value));
+    render(0);
+  }
+
+  function buildPalette(b) {
+    const sec = el('section','vertical v-comercial');
+    sec.id = b.id;
+    sec.style.background = b.bg || '#0E0C0A';
+    sec.style.color = 'rgba(255,255,255,0.85)';
+    sec.style.setProperty('--key', b.accent || '#ffffff');
+    const rule = 'rgba(255,255,255,0.18)';
+    sec.innerHTML = `
+      <div class="v-head rv" style="border-bottom:1px solid ${rule}">
+        <div class="v-num">${b.index}</div>
+        <h2 class="v-name">${b.name}</h2>
+        ${b.tag ? `<div class="v-tag" style="border:1px solid ${rule}">${b.tag}</div>` : ''}
+      </div>
+      <div class="logos-block rv" style="border-color:${rule};--rd:.18s">
+        <div class="logos-head">
+          <div class="logos-bg-toggle" style="border-color:${rule}" id="bgtoggle-${b.id}">
+            <button class="active" data-bg="negative"><span>Negativo</span></button>
+            <button data-bg="color"><span>Colorido</span></button>
+          </div>
+        </div>
+        <div class="logos-grid" id="logos-${b.id}"></div>
+      </div>
+      <div class="v-body rv" style="--rd:.32s">
+        <div>
+          <div class="v-role">${b.role}</div>
+          <div class="v-desc">${b.desc}</div>
+          <div class="v-use">${b.use}</div>
+        </div>
+        ${colorAreaMarkup(b, 'rgba(255,255,255,0.22)')}
+      </div>`;
+    container.appendChild(sec);
+    wireColorCodes(sec, b, b.palette, { rowBorder:'rgba(255,255,255,0.14)', copyBorder:'rgba(255,255,255,0.30)' });
+    function renderLogos(mode) {
+      const grid = document.getElementById(`logos-${b.id}`);
+      grid.innerHTML = '';
+      const isNeg = mode === 'negative';
+      const boxBg = isNeg ? 'rgba(255,255,255,0.05)' : '#ffffff';
+      const boxStroke = isNeg ? '1px solid rgba(255,255,255,0.18)' : '1px solid rgba(0,0,0,0.12)';
+      b.palette.forEach(c => {
+        const wrap = el('div','logo-slot-wrap');
+        const slot = el('div','logo-slot');
+        slot.style.background = boxBg; slot.style.border = boxStroke;
+        const img = el('img');
+        img.src = `${b.logoBase}${b.filePrefix}${c.slug}${isNeg ? '-w' : ''}.svg`;
+        img.alt = `${b.name} ${c.name}`;
+        img.style.cssText = 'max-width:74%;max-height:58%;object-fit:contain;display:block';
+        slot.appendChild(img); wrap.appendChild(slot);
+        const lbl = el('div','logo-slot-label'); lbl.textContent = c.name; wrap.appendChild(lbl);
+        grid.appendChild(wrap);
+      });
+    }
+    renderLogos('negative');
+    sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
+      const btn = e.target.closest('button[data-bg]'); if (!btn) return;
+      sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(x => x.classList.remove('active'));
+      btn.classList.add('active'); renderLogos(btn.dataset.bg);
+    });
+  }
+
+  function buildSingle(b) {
+    const sec = el('section','vertical');
+    sec.id = b.id;
+    sec.style.background = b.key;
+    sec.style.color = 'rgba(255,255,255,0.9)';
+    sec.style.setProperty('--key', b.key);
+    const a22 = hexAlpha(b.on, 0.22), a30 = hexAlpha(b.on, 0.30), a14 = hexAlpha(b.on, 0.14);
+    sec.innerHTML = `
+      <div class="v-head rv" style="border-bottom:1px solid ${a22}">
+        <div class="v-num">${b.index}</div>
+        <h2 class="v-name">${b.name}</h2>
+        ${b.tag ? `<div class="v-tag" style="border:1px solid ${a30}">${b.tag}</div>` : ''}
+      </div>
+      <div class="logos-block rv" style="border-color:${a22};--rd:.18s">
+        <div class="logos-head">
+          <div class="logos-bg-toggle" style="border-color:${a30}" id="bgtoggle-${b.id}">
+            <button class="active" data-bg="negative"><span>Negativo</span></button>
+            <button data-bg="color"><span>Colorido</span></button>
+          </div>
+        </div>
+        <div class="logos-grid" id="logos-${b.id}"></div>
+      </div>
+      <div class="v-body rv" style="--rd:.32s">
+        <div>
+          <div class="v-role">${b.role}</div>
+          <div class="v-desc">${b.desc}</div>
+          <div class="v-use">${b.use}</div>
+        </div>
+        ${colorAreaMarkup(b, a22)}
+      </div>`;
+    container.appendChild(sec);
+    wireColorCodes(sec, b, b.colors, { rowBorder:a14, copyBorder:a30 });
+    function renderLogos(mode) {
+      const grid = document.getElementById(`logos-${b.id}`);
+      grid.innerHTML = '';
+      const isNeg = mode === 'negative';
+      const boxBg = isNeg ? b.key : '#ffffff';
+      const boxStroke = isNeg ? '1px solid ' + hexAlpha(b.on, 0.3) : '1px solid rgba(0,0,0,0.12)';
+      b.variants.forEach(v => {
+        const wrap = el('div','logo-slot-wrap');
+        const slot = el('div','logo-slot');
+        slot.style.background = boxBg; slot.style.border = boxStroke;
+        const img = el('img');
+        img.src = b.logoBase + ((isNeg && v.whiteFile) ? v.whiteFile : v.file);
+        img.alt = `${b.name} ${v.label}`;
+        img.style.cssText = 'max-width:74%;max-height:72%;object-fit:contain;display:block';
+        slot.appendChild(img); wrap.appendChild(slot);
+        const lbl = el('div','logo-slot-label'); lbl.textContent = v.label; wrap.appendChild(lbl);
+        grid.appendChild(wrap);
+      });
+    }
+    renderLogos('negative');
+    sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
+      const btn = e.target.closest('button[data-bg]'); if (!btn) return;
+      sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      if (btn.dataset.bg === 'color') { sec.style.background = '#ffffff'; sec.style.color = 'var(--ink)'; sec.classList.add('v-light'); }
+      else { sec.style.background = b.key; sec.style.color = 'rgba(255,255,255,0.9)'; sec.classList.remove('v-light'); }
+      renderLogos(btn.dataset.bg);
+    });
+  }
+
+  COMERCIAIS.forEach(b => { (b.mode === 'single') ? buildSingle(b) : buildPalette(b); });
 })();
 
 // ─── Versionamento (CalVer automático) ───────────────────────────────────────
