@@ -1030,7 +1030,10 @@ const COMERCIAIS = [
     use:'Cardápios, sinalização de PDV, delivery e comunicação segmentada por categoria.',
     paletteTitle:'Keypalette · uma cor por categoria',
     logoBase:'assets-logos/comerciais/isaias/', filePrefix:'isaias-',
-    master:{ file:'isaias-restaurante.svg', label:'Logotipo principal' },
+    master:[
+      { file:'isaias-restaurante.svg',    label:'Logotipo principal', wide:true },
+      { file:'isaias-faixas-minimal.svg', label:'Assinatura com faixas' },
+    ],
     palette:[
       { name:'Bebidas',                slug:'bebidas',    hex:'#F05B7D' },
       { name:'Burgers',                slug:'burgers',    hex:'#58595B' },
@@ -1878,20 +1881,22 @@ async function downloadAllZip(btn) {
       const grid = document.getElementById(`logos-${b.id}`);
       grid.innerHTML = '';
       const isNeg = mode === 'negative';
-      // Logotipo principal (wordmark monocromática) — apresentado sobre o preto da marca, à frente do sistema de categorias
-      if (b.master) {
-        const mw = el('div','logo-slot-wrap wide');
+      // Lockups primários (wordmark / aplicações) — sempre sobre o preto da marca, à frente do sistema de categorias
+      const masters = Array.isArray(b.master) ? b.master : (b.master ? [b.master] : []);
+      masters.forEach(m => {
+        const mw = el('div', 'logo-slot-wrap' + (m.wide ? ' wide' : ''));
         const ms = el('div','logo-slot');
         ms.style.background = b.bg || '#0E0C0A';
         ms.style.border = '1px solid rgba(255,255,255,0.16)';
         const mi = el('img');
-        mi.src = `${b.logoBase}${b.master.file}`;
-        mi.alt = `${b.name} ${b.master.label}`;
-        mi.style.cssText = 'max-width:52%;max-height:54%;object-fit:contain;display:block';
+        mi.src = `${b.logoBase}${m.file}`;
+        mi.alt = `${b.name} ${m.label}`;
+        mi.style.cssText = m.wide ? 'max-width:52%;max-height:54%;object-fit:contain;display:block'
+                                  : 'max-width:64%;max-height:62%;object-fit:contain;display:block';
         ms.appendChild(mi); mw.appendChild(ms);
-        const ml = el('div','logo-slot-label'); ml.textContent = b.master.label; mw.appendChild(ml);
+        const ml = el('div','logo-slot-label'); ml.textContent = m.label; mw.appendChild(ml);
         grid.appendChild(mw);
-      }
+      });
       // Negativo: fundo escuro, box na cor da categoria + logo branco · Colorido: fundo branco, box branco + logo na cor
       b.palette.forEach(c => {
         const wrap = el('div','logo-slot-wrap');
