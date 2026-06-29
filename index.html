@@ -1065,6 +1065,70 @@ const COMERCIAIS = [
       { name:'Laranja',  hex:'#E37025', rgb:'227, 112, 37', cmyk:'7, 65, 92, 0' },
     ],
   },
+  {
+    id:'biggs', mode:'gallery', name:'Biggs', index:'06', tag:'7 grupos · 34 lockups',
+    key:'#D82C32', on:'#FFECEC',
+    role:'Marca comercial · Restaurante e delivery multi-cozinha',
+    desc:'Marca guarda-chuva de cor única (vermelho Biggs) com um sistema de lockups: a wordmark combina com um ícone de comida e o nome da categoria. As sub-marcas próprias — China, Japa, Poke e Açaí — herdam a wordmark com identidade visual própria.',
+    use:'Fachadas, cardápios, embalagens, delivery e comunicação de PDV — usar o lockup da categoria ou sub-marca correspondente.',
+    paletteTitle:'Cores da marca',
+    logoBase:'assets-logos/comerciais/biggs/',
+    groups:[
+      { title:'Wordmark e institucional', mono:true, items:[
+        { file:'biggs-wordmark.svg',   label:'Wordmark' },
+        { file:'biggs-grupo.svg',      label:'Grupo Biggs' },
+        { file:'biggs-i-love.svg',     label:'I ♥ Biggs' },
+        { file:'biggs-arigato.svg',    label:'Arigatô' },
+        { file:'biggs-street.svg',     label:'Street' },
+        { file:'biggs-street-alt.svg', label:'Street · alt' },
+      ]},
+      { title:'Verticais', items:[
+        { file:'biggs-lanches.svg',            label:'Lanches' },
+        { file:'biggs-lanches-compacto.svg',   label:'Lanches · compacto' },
+        { file:'biggs-burgers.svg',            label:'Burgers' },
+        { file:'biggs-burgers-compacto.svg',   label:'Burgers · compacto' },
+        { file:'biggs-pizzas.svg',             label:'Pizzas' },
+        { file:'biggs-pizzas-compacto.svg',    label:'Pizzas · compacto' },
+        { file:'biggs-carnes.svg',             label:'Carnes' },
+        { file:'biggs-carnes-compacto.svg',    label:'Carnes · compacto' },
+        { file:'biggs-refeicoes.svg',          label:'Refeições' },
+        { file:'biggs-refeicoes-compacto.svg', label:'Refeições · compacto' },
+        { file:'biggs-massas.svg',             label:'Massas' },
+      ]},
+      { title:'China Biggs', mono:true, items:[
+        { file:'biggs-china-oriental.svg',            label:'Oriental food' },
+        { file:'biggs-china-oriental-horizontal.svg', label:'Oriental · horizontal' },
+        { file:'biggs-china-oriental-compacto.svg',   label:'Oriental · compacto' },
+        { file:'biggs-china-chinese.svg',             label:'Chinese food' },
+        { file:'biggs-china-chinese-horizontal.svg',  label:'Chinese · horizontal' },
+      ]},
+      { title:'Japa Biggs', mono:true, items:[
+        { file:'biggs-japa-oriental.svg',            label:'Oriental food' },
+        { file:'biggs-japa-oriental-horizontal.svg', label:'Oriental · horizontal' },
+        { file:'biggs-japa-oriental-compacto.svg',   label:'Oriental · compacto' },
+        { file:'biggs-japa-japanese.svg',            label:'Japanese food' },
+        { file:'biggs-japa-japanese-horizontal.svg', label:'Japanese · horizontal' },
+      ]},
+      { title:'Poke Biggs', mono:true, items:[
+        { file:'biggs-poke.svg',            label:'Hawaiian food' },
+        { file:'biggs-poke-horizontal.svg', label:'Horizontal' },
+        { file:'biggs-poke-compacto.svg',   label:'Compacto' },
+      ]},
+      { title:'Açaí & Sorvetes', items:[
+        { file:'biggs-acai.svg',         label:'Açaí & Sorvetes' },
+        { file:'biggs-acai-forever.svg', label:'Açaí Forever' },
+      ]},
+      { title:'Biggs Fome', items:[
+        { file:'biggs-fome.svg',          label:'Fome' },
+        { file:'biggs-fome-compacto.svg', label:'Fome · compacto' },
+      ]},
+    ],
+    colors:[
+      { name:'Vermelho Biggs', hex:'#D82C32', key:true },
+      { name:'Verde Açaí',     hex:'#8ABD4F' },
+      { name:'Amarelo',        hex:'#E9B718' },
+    ],
+  },
 ];
 
 const CHECKLIST = [
@@ -1905,7 +1969,84 @@ async function downloadAllZip(btn) {
     });
   }
 
-  COMERCIAIS.forEach(b => { (b.mode === 'single') ? buildSingle(b) : buildPalette(b); });
+  function buildGallery(b) {
+    const sec = el('section','vertical v-light');
+    sec.id = b.id;
+    sec.style.background = '#ffffff';
+    sec.style.color = 'var(--ink)';
+    sec.style.setProperty('--key', b.key);
+    const a22 = hexAlpha(b.key, 0.22), a30 = hexAlpha(b.key, 0.30), a14 = hexAlpha(b.key, 0.14);
+    sec.innerHTML = `
+      <div class="v-head rv" style="border-bottom:1px solid ${a22}">
+        <div class="v-num">${b.index}</div>
+        <h2 class="v-name">${b.name}</h2>
+        ${b.tag ? `<div class="v-tag" style="border:1px solid ${a30}">${b.tag}</div>` : ''}
+      </div>
+      <div class="logos-block rv" style="border-color:${a22};--rd:.18s">
+        <div class="logos-head">
+          <div class="logos-bg-toggle" style="border-color:${a30}" id="bgtoggle-${b.id}">
+            <button class="active" data-bg="color"><span>Colorido</span></button>
+            <button data-bg="negative"><span>Negativo</span></button>
+          </div>
+        </div>
+        <div class="logos-grid" id="logos-${b.id}"></div>
+      </div>
+      <div class="v-body rv" style="--rd:.32s">
+        <div>
+          <div class="v-role">${b.role}</div>
+          <div class="v-desc">${b.desc}</div>
+          <div class="v-use">${b.use}</div>
+        </div>
+        ${colorAreaMarkup(b, a22)}
+      </div>`;
+    container.appendChild(sec);
+    wireColorCodes(sec, b, b.colors, { rowBorder:a14, copyBorder:a30 });
+    function renderLogos(mode) {
+      const grid = document.getElementById(`logos-${b.id}`);
+      grid.innerHTML = '';
+      // Colorido = fundo branco + lockup full-color · Negativo = fundo na key + lockup knockout branco
+      const isNeg = mode === 'negative';
+      b.groups.forEach(g => {
+        const gt = el('div','logo-group-title');
+        gt.textContent = g.title;
+        gt.style.cssText = 'flex:1 1 100%;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.5;margin-top:8px';
+        grid.appendChild(gt);
+        g.items.forEach(v => {
+          // mono = logo de texto/line-art que fica bem em knockout branco sobre a key;
+          // os lockups com ícone full-color permanecem coloridos sobre placa branca, mesmo no Negativo.
+          const mono = v.mono !== undefined ? v.mono : g.mono;
+          const knockout = isNeg && mono;
+          const wrap = el('div','logo-slot-wrap');
+          const slot = el('div','logo-slot');
+          slot.style.background = knockout ? b.key : '#ffffff';
+          slot.style.border = knockout ? '1px solid ' + hexAlpha(b.on, 0.3) : '1px solid rgba(0,0,0,0.12)';
+          const img = el('img');
+          img.src = b.logoBase + v.file;
+          img.alt = `${b.name} ${v.label}`;
+          img.style.cssText = 'max-width:74%;max-height:72%;object-fit:contain;display:block';
+          if (knockout) img.style.filter = 'brightness(0) invert(1)';
+          slot.appendChild(img); wrap.appendChild(slot);
+          const lbl = el('div','logo-slot-label'); lbl.textContent = v.label; wrap.appendChild(lbl);
+          grid.appendChild(wrap);
+        });
+      });
+    }
+    renderLogos('color');
+    sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
+      const btn = e.target.closest('button[data-bg]'); if (!btn) return;
+      sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      if (btn.dataset.bg === 'negative') { sec.style.background = b.key; sec.style.color = 'rgba(255,255,255,0.9)'; sec.classList.remove('v-light'); }
+      else { sec.style.background = '#ffffff'; sec.style.color = 'var(--ink)'; sec.classList.add('v-light'); }
+      renderLogos(btn.dataset.bg);
+    });
+  }
+
+  COMERCIAIS.forEach(b => {
+    if (b.mode === 'single') buildSingle(b);
+    else if (b.mode === 'gallery') buildGallery(b);
+    else buildPalette(b);
+  });
 })();
 
 // ─── Versionamento (CalVer automático) ───────────────────────────────────────

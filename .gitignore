@@ -4,3 +4,8 @@ skills-lock.json
 .DS_Store
 Thumbs.db
 node_modules/
+
+# Arquivos-fonte de design (mantidos localmente, fora do repo)
+*.ai
+*.eps
+*.psd
