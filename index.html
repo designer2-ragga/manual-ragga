@@ -222,11 +222,11 @@ button{cursor:pointer;font:inherit}
 /* spice dict */
 .v-spice-def{margin-top:28px;padding-top:20px;border-top:1px solid;font-family:var(--mono);font-size:11px;line-height:1.6;letter-spacing:.01em;opacity:.7;font-style:italic}
 /* marcas comerciais */
-/* Rob's: realce de código limpo e legível — bloco neutro, sem misturar com a cor selecionada */
-#robs .code-row:hover{background:#fff}
-#robs .code-row:hover .code-copy{color:#1a1410}
-#robs.v-light .code-row:hover{background:#1a1410}
-#robs.v-light .code-row:hover .code-copy{color:#fff}
+/* Comerciais: realce de código limpo e legível — bloco neutro, sem misturar com a cor selecionada */
+#robs .code-row:hover,#isaias .code-row:hover{background:#fff}
+#robs .code-row:hover .code-copy,#isaias .code-row:hover .code-copy{color:#1a1410}
+#robs.v-light .code-row:hover,#isaias.v-light .code-row:hover{background:#1a1410}
+#robs.v-light .code-row:hover .code-copy,#isaias.v-light .code-row:hover .code-copy{color:#fff}
 .v-tag{align-self:end;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;border-radius:999px;opacity:.8;white-space:nowrap}
 .pal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.14);border-radius:10px;overflow:hidden}
 .pal-swatch{display:flex;align-items:center;gap:12px;padding:13px 14px;background:#0E0C0A;border:none;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:background .15s}
@@ -251,6 +251,12 @@ button{cursor:pointer;font:inherit}
 .isa-select:hover{border-color:rgba(255,255,255,.4)}
 .isa-select:focus{outline:none;border-color:rgba(255,255,255,.55)}
 .isa-select option{color:#111}
+/* Colorido (fundo branco): seletor de cor precisa de contraste — senão some no branco */
+.vertical.v-light .isa-select{background-color:rgba(0,0,0,.03);border-color:rgba(0,0,0,.2);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%231a1410' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E")}
+.vertical.v-light .isa-select:hover{border-color:rgba(0,0,0,.34)}
+.vertical.v-light .isa-select:focus{border-color:rgba(0,0,0,.5)}
+.vertical.v-light .isa-chip{border-color:rgba(0,0,0,.14)}
+.vertical.v-light .v-tag{border-color:var(--rule)!important}
 /* brand download button */
 .v-dl-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:10px 22px;border-radius:999px;border:none;background:#ffffff;color:#000000;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .55s cubic-bezier(.4,0,.2,1),color .55s,opacity .15s}
 .v-dl-btn:disabled{cursor:wait}
@@ -1776,7 +1782,7 @@ async function downloadAllZip(btn) {
     sec.id = b.id;
     sec.style.background = b.bg || '#0E0C0A';
     sec.style.color = 'rgba(255,255,255,0.85)';
-    sec.style.setProperty('--key', b.accent || '#ffffff');
+    sec.style.setProperty('--key', '#1a1410'); // título legível no modo Colorido (fundo branco)
     const rule = 'rgba(255,255,255,0.18)';
     sec.innerHTML = `
       <div class="v-head rv" style="border-bottom:1px solid ${rule}">
@@ -1787,8 +1793,8 @@ async function downloadAllZip(btn) {
       <div class="logos-block rv" style="border-color:${rule};--rd:.18s">
         <div class="logos-head">
           <div class="logos-bg-toggle" style="border-color:${rule}" id="bgtoggle-${b.id}">
-            <button class="active" data-bg="color"><span>Colorido</span></button>
-            <button data-bg="negative"><span>Negativo</span></button>
+            <button class="active" data-bg="negative"><span>Negativo</span></button>
+            <button data-bg="color"><span>Colorido</span></button>
           </div>
         </div>
         <div class="logos-grid" id="logos-${b.id}"></div>
@@ -1806,15 +1812,15 @@ async function downloadAllZip(btn) {
     function renderLogos(mode) {
       const grid = document.getElementById(`logos-${b.id}`);
       grid.innerHTML = '';
-      const isColor = mode === 'color';
-      // Colorido: box na keycolor da categoria + logo branco · Negativo: box branco + logo na keycolor
+      const isNeg = mode === 'negative';
+      // Negativo: fundo escuro, box na cor da categoria + logo branco · Colorido: fundo branco, box branco + logo na cor
       b.palette.forEach(c => {
         const wrap = el('div','logo-slot-wrap');
         const slot = el('div','logo-slot');
-        slot.style.background = isColor ? c.hex : '#ffffff';
-        slot.style.border = isColor ? '1px solid rgba(255,255,255,0.16)' : '1px solid rgba(0,0,0,0.10)';
+        slot.style.background = isNeg ? c.hex : '#ffffff';
+        slot.style.border = isNeg ? '1px solid rgba(255,255,255,0.16)' : '1px solid rgba(0,0,0,0.10)';
         const img = el('img');
-        img.src = `${b.logoBase}${b.filePrefix}${c.slug}${isColor ? '-w' : ''}.svg`;
+        img.src = `${b.logoBase}${b.filePrefix}${c.slug}${isNeg ? '-w' : ''}.svg`;
         img.alt = `${b.name} ${c.name}`;
         img.style.cssText = 'max-width:74%;max-height:58%;object-fit:contain;display:block';
         slot.appendChild(img); wrap.appendChild(slot);
@@ -1822,11 +1828,14 @@ async function downloadAllZip(btn) {
         grid.appendChild(wrap);
       });
     }
-    renderLogos('color');
+    renderLogos('negative');
     sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
       const btn = e.target.closest('button[data-bg]'); if (!btn) return;
       sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(x => x.classList.remove('active'));
-      btn.classList.add('active'); renderLogos(btn.dataset.bg);
+      btn.classList.add('active');
+      if (btn.dataset.bg === 'color') { sec.style.background = '#ffffff'; sec.style.color = 'var(--ink)'; sec.classList.add('v-light'); }
+      else { sec.style.background = b.bg || '#0E0C0A'; sec.style.color = 'rgba(255,255,255,0.85)'; sec.classList.remove('v-light'); }
+      renderLogos(btn.dataset.bg);
     });
   }
 
@@ -1846,8 +1855,8 @@ async function downloadAllZip(btn) {
       <div class="logos-block rv" style="border-color:${a22};--rd:.18s">
         <div class="logos-head">
           <div class="logos-bg-toggle" style="border-color:${a30}" id="bgtoggle-${b.id}">
-            <button class="active" data-bg="color"><span>Colorido</span></button>
-            <button data-bg="negative"><span>Negativo</span></button>
+            <button class="active" data-bg="negative"><span>Negativo</span></button>
+            <button data-bg="color"><span>Colorido</span></button>
           </div>
         </div>
         <div class="logos-grid" id="logos-${b.id}"></div>
@@ -1865,31 +1874,32 @@ async function downloadAllZip(btn) {
     function renderLogos(mode) {
       const grid = document.getElementById(`logos-${b.id}`);
       grid.innerHTML = '';
-      // Colorido = fundo na key + logo branco · Negativo = fundo branco + logo colorido
-      const isColor = mode === 'color';
-      const boxBg = isColor ? b.key : '#ffffff';
-      const boxStroke = isColor ? '1px solid ' + hexAlpha(b.on, 0.3) : '1px solid rgba(0,0,0,0.12)';
+      // Negativo = fundo na key + logo branco · Colorido = fundo branco + logo full-color
+      const isNeg = mode === 'negative';
+      const boxBg = isNeg ? b.key : '#ffffff';
+      const boxStroke = isNeg ? '1px solid ' + hexAlpha(b.on, 0.3) : '1px solid rgba(0,0,0,0.12)';
       b.variants.forEach(v => {
         const wrap = el('div','logo-slot-wrap');
         const slot = el('div','logo-slot');
         slot.style.background = boxBg; slot.style.border = boxStroke;
         const img = el('img');
-        img.src = b.logoBase + ((isColor && v.whiteFile) ? v.whiteFile : v.file);
+        img.src = b.logoBase + ((isNeg && v.whiteFile) ? v.whiteFile : v.file);
         img.alt = `${b.name} ${v.label}`;
         img.style.cssText = 'max-width:74%;max-height:72%;object-fit:contain;display:block';
-        // Colorido: marca de traço (sem placa de fundo) renderiza em branco sólido sobre a key
-        if (isColor && v.whiteOnKey) img.style.filter = 'brightness(0) invert(1)';
+        // Negativo: marca de traço (sem placa de fundo) renderiza em branco sólido sobre a key;
+        // Circular e Dogs (com placa) seguem full-color
+        if (isNeg && v.whiteOnKey) img.style.filter = 'brightness(0) invert(1)';
         slot.appendChild(img); wrap.appendChild(slot);
         const lbl = el('div','logo-slot-label'); lbl.textContent = v.label; wrap.appendChild(lbl);
         grid.appendChild(wrap);
       });
     }
-    renderLogos('color');
+    renderLogos('negative');
     sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
       const btn = e.target.closest('button[data-bg]'); if (!btn) return;
       sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(x => x.classList.remove('active'));
       btn.classList.add('active');
-      if (btn.dataset.bg === 'negative') { sec.style.background = '#ffffff'; sec.style.color = 'var(--ink)'; sec.classList.add('v-light'); }
+      if (btn.dataset.bg === 'color') { sec.style.background = '#ffffff'; sec.style.color = 'var(--ink)'; sec.classList.add('v-light'); }
       else { sec.style.background = b.key; sec.style.color = 'rgba(255,255,255,0.9)'; sec.classList.remove('v-light'); }
       renderLogos(btn.dataset.bg);
     });
