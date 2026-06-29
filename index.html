@@ -1030,6 +1030,7 @@ const COMERCIAIS = [
     use:'Cardápios, sinalização de PDV, delivery e comunicação segmentada por categoria.',
     paletteTitle:'Keypalette · uma cor por categoria',
     logoBase:'assets-logos/comerciais/isaias/', filePrefix:'isaias-',
+    master:{ file:'isaias-restaurante.svg', label:'Logotipo principal' },
     palette:[
       { name:'Bebidas',                slug:'bebidas',    hex:'#F05B7D' },
       { name:'Burgers',                slug:'burgers',    hex:'#58595B' },
@@ -1877,6 +1878,20 @@ async function downloadAllZip(btn) {
       const grid = document.getElementById(`logos-${b.id}`);
       grid.innerHTML = '';
       const isNeg = mode === 'negative';
+      // Logotipo principal (wordmark monocromática) — apresentado sobre o preto da marca, à frente do sistema de categorias
+      if (b.master) {
+        const mw = el('div','logo-slot-wrap wide');
+        const ms = el('div','logo-slot');
+        ms.style.background = b.bg || '#0E0C0A';
+        ms.style.border = '1px solid rgba(255,255,255,0.16)';
+        const mi = el('img');
+        mi.src = `${b.logoBase}${b.master.file}`;
+        mi.alt = `${b.name} ${b.master.label}`;
+        mi.style.cssText = 'max-width:52%;max-height:54%;object-fit:contain;display:block';
+        ms.appendChild(mi); mw.appendChild(ms);
+        const ml = el('div','logo-slot-label'); ml.textContent = b.master.label; mw.appendChild(ml);
+        grid.appendChild(mw);
+      }
       // Negativo: fundo escuro, box na cor da categoria + logo branco · Colorido: fundo branco, box branco + logo na cor
       b.palette.forEach(c => {
         const wrap = el('div','logo-slot-wrap');
