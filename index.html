@@ -1782,8 +1782,8 @@ async function downloadAllZip(btn) {
       <div class="logos-block rv" style="border-color:${rule};--rd:.18s">
         <div class="logos-head">
           <div class="logos-bg-toggle" style="border-color:${rule}" id="bgtoggle-${b.id}">
-            <button class="active" data-bg="negative"><span>Negativo</span></button>
-            <button data-bg="color"><span>Colorido</span></button>
+            <button class="active" data-bg="color"><span>Colorido</span></button>
+            <button data-bg="negative"><span>Negativo</span></button>
           </div>
         </div>
         <div class="logos-grid" id="logos-${b.id}"></div>
@@ -1801,15 +1801,15 @@ async function downloadAllZip(btn) {
     function renderLogos(mode) {
       const grid = document.getElementById(`logos-${b.id}`);
       grid.innerHTML = '';
-      const isNeg = mode === 'negative';
-      const boxBg = isNeg ? 'rgba(255,255,255,0.05)' : '#ffffff';
-      const boxStroke = isNeg ? '1px solid rgba(255,255,255,0.18)' : '1px solid rgba(0,0,0,0.12)';
+      const isColor = mode === 'color';
+      // Colorido: box na keycolor da categoria + logo branco · Negativo: box branco + logo na keycolor
       b.palette.forEach(c => {
         const wrap = el('div','logo-slot-wrap');
         const slot = el('div','logo-slot');
-        slot.style.background = boxBg; slot.style.border = boxStroke;
+        slot.style.background = isColor ? c.hex : '#ffffff';
+        slot.style.border = isColor ? '1px solid rgba(255,255,255,0.16)' : '1px solid rgba(0,0,0,0.10)';
         const img = el('img');
-        img.src = `${b.logoBase}${b.filePrefix}${c.slug}${isNeg ? '-w' : ''}.svg`;
+        img.src = `${b.logoBase}${b.filePrefix}${c.slug}${isColor ? '-w' : ''}.svg`;
         img.alt = `${b.name} ${c.name}`;
         img.style.cssText = 'max-width:74%;max-height:58%;object-fit:contain;display:block';
         slot.appendChild(img); wrap.appendChild(slot);
@@ -1817,7 +1817,7 @@ async function downloadAllZip(btn) {
         grid.appendChild(wrap);
       });
     }
-    renderLogos('negative');
+    renderLogos('color');
     sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
       const btn = e.target.closest('button[data-bg]'); if (!btn) return;
       sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(x => x.classList.remove('active'));
@@ -1841,8 +1841,8 @@ async function downloadAllZip(btn) {
       <div class="logos-block rv" style="border-color:${a22};--rd:.18s">
         <div class="logos-head">
           <div class="logos-bg-toggle" style="border-color:${a30}" id="bgtoggle-${b.id}">
-            <button class="active" data-bg="negative"><span>Negativo</span></button>
-            <button data-bg="color"><span>Colorido</span></button>
+            <button class="active" data-bg="color"><span>Colorido</span></button>
+            <button data-bg="negative"><span>Negativo</span></button>
           </div>
         </div>
         <div class="logos-grid" id="logos-${b.id}"></div>
@@ -1860,15 +1860,16 @@ async function downloadAllZip(btn) {
     function renderLogos(mode) {
       const grid = document.getElementById(`logos-${b.id}`);
       grid.innerHTML = '';
-      const isNeg = mode === 'negative';
-      const boxBg = isNeg ? b.key : '#ffffff';
-      const boxStroke = isNeg ? '1px solid ' + hexAlpha(b.on, 0.3) : '1px solid rgba(0,0,0,0.12)';
+      // Colorido = fundo na key + logo branco · Negativo = fundo branco + logo colorido
+      const isColor = mode === 'color';
+      const boxBg = isColor ? b.key : '#ffffff';
+      const boxStroke = isColor ? '1px solid ' + hexAlpha(b.on, 0.3) : '1px solid rgba(0,0,0,0.12)';
       b.variants.forEach(v => {
         const wrap = el('div','logo-slot-wrap');
         const slot = el('div','logo-slot');
         slot.style.background = boxBg; slot.style.border = boxStroke;
         const img = el('img');
-        img.src = b.logoBase + ((isNeg && v.whiteFile) ? v.whiteFile : v.file);
+        img.src = b.logoBase + ((isColor && v.whiteFile) ? v.whiteFile : v.file);
         img.alt = `${b.name} ${v.label}`;
         img.style.cssText = 'max-width:74%;max-height:72%;object-fit:contain;display:block';
         slot.appendChild(img); wrap.appendChild(slot);
@@ -1876,12 +1877,12 @@ async function downloadAllZip(btn) {
         grid.appendChild(wrap);
       });
     }
-    renderLogos('negative');
+    renderLogos('color');
     sec.querySelector(`#bgtoggle-${b.id}`).addEventListener('click', e => {
       const btn = e.target.closest('button[data-bg]'); if (!btn) return;
       sec.querySelectorAll(`#bgtoggle-${b.id} button`).forEach(x => x.classList.remove('active'));
       btn.classList.add('active');
-      if (btn.dataset.bg === 'color') { sec.style.background = '#ffffff'; sec.style.color = 'var(--ink)'; sec.classList.add('v-light'); }
+      if (btn.dataset.bg === 'negative') { sec.style.background = '#ffffff'; sec.style.color = 'var(--ink)'; sec.classList.add('v-light'); }
       else { sec.style.background = b.key; sec.style.color = 'rgba(255,255,255,0.9)'; sec.classList.remove('v-light'); }
       renderLogos(btn.dataset.bg);
     });
