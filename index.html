@@ -1031,7 +1031,7 @@ const COMERCIAIS = [
     paletteTitle:'Keypalette · uma cor por categoria',
     logoBase:'assets-logos/comerciais/isaias/', filePrefix:'isaias-',
     master:[
-      { file:'isaias-restaurante.svg',    label:'Logotipo principal', wide:true },
+      { file:'isaias-restaurante.svg', whiteFile:'isaias-restaurante-w.svg', label:'Logotipo principal', wide:true },
       { file:'isaias-faixas-minimal.svg', label:'Assinatura com faixas' },
     ],
     palette:[
@@ -1889,7 +1889,7 @@ async function downloadAllZip(btn) {
         ms.style.background = b.bg || '#0E0C0A';
         ms.style.border = '1px solid rgba(255,255,255,0.16)';
         const mi = el('img');
-        mi.src = `${b.logoBase}${m.file}`;
+        mi.src = `${b.logoBase}${(isNeg && m.whiteFile) ? m.whiteFile : m.file}`;
         mi.alt = `${b.name} ${m.label}`;
         mi.style.cssText = m.wide ? 'max-width:52%;max-height:54%;object-fit:contain;display:block'
                                   : 'max-width:64%;max-height:62%;object-fit:contain;display:block';
