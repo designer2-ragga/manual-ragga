@@ -175,6 +175,7 @@ button{cursor:pointer;font:inherit}
 /* ── Vertical ── */
 .vertical{padding:80px clamp(32px,6vw,80px) 100px;min-height:100vh;display:flex;flex-direction:column;transition:background .55s cubic-bezier(.4,0,.2,1),color .55s cubic-bezier(.4,0,.2,1)}
 .v-head{display:grid;grid-template-columns:80px 1fr auto;gap:24px;padding-bottom:32px;align-items:end;margin-bottom:0}
+.v-head:has(.v-tag){grid-template-columns:80px 1fr auto auto}
 .v-num{font-family:var(--mono);font-size:11px;letter-spacing:.14em;opacity:.7}
 .v-name{font-size:clamp(48px,6vw,80px);line-height:.95;letter-spacing:-.03em;font-weight:700}
 .v-badge{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;border-radius:999px;border:1px solid}
@@ -1783,10 +1784,74 @@ async function downloadAllZip(btn) {
   });
 })();
 
+// ─── Download ZIP das marcas comerciais (SVG + PNG se existir) ───────────────
+async function downloadComercialZip(b, btn) {
+  const origHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.style.opacity = '.45';
+  try {
+    // Coleta os arquivos únicos da marca conforme o mode
+    const files = new Set();
+    if (b.mode === 'palette') {
+      (Array.isArray(b.master) ? b.master : (b.master ? [b.master] : [])).forEach(m => {
+        if (m.file) files.add(m.file);
+        if (m.whiteFile) files.add(m.whiteFile);
+      });
+      (b.palette || []).forEach(c => {
+        files.add(`${b.filePrefix}${c.slug}.svg`);
+        files.add(`${b.filePrefix}${c.slug}-w.svg`);
+      });
+    } else if (b.mode === 'single') {
+      (b.variants || []).forEach(v => {
+        if (v.file) files.add(v.file);
+        if (v.whiteFile) files.add(v.whiteFile);
+      });
+    } else if (b.mode === 'gallery') {
+      (b.groups || []).forEach(g => g.items.forEach(v => { if (v.file) files.add(v.file); }));
+    }
+    const zip = new JSZip();
+    const folder = zip.folder(`ragga-${b.id}`);
+    const svgFolder = folder.folder('SVG');
+    const pngFolder = folder.folder('PNG');
+    for (const file of files) {
+      try {
+        const svgResp = await fetch(`${b.logoBase}${file}`);
+        if (svgResp.ok) svgFolder.file(file, await svgResp.text());
+      } catch (e) { /* svg ausente — ignora */ }
+      const pngName = file.replace(/\.svg$/i, '.png');
+      try {
+        const pngResp = await fetch(`${b.logoBase}${pngName}`);
+        if (pngResp.ok) pngFolder.file(pngName, await pngResp.blob());
+      } catch (e) { /* png ausente — ignora */ }
+    }
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const content = await zip.generateAsync({type:'blob'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(content);
+    a.download = `ragga-${b.id}_${ts}.zip`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.innerHTML = origHTML;
+  }
+}
+
 // ─── Marcas comerciais ───────────────────────────────────────────────────────
 (function buildComerciais() {
   const container = document.getElementById('comerciais');
   if (!container || typeof COMERCIAIS === 'undefined') return;
+
+  // Ícone e wire-up do botão "Baixar Arquivos" no v-head (comum aos 3 modes)
+  const DL_ICON = `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M6 1.5v7"/><path d="M2.5 6.5L6 10l3.5-3.5"/><line x1="1.5" y1="11" x2="10.5" y2="11"/></svg>`;
+  const dlBtnMarkup = (b) => `<button class="v-dl-btn" id="vdl-${b.id}">${DL_ICON}Baixar Arquivos</button>`;
+  function wireDlBtn(sec, b){
+    const btn = sec.querySelector(`#vdl-${b.id}`);
+    if (btn) btn.addEventListener('click', () => downloadComercialZip(b, btn));
+  }
 
   function hexToRgb(h){ h = h.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
   function rgbToCmyk(r,g,bl){ r/=255; g/=255; bl/=255; const k = 1 - Math.max(r,g,bl); if (k >= 0.9999) return [0,0,0,100]; const c=(1-r-k)/(1-k), m=(1-g-k)/(1-k), y=(1-bl-k)/(1-k); return [c,m,y,k].map(v=>Math.round(v*100)); }
@@ -1842,6 +1907,7 @@ async function downloadAllZip(btn) {
         <div class="v-num">${b.index}</div>
         <h2 class="v-name">${b.name}</h2>
         ${b.tag ? `<div class="v-tag" style="border:1px solid ${rule}">${b.tag}</div>` : ''}
+        ${dlBtnMarkup(b)}
       </div>
       <div class="logos-block rv" style="border-color:${rule};--rd:.18s">
         <div class="logos-head">
@@ -1861,6 +1927,7 @@ async function downloadAllZip(btn) {
         ${colorAreaMarkup(b, 'rgba(255,255,255,0.22)')}
       </div>`;
     container.appendChild(sec);
+    wireDlBtn(sec, b);
     wireColorCodes(sec, b, b.palette, { rowBorder:'rgba(255,255,255,0.14)', copyBorder:'rgba(255,255,255,0.30)' });
     function renderLogos(mode) {
       const grid = document.getElementById(`logos-${b.id}`);
@@ -1922,6 +1989,7 @@ async function downloadAllZip(btn) {
         <div class="v-num">${b.index}</div>
         <h2 class="v-name">${b.name}</h2>
         ${b.tag ? `<div class="v-tag" style="border:1px solid ${a30}">${b.tag}</div>` : ''}
+        ${dlBtnMarkup(b)}
       </div>
       <div class="logos-block rv" style="border-color:${a22};--rd:.18s">
         <div class="logos-head">
@@ -1941,6 +2009,7 @@ async function downloadAllZip(btn) {
         ${colorAreaMarkup(b, a22)}
       </div>`;
     container.appendChild(sec);
+    wireDlBtn(sec, b);
     wireColorCodes(sec, b, b.colors, { rowBorder:a14, copyBorder:a30 });
     function renderLogos(mode) {
       const grid = document.getElementById(`logos-${b.id}`);
@@ -1988,6 +2057,7 @@ async function downloadAllZip(btn) {
         <div class="v-num">${b.index}</div>
         <h2 class="v-name">${b.name}</h2>
         ${b.tag ? `<div class="v-tag" style="border:1px solid ${a30}">${b.tag}</div>` : ''}
+        ${dlBtnMarkup(b)}
       </div>
       <div class="logos-block rv" style="border-color:${a22};--rd:.18s">
         <div class="logos-head">
@@ -2007,6 +2077,7 @@ async function downloadAllZip(btn) {
         ${colorAreaMarkup(b, a22)}
       </div>`;
     container.appendChild(sec);
+    wireDlBtn(sec, b);
     wireColorCodes(sec, b, b.colors, { rowBorder:a14, copyBorder:a30 });
     function renderLogos(mode) {
       const grid = document.getElementById(`logos-${b.id}`);
