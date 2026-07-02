@@ -1551,19 +1551,32 @@ function generateASE(name, hex) {
   return new Uint8Array(buf);
 }
 
-// ─── Cores → texto (HEX · RGB · CMYK · Pantone) para incluir nos exports ─────
+// ─── Conversão de cor para export CMYK (device-cmyk com valores oficiais) ────
 function hexToRgbArr(h){ h = h.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
 function rgbToCmykArr(r,g,b){ r/=255; g/=255; b/=255; const k = 1 - Math.max(r,g,b); if (k >= 0.9999) return [0,0,0,100]; const c=(1-r-k)/(1-k), m=(1-g-k)/(1-k), y=(1-b-k)/(1-k); return [c,m,y,k].map(v=>Math.round(v*100)); }
-function buildColorsTxt(title, colors){
-  const body = colors.map(c => {
-    const [r,g,b] = hexToRgbArr(c.hex);
-    const rgb  = c.rgb  || `${r}, ${g}, ${b}`;
-    const cmyk = c.cmyk || rgbToCmykArr(r,g,b).join(', ');
-    let block = `${c.name}\n  HEX     ${c.hex.toUpperCase()}\n  RGB     ${rgb}\n  CMYK    ${cmyk}`;
-    if (c.pantone) block += `\n  Pantone ${c.pantone}`;
-    return block;
-  }).join('\n\n');
-  return `${title} — Cores oficiais\n${'='.repeat(40)}\n\n${body}\n\nHEX/RGB para tela · CMYK para impressão.\n`;
+// Mapa hex → CMYK oficial (verticais + comerciais que têm cmyk definido no manual)
+const OFFICIAL_CMYK = (() => {
+  const map = {};
+  const add = (hex, cmyk) => { if (hex && cmyk) map[hex.toUpperCase()] = cmyk.replace(/%/g,'').split(',').map(s => parseFloat(s.trim())); };
+  (typeof BRANDS !== 'undefined' ? BRANDS : []).forEach(b => add(b.hex, b.cmyk));
+  (typeof COMERCIAIS !== 'undefined' ? COMERCIAIS : []).forEach(b => {
+    (b.colors || []).forEach(c => add(c.hex, c.cmyk));
+    (b.palette || []).forEach(c => add(c.hex, c.cmyk));
+  });
+  return map;
+})();
+function hexToCmykArr(hex){
+  const H = hex.toUpperCase();
+  if (OFFICIAL_CMYK[H]) return OFFICIAL_CMYK[H];        // valor oficial da marca
+  const [r,g,b] = hexToRgbArr(hex);
+  return rgbToCmykArr(r,g,b);                            // conversão padrão
+}
+// Reescreve as cores hex de um SVG em device-cmyk() (com fallback pro hex) — versão para impressão
+function svgToCmyk(svgText){
+  return svgText.replace(/#([0-9a-fA-F]{6})\b/g, (full, body) => {
+    const [c,m,y,k] = hexToCmykArr('#'+body).map(v => +(v/100).toFixed(4));
+    return `device-cmyk(${c} ${m} ${y} ${k} / 1, ${full})`;
+  });
 }
 
 // ─── Brand ZIP download ───────────────────────────────────────────────────────
@@ -1574,20 +1587,16 @@ async function downloadBrandZip(b, btn) {
   try {
     const zip = new JSZip();
     const folder = zip.folder(`ragga-${b.id}`);
-    const svgFolder = folder.folder('SVG');
-    const pngFolder = folder.folder('PNG');
     for (const { file } of LOGO_FILES[b.id].variants) {
       const svgText = await fetch(`${LOGO_BASE}${file}`).then(r => r.text());
-      svgFolder.file(file, svgText);
+      folder.file(`RGB/SVG/${file}`, svgText);                 // vetor RGB (tela)
+      folder.file(`CMYK/SVG/${file}`, svgToCmyk(svgText));     // vetor CMYK (impressão)
       const pngName = file.replace(/\.svg$/i, '.png');
       try {
         const pngResp = await fetch(`${LOGO_BASE}${pngName}`);
-        if (pngResp.ok) pngFolder.file(pngName, await pngResp.blob());
+        if (pngResp.ok) folder.file(`RGB/PNG/${pngName}`, await pngResp.blob());
       } catch (e) { /* png ausente — ignora */ }
     }
-    folder.file('PALETA/cores.txt', buildColorsTxt(b.name, [
-      { name: b.name, hex: b.hex, rgb: b.rgb, cmyk: b.cmyk, pantone: b.pantone },
-    ]));
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
     const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
@@ -1852,8 +1861,6 @@ async function downloadComercialZip(b, btn) {
     }
     const zip = new JSZip();
     const folder = zip.folder(`ragga-${b.id}`);
-    const svgFolder = folder.folder('SVG');
-    const pngFolder = folder.folder('PNG');
     const list = [...files];
     let done = 0;
     setLabel(`Preparando 0/${list.length}…`);
@@ -1864,17 +1871,16 @@ async function downloadComercialZip(b, btn) {
         if (svgResp.ok) svgText = await svgResp.text();
       } catch (e) { /* svg ausente — ignora */ }
       if (svgText) {
-        svgFolder.file(file, svgText);
+        folder.file(`RGB/SVG/${file}`, svgText);                // vetor RGB (tela)
+        folder.file(`CMYK/SVG/${file}`, svgToCmyk(svgText));    // vetor CMYK (impressão)
         try {
           const pngBlob = await svgToPngBlob(svgText, 2000);
-          if (pngBlob) pngFolder.file(file.replace(/\.svg$/i, '.png'), pngBlob);
+          if (pngBlob) folder.file(`RGB/PNG/${file.replace(/\.svg$/i, '.png')}`, pngBlob);
         } catch (e) { console.warn('PNG rasterization failed for', file, e); }
       }
       done++;
       setLabel(`Preparando ${done}/${list.length}…`);
     }));
-    const palette = (b.palette && b.palette.length) ? b.palette : (b.colors || []);
-    if (palette.length) folder.file('PALETA/cores.txt', buildColorsTxt(b.name, palette));
     setLabel('Gerando ZIP…');
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
