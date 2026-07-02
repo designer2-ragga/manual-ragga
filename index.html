@@ -1119,6 +1119,23 @@ const COMERCIAIS = [
       { name:'Amarelo',        hex:'#E9B718' },
     ],
   },
+  {
+    id:'mapoli', mode:'single', name:'Mapoli', index:'07', tag:'símbolo · wordmark · assinatura',
+    key:'#E73439', on:'#FFECEC',
+    role:'Marca comercial · Restaurante',
+    desc:'Marca de cor única (vermelho Mapoli). Sistema simples: símbolo, wordmark e assinatura completa.',
+    use:'Fachadas, embalagens, uniformes, mesa e comunicação de PDV.',
+    paletteTitle:'Cores da marca',
+    logoBase:'assets-logos/comerciais/mapoli/',
+    variants:[
+      { file:'mapoli-simbolo.svg',    label:'Símbolo',    whiteOnKey:true },
+      { file:'mapoli-wordmark.svg',   label:'Wordmark',   whiteOnKey:true },
+      { file:'mapoli-assinatura.svg', label:'Assinatura', whiteOnKey:true, wide:true },
+    ],
+    colors:[
+      { name:'Vermelho Mapoli', hex:'#E73439', key:true },
+    ],
+  },
 ];
 
 const CHECKLIST = [
@@ -2066,13 +2083,15 @@ async function downloadComercialZip(b, btn) {
       const boxBg = isNeg ? b.key : '#ffffff';
       const boxStroke = isNeg ? '1px solid ' + hexAlpha(b.on, 0.3) : '1px solid rgba(0,0,0,0.12)';
       b.variants.forEach(v => {
-        const wrap = el('div','logo-slot-wrap');
+        const wrap = el('div','logo-slot-wrap' + (v.wide ? ' wide' : ''));
         const slot = el('div','logo-slot');
         slot.style.background = boxBg; slot.style.border = boxStroke;
         const img = el('img');
         img.src = b.logoBase + ((isNeg && v.whiteFile) ? v.whiteFile : v.file);
         img.alt = `${b.name} ${v.label}`;
-        img.style.cssText = 'max-width:74%;max-height:72%;object-fit:contain;display:block';
+        img.style.cssText = v.wide
+          ? 'max-width:52%;max-height:60%;object-fit:contain;display:block'
+          : 'max-width:74%;max-height:72%;object-fit:contain;display:block';
         // Negativo: marca de traço (sem placa de fundo) renderiza em branco sólido sobre a key;
         // Circular e Dogs (com placa) seguem full-color
         if (isNeg && v.whiteOnKey) img.style.filter = 'brightness(0) invert(1)';
