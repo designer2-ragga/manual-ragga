@@ -1551,39 +1551,22 @@ function generateASE(name, hex) {
   return new Uint8Array(buf);
 }
 
-// ─── Brand ZIP download ───────────────────────────────────────────────────────
-function svgToPngBlob(svgText) {
-  return new Promise(resolve => {
-    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-    const svgEl = doc.querySelector('svg');
-    let vbW = 512, vbH = 512;
-    const vb = svgEl?.getAttribute('viewBox');
-    if (vb) {
-      const p = vb.trim().split(/[\s,]+/);
-      vbW = parseFloat(p[2]) || 512;
-      vbH = parseFloat(p[3]) || 512;
-    } else {
-      vbW = parseFloat(svgEl?.getAttribute('width')) || 512;
-      vbH = parseFloat(svgEl?.getAttribute('height')) || 512;
-    }
-    const maxDim = 1024;
-    const scale = maxDim / Math.max(vbW, vbH);
-    const cw = Math.round(vbW * scale), ch = Math.round(vbH * scale);
-    const canvas = document.createElement('canvas');
-    canvas.width = cw; canvas.height = ch;
-    const img = new Image();
-    const blob = new Blob([svgText], {type:'image/svg+xml'});
-    const url = URL.createObjectURL(blob);
-    img.onload = () => {
-      canvas.getContext('2d').drawImage(img, 0, 0, cw, ch);
-      URL.revokeObjectURL(url);
-      canvas.toBlob(resolve, 'image/png');
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
-    img.src = url;
-  });
+// ─── Cores → texto (HEX · RGB · CMYK · Pantone) para incluir nos exports ─────
+function hexToRgbArr(h){ h = h.replace('#',''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+function rgbToCmykArr(r,g,b){ r/=255; g/=255; b/=255; const k = 1 - Math.max(r,g,b); if (k >= 0.9999) return [0,0,0,100]; const c=(1-r-k)/(1-k), m=(1-g-k)/(1-k), y=(1-b-k)/(1-k); return [c,m,y,k].map(v=>Math.round(v*100)); }
+function buildColorsTxt(title, colors){
+  const body = colors.map(c => {
+    const [r,g,b] = hexToRgbArr(c.hex);
+    const rgb  = c.rgb  || `${r}, ${g}, ${b}`;
+    const cmyk = c.cmyk || rgbToCmykArr(r,g,b).join(', ');
+    let block = `${c.name}\n  HEX     ${c.hex.toUpperCase()}\n  RGB     ${rgb}\n  CMYK    ${cmyk}`;
+    if (c.pantone) block += `\n  Pantone ${c.pantone}`;
+    return block;
+  }).join('\n\n');
+  return `${title} — Cores oficiais\n${'='.repeat(40)}\n\n${body}\n\nHEX/RGB para tela · CMYK para impressão.\n`;
 }
 
+// ─── Brand ZIP download ───────────────────────────────────────────────────────
 async function downloadBrandZip(b, btn) {
   const origHTML = btn.innerHTML;
   btn.disabled = true;
@@ -1602,6 +1585,9 @@ async function downloadBrandZip(b, btn) {
         if (pngResp.ok) pngFolder.file(pngName, await pngResp.blob());
       } catch (e) { /* png ausente — ignora */ }
     }
+    folder.file('PALETA/cores.txt', buildColorsTxt(b.name, [
+      { name: b.name, hex: b.hex, rgb: b.rgb, cmyk: b.cmyk, pantone: b.pantone },
+    ]));
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
     const ts = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
@@ -1887,6 +1873,8 @@ async function downloadComercialZip(b, btn) {
       done++;
       setLabel(`Preparando ${done}/${list.length}…`);
     }));
+    const palette = (b.palette && b.palette.length) ? b.palette : (b.colors || []);
+    if (palette.length) folder.file('PALETA/cores.txt', buildColorsTxt(b.name, palette));
     setLabel('Gerando ZIP…');
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
