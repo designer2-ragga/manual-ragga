@@ -87,7 +87,7 @@ h1 i{font-style:italic}
 .sliderwrap{margin:0}
 .marks{display:flex;justify-content:space-between;padding:0 15px;margin-bottom:4px}
 .marks i{width:1px;height:8px;background:var(--rule-strong);opacity:.55}
-.marks i.gap{opacity:0}
+.marks i.mid{height:12px;opacity:.9}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent}
 input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--rule-strong);border-radius:3px}
 input[type=range]::-moz-range-track{height:3px;background:var(--rule-strong);border-radius:3px}
@@ -214,7 +214,10 @@ const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const STORE='ragga-briefing-poke-v2';
 
 /* escala sem meio: 8 posições, o zero não existe */
-const STOPS=[-4,-3,-2,-1,1,2,3,4];
+/* 9 posições: o índice 4 vale 0 e é APENAS o estado inicial, com a bolinha no
+   centro exato. Nenhuma resposta é salva como 0 — depois do primeiro toque o
+   cursor atravessa o meio mas nunca descansa nele. */
+const STOPS=[-4,-3,-2,-1,0,1,2,3,4], CENTRO=4;
 
 /* Regra do par: os DOIS lados têm de ser desejáveis. Nenhum polo pode ser o lado
    vergonhoso, senão a resposta é obrigatória e o dado não vale nada.
@@ -545,7 +548,7 @@ function vIntro(sc,stage,foot){
 
 /* — um atributo por tela, com slider — */
 function vAx(sc,stage,foot){
-  const a=sc.ax,cur=val(a.k),idx=cur?STOPS.indexOf(cur):3;
+  const a=sc.ax,cur=val(a.k),idx=cur?STOPS.indexOf(cur):CENTRO;
   const n=AXES.indexOf(a)+1;
   const w=el('div','screen');
   w.innerHTML=`<span class="eyebrow">Atributo ${n} de ${AXES.length} · ${a.t}</span>
@@ -556,8 +559,8 @@ function vAx(sc,stage,foot){
       <div class="axside r" id="pR"><h5>${a.R}</h5><div class="ex">${a.Rex}</div></div>
     </div>
     <div class="sliderwrap">
-      <div class="marks">${[0,1,2,3,4,5,6,7].map(i=>`<i class="${i===3||i===4?'gap':''}"></i>`).join('')}</div>
-      <input type="range" min="0" max="7" step="1" value="${idx}" id="sl" aria-label="${a.L} ou ${a.R}">
+      <div class="marks">${STOPS.map((_,i)=>`<i class="${i===CENTRO?'mid':''}"></i>`).join('')}</div>
+      <input type="range" min="0" max="8" step="1" value="${idx}" id="sl" aria-label="${a.L} ou ${a.R}">
       <div class="readout ${cur?'':'idle'}" id="ro"></div>
     </div>`;
   stage.appendChild(w);
@@ -576,7 +579,18 @@ function vAx(sc,stage,foot){
       : `<b>arraste para escolher um lado</b>`;
     $('#nx').disabled=!set;
   };
-  sl.addEventListener('input',()=>{S.a[a.k]=STOPS[+sl.value];save();paint()});
+  let ultimo=idx;
+  sl.addEventListener('input',()=>{
+    let v=+sl.value;
+    if(v===CENTRO){
+      // ainda não escolheu nada: segue no centro, sem resposta
+      if(!S.a[a.k]&&ultimo===CENTRO){paint();return}
+      // já escolheu: atravessa para o outro lado, nunca para no meio
+      v=CENTRO+(ultimo<CENTRO?1:-1);
+      sl.value=v;
+    }
+    ultimo=v;S.a[a.k]=STOPS[v];save();paint();
+  });
 
   const back=el('button','btn ghost','Voltar');back.onclick=()=>go(S.i-1);foot.appendChild(back);
   foot.appendChild(el('div','hint','Não existe meio — escolha um lado. Quanto mais para a ponta, mais esse lado rege a marca.'));
