@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direcionador de Briefing · Poke · Grupo Ragga</title>
+<meta name="description" content="Formulário interativo que transforma escolhas em um direcionamento de marca: nome, cor e tipografia com justificativa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Anton&family=Archivo:wght@400;600;800&family=Cinzel:wght@400;700&family=DM+Sans:wght@400;700&family=Fraunces:wght@400;700;900&family=Instrument+Serif&family=Lora:wght@400;600&family=Marcellus&family=Oswald:wght@400;600&family=Playfair+Display:wght@400;700;900&family=Quicksand:wght@400;600;700&family=Space+Grotesk:wght@400;700&family=Syne:wght@700;800&family=Unbounded:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f3ec;--ink:#1a1410;--ink-soft:#4a423b;--ink-muted:#8a8278;
+  --rule:rgba(26,20,16,.14);--rule-strong:rgba(26,20,16,.26);
+  --sans:"Instrument Sans",system-ui,sans-serif;
+  --display:"Dotties Vanilla","Instrument Sans",system-ui,sans-serif;
+  --key:#52C1B5;
+  --max:900px;
+}
+@font-face{font-family:"Dotties Vanilla";src:url("assets-fonts/DottiesVanilla-Heavy.otf") format("opentype");font-weight:400 900;font-display:swap}
+@font-face{font-family:"Dotties Vanilla";src:url("assets-fonts/DottiesVanilla-HeavyItalic.otf") format("opentype");font-weight:400 900;font-style:italic;font-display:swap}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .55s cubic-bezier(.22,1,.36,1),color .55s}
+button{cursor:pointer;font:inherit;color:inherit}
+h1,h2{letter-spacing:-.03em;line-height:1.02;font-weight:700}
+.eyebrow{font-size:10.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted)}
+
+/* tema por tela */
+body[data-t=dark]{--bg:#0e0c0a;--ink:#f2ece1;--ink-soft:#c6bcae;--ink-muted:#8c8377;--rule:rgba(242,236,225,.15);--rule-strong:rgba(242,236,225,.3)}
+body[data-t=deep]{--bg:#12100f;--ink:#f2ece1;--ink-soft:#c6bcae;--ink-muted:#8c8377;--rule:rgba(242,236,225,.13);--rule-strong:rgba(242,236,225,.26)}
+body[data-t=warm]{--bg:#f2ebdd;--ink:#1a1410}
+
+/* ── shell: um motivo por tela ── */
+.top{position:fixed;top:0;left:0;right:0;height:54px;display:flex;align-items:center;gap:14px;padding:0 clamp(18px,4vw,40px);z-index:40}
+.bar{flex:1;height:2px;background:var(--rule);border-radius:2px;overflow:hidden;max-width:340px}
+.bar i{display:block;height:100%;background:var(--ink);width:0;transition:width .45s cubic-bezier(.22,1,.36,1)}
+.count{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+.brandmark{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);margin-left:auto}
+
+.stage{min-height:100%;display:flex;flex-direction:column;justify-content:center;
+  padding:92px clamp(20px,5vw,48px) 108px;max-width:var(--max);margin:0 auto}
+.stage.wide{max-width:1180px}
+.screen{animation:in .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.foot{position:fixed;bottom:0;left:0;right:0;display:flex;align-items:center;gap:14px;
+  padding:14px clamp(18px,4vw,40px);background:linear-gradient(to top,var(--bg) 62%,transparent);z-index:40}
+.hint{font-size:12px;color:var(--ink-muted);flex:1}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:999px;border:none;
+  background:var(--ink);color:var(--bg);font-size:14px;font-weight:600;transition:transform .15s,opacity .2s;min-height:46px}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.26;pointer-events:none}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.4px var(--rule-strong);padding:13px 18px}
+
+/* ── abertura ── */
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border:1px solid var(--rule);border-radius:999px;
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:26px}
+.pill b{width:5px;height:5px;border-radius:50%;background:var(--key)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(40px,8.4vw,88px);letter-spacing:0;margin-bottom:22px}
+h1 i{font-style:italic}
+.lede{font-size:clamp(17px,2.1vw,21px);color:var(--ink-soft);max-width:46ch;line-height:1.42}
+/* loading entre as grandes etapas */
+.load{position:fixed;inset:0;z-index:80;background:var(--bg);display:grid;place-items:center;animation:in .26s both}
+.load-in{display:flex;flex-direction:column;align-items:center;gap:15px}
+.load-lbl{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-muted);text-align:center;padding:0 24px}
+.load-bar{width:min(200px,60vw);height:2px;background:var(--rule);border-radius:2px;overflow:hidden}
+.load-bar i{display:block;height:100%;background:var(--ink);width:0;animation:fill var(--d,1100ms) cubic-bezier(.35,0,.15,1) forwards}
+@keyframes fill{from{width:0}to{width:100%}}
+
+/* ── atributo: um por tela ── */
+.q{font-size:clamp(28px,5.4vw,54px);margin:14px 0 8px;max-width:22ch}
+.q em{font-style:italic;color:var(--ink-soft)}
+.qsub{font-size:14.5px;color:var(--ink-muted);margin-bottom:44px;max-width:52ch}
+/* os dois polos, sempre acima do slider, sem caixa */
+.axhead{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,5vw,60px);align-items:end;margin-bottom:26px}
+.axside h5{font-size:clamp(20px,2.7vw,30px);font-weight:700;letter-spacing:-.025em;margin-bottom:7px;
+  transition:opacity .35s,transform .35s}
+.axside .ex{font-size:13.5px;color:var(--ink-soft);line-height:1.5;max-width:36ch;transition:opacity .35s}
+.axside.r{text-align:right}
+.axside.r .ex{margin-left:auto}
+.axside.dim h5{opacity:.34}
+.axside.dim .ex{opacity:.3}
+.axside.lead h5{transform:translateY(-2px)}
+
+.sliderwrap{margin:0}
+.marks{display:flex;justify-content:space-between;padding:0 15px;margin-bottom:4px}
+.marks i{width:1px;height:8px;background:var(--rule-strong);opacity:.55}
+.marks i.mid{height:12px;opacity:.9}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--rule-strong);border-radius:3px}
+input[type=range]::-moz-range-track{height:3px;background:var(--rule-strong);border-radius:3px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;
+  background:var(--ink);border:4px solid var(--bg);box-shadow:0 2px 10px rgba(0,0,0,.22);margin-top:-14px;cursor:grab}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--ink);border:4px solid var(--bg);cursor:grab}
+.readout{display:flex;align-items:baseline;gap:10px;justify-content:center;margin-top:6px;min-height:34px}
+.readout b{font-size:25px;font-weight:700;letter-spacing:-.02em}
+.readout span{font-size:12.5px;color:var(--ink-muted);letter-spacing:.06em;text-transform:uppercase}
+.readout.idle b{color:var(--ink-muted);font-weight:600;font-size:16px}
+
+/* ── arquétipos ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
+.arch{text-align:left;padding:20px 18px;border:1px solid var(--rule);border-radius:16px;background:transparent;
+  display:flex;flex-direction:column;gap:11px;transition:border-color .2s,transform .2s}
+.arch:hover{border-color:var(--rule-strong);transform:translateY(-2px)}
+.arch.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.arch svg{width:34px;height:34px;color:var(--ink);opacity:.85}
+.arch-n{font-size:24px;line-height:1;letter-spacing:-.01em}
+.arch-d{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.arch-p{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-top:auto}
+.arch-p i{flex:1;height:2px;background:var(--rule);border-radius:2px;overflow:hidden}
+.arch-p i b{display:block;height:100%;background:var(--ink)}
+.caveat{margin-top:26px;padding:15px 17px;border:1px dashed var(--rule-strong);border-radius:12px;
+  font-size:12.5px;color:var(--ink-soft);line-height:1.55;max-width:78ch}
+
+/* ── nomes ── */
+.namegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:11px}
+.nm{text-align:left;padding:19px 18px;border:1px solid var(--rule);border-radius:15px;background:transparent;
+  transition:border-color .2s,transform .2s;position:relative}
+.nm:hover{border-color:var(--rule-strong);transform:translateY(-2px)}
+.nm.on{border-color:var(--key);box-shadow:inset 0 0 0 1.4px var(--key)}
+.nm.off{opacity:.42}
+.nm-t{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}
+.nm-n{font-size:23px;font-weight:700;letter-spacing:-.02em}
+.nm-o{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.nm-d{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.group{margin-bottom:30px}
+.group-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--rule)}
+.group-h b{font-size:14px;font-weight:700;letter-spacing:-.01em}
+.group-h span{font-size:11px;color:var(--ink-muted)}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;background:color-mix(in oklab,var(--key) 22%,transparent);
+  font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+
+/* ── KV full screen ── */
+.kv{position:fixed;inset:0;z-index:60;display:grid;place-items:center;overflow:hidden;animation:kvin .6s cubic-bezier(.22,1,.36,1) both}
+@keyframes kvin{from{opacity:0}to{opacity:1}}
+.kv-bg{position:absolute;inset:0}
+.kv-noise{position:absolute;inset:0;opacity:.16;mix-blend-mode:overlay;pointer-events:none}
+.kv-in{position:relative;text-align:center;padding:24px;animation:kvup .85s cubic-bezier(.22,1,.36,1) both .12s}
+@keyframes kvup{from{opacity:0;transform:translateY(24px) scale(.985);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+.kv-name{display:block;line-height:.94;white-space:nowrap;padding-bottom:.16em}
+.kv-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:18px clamp(16px,4vw,32px);z-index:2}
+.kv-dots{display:flex;gap:6px;margin-left:auto}
+.kv-dots b{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.32}
+.kv-dots b.on{opacity:1;transform:scale(1.25)}
+.kv-lbl{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;opacity:.75;font-weight:600}
+.kv-nav{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:20px clamp(16px,4vw,32px);z-index:2}
+.arrow{width:52px;height:52px;border-radius:50%;border:1.5px solid currentColor;background:transparent;
+  display:grid;place-items:center;opacity:.68;transition:opacity .2s,transform .2s}
+.arrow:hover{opacity:1;transform:scale(1.06)}
+.arrow[disabled]{opacity:.2;pointer-events:none}
+.kv-why{font-size:12px;line-height:1.5;max-width:44ch;opacity:.78;text-align:left}
+
+/* ── fecho ── */
+.sum{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:14px;overflow:hidden;margin-top:8px}
+.row{background:var(--bg);display:grid;grid-template-columns:150px 1fr;gap:16px;padding:16px 18px}
+.row-k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-muted);padding-top:2px}
+.row-v{font-size:13.5px;color:var(--ink-soft);line-height:1.55}
+.row-v b{color:var(--ink)}
+.picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:8px 0 26px}
+.pick{border:1px solid var(--rule);border-radius:14px;overflow:hidden;text-align:left;background:transparent;transition:transform .2s,border-color .2s}
+.pick:hover{transform:translateY(-2px);border-color:var(--rule-strong)}
+.pick.on{border-color:var(--key);box-shadow:inset 0 0 0 1.4px var(--key)}
+.pick-kv{aspect-ratio:16/10;display:grid;place-items:center;position:relative;overflow:hidden}
+.pick-kv span{white-space:nowrap;line-height:1;padding-bottom:.14em}
+.pick-f{padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pick-f b{font-size:13.5px}
+.pick-f i{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);font-style:normal}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.tags i{font-style:normal;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;border:1px solid var(--rule-strong);color:var(--ink-soft)}
+.drv{margin-top:8px;font-size:11.5px;color:var(--ink-muted);line-height:1.5}
+.drv b{color:var(--ink-soft)}
+.sw{display:flex;gap:6px;margin-top:10px}
+.sw i{width:26px;height:26px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.toast{position:fixed;left:50%;bottom:80px;transform:translate(-50%,14px);background:var(--ink);color:var(--bg);
+  padding:11px 20px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:90}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:640px){
+  .axhead{grid-template-columns:1fr;gap:16px;margin-bottom:20px}
+  .axside.r{text-align:left}
+  .axside.r .ex{margin-left:0}
+  .axside h5{font-size:21px;margin-bottom:3px}
+  .axside.dim h5{opacity:.45}
+  .axside.r h5::before{content:'↔ ';opacity:.4}
+  .row{grid-template-columns:1fr;gap:6px}
+  .brandmark{display:none}
+  .q{font-size:clamp(25px,7.4vw,34px)}
+  .kv-why{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body data-t="light">
+
+<div class="top">
+  <span class="count" id="count"></span>
+  <div class="bar"><i id="bar"></i></div>
+  <span class="brandmark">Grupo Ragga · Poke</span>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<div class="foot" id="foot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══ dados ═══════════════════════════════════════════════════════════════ */
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const $=(s,r=document)=>r.querySelector(s);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const STORE='ragga-briefing-poke-v2';
+
+/* escala sem meio: 8 posições, o zero não existe */
+/* 9 posições: o índice 4 vale 0 e é APENAS o estado inicial, com a bolinha no
+   centro exato. Nenhuma resposta é salva como 0 — depois do primeiro toque o
+   cursor atravessa o meio mas nunca descansa nele. */
+const STOPS=[-4,-3,-2,-1,0,1,2,3,4], CENTRO=4;
+
+/* Regra do par: os DOIS lados têm de ser desejáveis. Nenhum polo pode ser o lado
+   vergonhoso, senão a resposta é obrigatória e o dado não vale nada.
+   push: quais características tipográficas cada lado puxa (ver catálogo FONTS). */
+const AXES=[
+ {k:'temperatura',t:'Temperatura',q:'A marca <em>acolhe</em> ou <em>refresca?</em>',
+  why:'Escolhe a família de cor.',theme:'light',
+  L:'Quente',Lex:'Recebe bem: coral e âmbar, comida no vapor, fala com você pelo nome.',
+  R:'Fria',Rex:'Refresca: azul e verde-água, peixe cru sobre pedra, ar de coisa limpa.',
+  push:{L:['humanista','arredondada','slab','irregular'],R:['grotesca','geométrica','técnica','contraste alto','contraste muito alto']}},
+ {k:'luz',t:'Luz',q:'A marca é de <em>dia</em> ou de <em>noite?</em>',
+  why:'Escolhe se o sistema nasce claro ou escuro.',theme:'dark',
+  L:'Dia',Lex:'Luz de janela, almoço que resolve, tudo à vista.',
+  R:'Noite',Rex:'Luz baixa, jantar com calma, brilho onde importa.',
+  push:{L:['arredondada','humanista','light'],R:['black','bold','contraste muito alto','caixa-alta']}},
+ {k:'energia',t:'Energia',q:'A marca <em>sussurra</em> ou <em>anuncia?</em>',
+  why:'Escolhe saturação da cor e peso da letra.',theme:'light',
+  L:'Serena',Lex:'Confia no silêncio: espaço vazio, uma cor só, nada disputando.',
+  R:'Vibrante',Rex:'Não se esconde: cor cheia, peso alto, se acha no meio do feed.',
+  push:{L:['light','regular','contraste alto','expandida'],R:['black','bold','condensada','display']}},
+ {k:'acesso',t:'Acesso',q:'A marca é <em>de todo dia</em> ou <em>de ocasião?</em>',
+  why:'Escolhe se a letra é robusta ou refinada.',theme:'warm',
+  L:'De todo dia',Lex:'Cabe na rotina: preço claro, porção honesta, sem cerimônia.',
+  R:'De ocasião',Rex:'Vale a espera: menu curto, seleção do dia, cuidado visível.',
+  push:{L:['grotesca','bold','normal'],R:['didone','romana','versalete','lapidar','contraste alto','contraste muito alto']}},
+ {k:'tempo',t:'Tempo',q:'A marca é <em>recém-chegada</em> ou <em>de tradição?</em>',
+  why:'Escolhe entre letra geométrica recente e letra romana herdada.',theme:'light',
+  L:'Moderna',Lex:'Nasceu agora e mostra: geométrica, limpa, cara de coisa nova.',
+  R:'Clássica',Rex:'Vem de longe: romana, impressa, com lastro de ofício.',
+  push:{L:['geométrica','grotesca','sem serifa','técnica'],R:['com serifa','romana','didone','transicional','lapidar']}},
+ {k:'tom',t:'Tom',q:'A marca <em>afirma</em> ou <em>provoca?</em>',
+  why:'Escolhe o humor do nome e a distância entre as cores.',theme:'dark',
+  L:'Séria',Lex:'Fala e cumpre: sem piada, sem ruído, erro não passa.',
+  R:'Divertida',Rex:'Fica leve: brinca com o próprio nome, deixa recado na embalagem.',
+  push:{L:['transicional','grotesca','lapidar','romana'],R:['slab','irregular','arredondada','display']}},
+ {k:'metodo',t:'Método',q:'A marca <em>improvisa</em> ou <em>calibra?</em>',
+  why:'Escolhe entre gesto solto e sistema fechado.',theme:'light',
+  L:'Espontânea',Lex:'Viva no dia: o que chegou hoje entra, a mão aparece no prato.',
+  R:'Precisa',Rex:'Igual sempre: gramatura na etiqueta, mesmo corte, ficha técnica.',
+  push:{L:['humanista','irregular','itálico'],R:['geométrica','técnica','grotesca','lapidar']}},
+ {k:'materia',t:'Matéria',q:'A marca vem da <em>terra</em> ou do <em>projeto?</em>',
+  why:'Escolhe textura e se a cor puxa terroso ou sintético.',theme:'warm',
+  L:'Natural',Lex:'Cheira a origem: kraft, fibra, verde de folha, mão de quem colhe.',
+  R:'Tecnológica',Rex:'Cheira a precisão: superfície lisa, cor de tela, grade que se vê.',
+  push:{L:['humanista','slab','com serifa','arredondada'],R:['geométrica','técnica','sem serifa','expandida']}},
+ {k:'distancia',t:'Distância',q:'A marca fala <em>de perto</em> ou <em>com lastro?</em>',
+  why:'Escolhe se a assinatura é pessoal ou institucional.',theme:'dark',
+  L:'Íntima',Lex:'Trata por você: assina com nome de gente, escreve à mão.',
+  R:'Institucional',Rex:'Tem lastro: assina como casa, tom de quem responde pelo padrão.',
+  push:{L:['humanista','itálico','arredondada'],R:['lapidar','caixa-alta','versalete','romana']}},
+];
+const AX=Object.fromEntries(AXES.map(a=>[a.k,a]));
+
+const ICON={
+ inocente:'<circle cx="12" cy="12" r="4.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+ sabio:'<path d="M3 5.5h7a2 2 0 0 1 2 2v12M21 5.5h-7a2 2 0 0 0-2 2"/><path d="M3 5.5v13h7M21 5.5v13h-7"/>',
+ explorador:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+ rebelde:'<path d="M13.5 2L4 14h6l-1.5 8L20 9h-6.5z"/>',
+ mago:'<path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M18.5 16.5l.7 2.3 2.3.7-2.3.7-.7 2.3-.7-2.3-2.3-.7 2.3-.7z"/>',
+ heroi:'<path d="M12 2.5l7.5 3v6c0 5-3.2 8.6-7.5 10-4.3-1.4-7.5-5-7.5-10v-6z"/>',
+ amante:'<path d="M12 20.5C7 16.6 3.5 13.6 3.5 9.9A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8.5 2.3c0 3.7-3.5 6.7-8.5 10.6z"/>',
+ bobo:'<circle cx="12" cy="13" r="8"/><path d="M8.5 11.5h.01M15.5 11.5h.01M8.5 16c1 1.4 2.1 2 3.5 2s2.5-.6 3.5-2"/><path d="M6 5.5l2 2M18 5.5l-2 2"/>',
+ comum:'<circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="10" r="2.4"/><path d="M2.5 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M15 14.8c2.9.2 5 2.3 5 5.2"/>',
+ cuidador:'<path d="M4 13.5c0 4 3.6 6.5 8 6.5s8-2.5 8-6.5z"/><path d="M8 10c0-1.5-1.5-2-1.5-3.5S8 4 8 4M12 9.5c0-2-2-2.5-2-4.5S12 2.5 12 2.5M16 10c0-1.5-1.5-2-1.5-3.5S16 4 16 4"/>',
+ governante:'<path d="M3 8l3.5 3L12 4.5l5.5 6.5L21 8l-1.5 10.5h-15z"/>',
+ criador:'<path d="M4 20l4.5-1.5L20 7a2.1 2.1 0 0 0-3-3L5.5 15.5z"/><path d="M14.5 6.5l3 3"/>',
+};
+
+/* 12 arquétipos · nomes e desejos conforme Mark & Pearson (2001) */
+const ARCH=[
+ {id:'inocente',n:'Inocente',f:'Quicksand',w:700,d:'Fazer o simples direito, todo dia. Nada escondido.',
+  t:{luz:[-4,3],energia:[-3,2],materia:[-3,3],acesso:[-2,2],temperatura:[-2,2],tempo:[2,1]}},
+ {id:'sabio',n:'Sábio',f:'Marcellus',w:400,d:'Conhecer o corte e o arroz melhor que todos — e explicar sem soberba.',
+  t:{metodo:[3,3],tom:[-3,3],tempo:[3,2],temperatura:[2,1],distancia:[1,2],energia:[-2,2]}},
+ {id:'explorador',n:'Explorador',f:'Archivo',w:600,d:'Trazer o que ninguém em Londrina provou ainda.',
+  t:{metodo:[-3,3],energia:[2,2],materia:[-2,2],acesso:[-1,2],luz:[-1,1],tempo:[-1,1]}},
+ {id:'rebelde',n:'Fora da Lei',f:'Anton',w:400,d:'Quebrar o desconto de 25% e o clichê tropical que todo mundo repete.',
+  t:{luz:[3,3],energia:[3,3],tempo:[-3,3],metodo:[-3,2],acesso:[1,1],tom:[-1,1]}},
+ {id:'mago',n:'Mago',f:'Cinzel',w:400,d:'Transformar peixe cru e arroz em algo que parece outra coisa.',
+  t:{luz:[3,3],materia:[2,2],acesso:[2,2],tom:[-2,2],tempo:[-2,2],distancia:[1,1]}},
+ {id:'heroi',n:'Herói',f:'Oswald',w:600,d:'Chegar rápido e certo, com a gramatura no ponto e o crispy seco.',
+  t:{energia:[3,3],metodo:[2,2],tom:[-3,2],temperatura:[-2,2],tempo:[-2,1],distancia:[1,1]}},
+ {id:'amante',n:'Amante',f:'Playfair Display',w:700,d:'Comida como prazer: cor, textura, brilho, desejo na foto.',
+  t:{temperatura:[-4,3],distancia:[-4,3],luz:[2,2],acesso:[2,2],energia:[-1,1],materia:[-1,1]}},
+ {id:'bobo',n:'Bobo da Corte',f:'Fraunces',w:900,d:'Levar a comida a sério e o resto, nada.',
+  t:{tom:[4,3],energia:[3,3],acesso:[-3,3],metodo:[-3,2],temperatura:[-2,2],luz:[-2,1]}},
+ {id:'comum',n:'Cara Comum',f:'DM Sans',w:700,d:'A tigela do dia a dia, no preço e no jeito de todo mundo.',
+  t:{acesso:[-4,3],distancia:[-3,3],materia:[-2,2],energia:[-1,1],luz:[-1,1],tempo:[1,1]}},
+ {id:'cuidador',n:'Cuidador',f:'Lora',w:600,d:'Alimentar bem quem tem pouco tempo para se cuidar.',
+  t:{temperatura:[-3,3],distancia:[-3,3],materia:[-3,3],energia:[-2,2],luz:[-2,2],acesso:[-2,1]}},
+ {id:'governante',n:'Governante',f:'Instrument Serif',w:400,d:'Definir o padrão do poke na cidade — e cobrar por ele sem desconto.',
+  t:{acesso:[4,3],distancia:[3,3],metodo:[3,3],tom:[-3,2],tempo:[2,2],temperatura:[1,1]}},
+ {id:'criador',n:'Criador',f:'Space Grotesk',w:700,d:'A tigela como sistema: o cliente monta, a marca dá a gramática.',
+  t:{tempo:[-3,3],metodo:[2,3],materia:[1,2],energia:[1,1],acesso:[1,1],tom:[1,1]}},
+];
+
+/* nomes — territórios que a pesquisa aponta como vagos */
+const GROUPS=[
+ {g:'Gesto de corte',note:'Poke é um verbo: cortar em pedaços. Zero ocupação no mercado.',vaga:true,names:[
+  {n:'Corte',d:'O gesto puro, em português. Duas sílabas, uma imagem, nenhuma tradução necessária.'},
+  {n:'Talho',d:'Corte, incisão. Soa antigo e técnico ao mesmo tempo — e ninguém no delivery usa.'},
+  {n:'Fatia',d:'A unidade real do produto. Palavra doméstica que qualquer um pronuncia certo.'},
+  {n:'Lâmina',d:'O instrumento em vez do prato. Sugere precisão sem mostrar o peixe.'},
+  {n:'Sogi',d:'Corte em diagonal, do japonês. Curto, opaco e registrável.'},
+  {n:'Kiri',d:'Cortar, do japonês. Quatro letras, sobrevive em qualquer tamanho.'},
+ ]},
+ {g:'Havaiano funcional',note:'Palavra havaiana real e não toponímica. Kailua e Maui estão ocupados; isto não.',vaga:true,names:[
+  {n:'Limu',d:'A alga: o ingrediente do poke original, antes do shoyu. Quatro letras, som limpo.'},
+  {n:'Inamona',d:'Pasta de kukui torrado que temperava o poke antigo. Autoridade máxima, zero saturação.'},
+  {n:'Umeke',d:'A tigela de madeira havaiana. Nomeia o objeto que o cliente recebe na mão.'},
+  {n:'Pa’akai',d:'Sal marinho. O tempero mais antigo do prato — o apóstrofo é personalidade e é risco.'},
+  {n:'Lomi',d:'Amassar com a mão. Descreve o preparo, não a origem.'},
+  {n:'Kapu',d:'O que é reservado, sagrado. Serve a uma marca seleta sem soar mística.'},
+ ]},
+ {g:'Japonês de preparo',note:'A língua que o cliente já usa na avaliação e que nenhum concorrente assumiu.',vaga:true,names:[
+  {n:'Gohan',d:'O arroz cozido: a base real da tigela. Palavra que as reviews já escrevem sozinhas.'},
+  {n:'Tarê',d:'O molho que define a casa. Curto, com acento, e é o que o cliente elogia.'},
+  {n:'Goma',d:'Gergelim. Duas sílabas, fácil, e já soa a nome de marca.'},
+  {n:'Donburi',d:'A tigela sobre arroz. Nome de categoria no Japão, território livre aqui.'},
+  {n:'Shun',d:'A estação certa do ingrediente. Vira promessa de frescor sem dizer “fresco”.'},
+  {n:'Itamae',d:'Quem está diante da tábua. Coloca a pessoa no centro, não o peixe.'},
+]}];
+
+/* ── catálogo tipográfico ────────────────────────────────────────────────────
+   Cada fonte é descrita por características (tags). Os atributos da marca
+   puxam tags (AXES[].push), e a fonte é escolhida por quantas tags ela atende.
+   Assim nenhuma letra entra por gosto: entra por quantas características o
+   briefing pediu. ficha = o que se diz dela em reunião.
+   ───────────────────────────────────────────────────────────────────────── */
+const FONTS=[
+ {f:'Anton',w:400,uni:true,tr:'-.005em',cls:'Display sem serifa',
+  tags:['sem serifa','grotesca','condensada','black','contraste baixo','display'],
+  ficha:'Grotesca condensada de peso extremo. Máxima mancha por centímetro; não tem itálico nem peso leve.'},
+ {f:'Bebas Neue',w:400,uni:true,tr:'.06em',cls:'Condensada unicameral',
+  tags:['sem serifa','grotesca','condensada','bold','caixa-alta','contraste baixo'],
+  ficha:'Só existe em caixa-alta. Letra de cartaz: alta, estreita, direta.'},
+ {f:'Oswald',w:600,uni:false,tr:'-.01em',cls:'Grotesca condensada',
+  tags:['sem serifa','grotesca','condensada','bold'],
+  ficha:'Condensada de uso pesado. Aguenta título longo sem quebrar linha.'},
+ {f:'Archivo',w:800,uni:false,tr:'-.025em',cls:'Grotesca de texto',
+  tags:['sem serifa','grotesca','normal','bold','itálico'],
+  ficha:'Grotesca robusta e neutra, com itálico real e família larga de pesos.'},
+ {f:'Space Grotesk',w:700,uni:false,tr:'-.03em',cls:'Grotesca técnica',
+  tags:['sem serifa','grotesca','técnica','normal','regular'],
+  ficha:'Terminais cortados e formas de interface. Cheiro de produto digital.'},
+ {f:'DM Sans',w:700,uni:false,tr:'-.03em',cls:'Geométrica de texto',
+  tags:['sem serifa','geométrica','normal','regular','itálico'],
+  ficha:'Geométrica silenciosa. Some a favor do conteúdo, funciona em corpo pequeno.'},
+ {f:'Quicksand',w:600,uni:false,tr:'-.01em',cls:'Geométrica arredondada',
+  tags:['sem serifa','geométrica','arredondada','light','normal'],
+  ficha:'Terminais redondos, ar leve e amável. Não tem peso pesado de verdade.'},
+ {f:'Syne',w:800,uni:false,tr:'-.02em',cls:'Display expandida',
+  tags:['sem serifa','expandida','irregular','bold','display'],
+  ficha:'Larga e deliberadamente torta. Cara de galeria, não de praia.'},
+ {f:'Unbounded',w:700,uni:false,tr:'-.01em',cls:'Display geométrica larga',
+  tags:['sem serifa','geométrica','expandida','bold','display'],
+  ficha:'Geométrica muito larga. Presença total, mas come espaço horizontal.'},
+ {f:'Marcellus',w:400,uni:true,tr:'.14em',cls:'Romana lapidar',
+  tags:['com serifa','romana','lapidar','caixa-alta','contraste médio','normal'],
+  ficha:'Capitular de inscrição, herdada da pedra romana. Excelente em caixa-alta espaçada.'},
+ {f:'Cinzel',w:700,uni:true,tr:'.1em',cls:'Romana versalete',
+  tags:['com serifa','romana','lapidar','caixa-alta','versalete','contraste médio'],
+  ficha:'Desenhada só em maiúsculas e versalete. Cerimonial sem ser religiosa.'},
+ {f:'Instrument Serif',w:400,uni:false,tr:'-.015em',cls:'Serifada editorial',
+  tags:['com serifa','transicional','contraste alto','normal','itálico'],
+  ficha:'Serifada de alto contraste e ar de revista. Econômica na largura.'},
+ {f:'Playfair Display',w:900,uni:false,tr:'-.02em',cls:'Didone',
+  tags:['com serifa','didone','contraste muito alto','bold','itálico'],
+  ficha:'Contraste extremo entre traço fino e grosso. Luxo real — e o fino sofre em corpo pequeno.'},
+ {f:'Lora',w:600,uni:false,tr:'-.01em',cls:'Serifada humanista',
+  tags:['com serifa','humanista','contraste médio','normal','itálico'],
+  ficha:'Serifada de livro, com caligrafia no traço. Fala de perto, sem pose.'},
+ {f:'Fraunces',w:900,uni:false,tr:'-.02em',cls:'Slab macia',
+  tags:['com serifa','slab','humanista','bold','itálico','irregular'],
+  ficha:'Serifa grossa e macia, com humor no desenho. Quente e apetitosa, e tem peso de verdade.'},
+];
+
+/* pontua cada fonte pelas tags que os atributos pediram */
+function fontScore(f){
+  let s=0,hits=[];
+  AXES.forEach(a=>{
+    const v=val(a.k);if(!v)return;
+    const mine=v<0?a.push.L:a.push.R, other=v<0?a.push.R:a.push.L;
+    const m=f.tags.filter(t=>mine.includes(t));
+    const o=f.tags.filter(t=>other.includes(t));
+    s+=Math.abs(v)*m.length - Math.abs(v)*o.length*.5;
+    if(m.length)hits.push({ax:a,tags:m,force:Math.abs(v)});
+  });
+  hits.sort((x,y)=>y.force*y.tags.length-x.force*x.tags.length);
+  return{s,hits};
+}
+function fontRank(){
+  return FONTS.map(f=>({...f,...fontScore(f)})).sort((a,b)=>b.s-a.s);
+}
+/* as três direções: a melhor, e depois as melhores de classes diferentes */
+function pickFonts(n){
+  const r=fontRank(),out=[];
+  const fam=f=>f.tags.includes('com serifa')?'serif':f.tags.includes('display')||f.tags.includes('expandida')?'display':'sans';
+  for(const f of r){if(out.length>=n)break;if(!out.some(o=>fam(o)===fam(f)))out.push(f)}
+  for(const f of r){if(out.length>=n)break;if(!out.includes(f))out.push(f)}
+  return out.slice(0,Math.max(1,n));
+}
+const kvFont=i=>{const p=pickFonts(Math.max(1,S.names.length));return p[i%p.length]};
+
+const NOISE="url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+/* ═══ estado ═══════════════════════════════════════════════════════════════ */
+const S={i:0,a:{},arch:null,names:[],approved:null};
+const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
+const load=()=>{try{const r=localStorage.getItem(STORE);if(r){Object.assign(S,JSON.parse(r));return true}}catch(e){}return false};
+
+const val=k=>S.a[k]||0, force=k=>Math.abs(val(k));
+const pole=k=>val(k)<0?AX[k].L:AX[k].R;
+const chip=k=>`${pole(k)} ${force(k)}`;
+const done=()=>AXES.every(a=>S.a[a.k]);
+
+function match(t){let s=0,w=0,sup=[];for(const k in t){const[v,ww]=t[k];const d=Math.abs(val(k)-v);
+  s+=ww*(1-d/8);w+=ww;if(d<=2)sup.push({k,ww,d})}
+  sup.sort((a,b)=>b.ww-a.ww||a.d-b.d);
+  return{pct:w?clamp(Math.round(Math.pow(s/w,2.1)*100),4,98):0,sup}}
+const archList=()=>ARCH.map(a=>({...a,...match(a.t)})).sort((x,y)=>y.pct-x.pct);
+const archOf=id=>ARCH.find(a=>a.id===id);
+
+/* ═══ cor derivada ════════════════════════════════════════════════════════ */
+const HW={1:46,2:34,3:24,4:14}, HC={1:170,2:196,3:222,4:250};
+const lerpH=(h,to,a)=>{const d=((to-h+540)%360)-180;return(h+d*a+360)%360};
+const ok=(l,c,h)=>`oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(1)})`;
+
+function pal(){
+  const t=val('temperatura'),lz=val('luz'),en=val('energia'),mt=val('materia'),ac=val('acesso'),tm=val('tom');
+  let hue=t<0?HW[force('temperatura')]:HC[force('temperatura')];
+  hue=mt<0?lerpH(hue,95,.07*force('materia')):lerpH(hue,288,.07*force('materia'));
+  let C=en>0?.098+.036*en:.098-.019*force('energia');
+  C=clamp(C*(mt>0?1.1:.88),.026,.245);
+  const night=lz>0,fz=force('luz');
+  const bgL=night?.19-.02*fz:.955+.007*fz, inkL=night?.955:.215-.012*fz;
+  let keyL=night?clamp(.68+.02*en,.58,.82):clamp(.56-.018*en,.38,.66);
+  if(Math.abs(keyL-bgL)<.34)keyL=night?bgL+.34:bgL-.34;
+  keyL=clamp(keyL,.3,.86);
+  const accH=(hue+(tm>0?128+12*tm:26+6*force('tom')))%360;
+  const bgC=ac>0?clamp(.006*(5-force('acesso')),.004,.018):clamp(.012+.009*force('acesso'),.012,.05);
+  return{hue,accH,C,night,keyL,bgL,gap:Math.abs(keyL-bgL),cliche:hue<62||hue>340,
+    bg:ok(bgL,bgC,hue),ink:ok(inkL,bgC*1.4,hue),key:ok(keyL,C,hue),
+    acc:ok(clamp(keyL+(night?-.16:.16),.22,.9),C*.8,accH),
+    onKey:keyL>.63?ok(.16,.03,hue):ok(.975,.012,hue)};
+}
+/* fundo procedural: sem gradiente-clichê, contraste por valor */
+function kvBg(i,P){
+  const a=P.key,b=P.acc,ink=P.ink,bg=P.bg;
+  const nat=val('materia')<0;
+  if(i%3===0) return {bg:a,fg:P.onKey,
+    deco:nat?`radial-gradient(120% 90% at 18% 12%,${b}55,transparent 62%)`
+            :`repeating-linear-gradient(90deg,rgba(255,255,255,.055) 0 1px,transparent 1px 42px)`};
+  if(i%3===1) return {bg:bg,fg:a,
+    deco:nat?`radial-gradient(90% 70% at 82% 88%,${a}22,transparent 60%)`
+            :`repeating-linear-gradient(0deg,rgba(0,0,0,.035) 0 1px,transparent 1px 38px)`};
+  return {bg:ink,fg:bg,deco:`radial-gradient(100% 80% at 50% 110%,${a}44,transparent 65%)`};
+}
+
+/* ═══ telas ════════════════════════════════════════════════════════════════ */
+function screens(){
+  const s=[{id:'intro',theme:'light'}];
+  AXES.forEach(a=>s.push({id:'ax',ax:a,theme:a.theme}));
+  s.push({id:'arch',theme:'light'});
+  s.push({id:'names',theme:'deep'});
+  S.names.forEach((n,i)=>s.push({id:'kv',n,i,theme:'light'}));
+  if(S.names.length)s.push({id:'end',theme:'light'});
+  return s;
+}
+const SC=()=>screens()[Math.min(S.i,screens().length-1)];
+
+/* uma etapa grande = mudança de tipo de tela. Só dispara indo para frente,
+   então avançar entre atributos (ax→ax) ou entre KVs não mostra loading. */
+const ETAPA={
+  ax:'Montando o mapa de atributos',
+  arch:'Cruzando seus atributos com os 12 arquétipos',
+  names:'Filtrando os territórios de nome',
+  kv:'Compondo as direções visuais',
+  end:'Fechando o direcionamento',
+};
+const reduzido=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function loading(msg,ms){
+  return new Promise(res=>{
+    const d=el('div','load');
+    d.innerHTML=`<div class="load-in"><div class="load-lbl">${msg}</div>
+      <div class="load-bar" style="--d:${ms}ms"><i></i></div></div>`;
+    document.body.appendChild(d);
+    setTimeout(()=>{d.remove();res()},ms);
+  });
+}
+
+async function go(n){
+  const l=screens().length,t=clamp(n,0,l-1);
+  const de=SC().id,para=screens()[t].id,frente=t>S.i;
+  S.i=t;save();
+  if(frente&&para!==de&&ETAPA[para]){
+    document.querySelectorAll('.kv').forEach(k=>k.remove());
+    await loading(ETAPA[para],reduzido()?260:1150);
+  }
+  render();window.scrollTo(0,0);
+}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),2000)}
+
+function render(){
+  const sc=SC(),all=screens();
+  document.body.dataset.t=sc.theme;
+  const stage=$('#stage'),foot=$('#foot');
+  stage.className='stage'+(sc.id==='arch'||sc.id==='names'||sc.id==='end'?' wide':'');
+  stage.innerHTML='';foot.innerHTML='';
+  $('#bar').style.width=(S.i/(all.length-1)*100)+'%';
+  $('#count').textContent=sc.id==='intro'?'':`${String(S.i).padStart(2,'0')} / ${String(all.length-1).padStart(2,'0')}`;
+
+  document.querySelectorAll('.kv').forEach(k=>k.remove());
+  ({intro:vIntro,ax:vAx,arch:vArch,names:vNames,kv:vKv,end:vEnd})[sc.id](sc,stage,foot);
+}
+
+/* — abertura enxuta — */
+function vIntro(sc,stage,foot){
+  const w=el('div','screen');
+  w.innerHTML=`<div class="pill"><b></b>Nova marca de poke · delivery · Londrina</div>
+   <h1>Direção de <i>Briefing.</i></h1>
+   <p class="lede">Responda as escolhas e desenvolva um caminho de marca. Pronto para a equipe desenvolver a partir disso.</p>`;
+  stage.appendChild(w);
+  foot.appendChild(el('div','hint','9 perguntas · uma por tela · leva 3 minutos'));
+  const b=el('button','btn','Começar');b.onclick=()=>go(1);foot.appendChild(b);
+}
+
+/* — um atributo por tela, com slider — */
+function vAx(sc,stage,foot){
+  const a=sc.ax,cur=val(a.k),idx=cur?STOPS.indexOf(cur):CENTRO;
+  const n=AXES.indexOf(a)+1;
+  const w=el('div','screen');
+  w.innerHTML=`<span class="eyebrow">Atributo ${n} de ${AXES.length} · ${a.t}</span>
+    <h2 class="q">${a.q}</h2>
+    <p class="qsub">${a.why}</p>
+    <div class="axhead">
+      <div class="axside" id="pL"><h5>${a.L}</h5><div class="ex">${a.Lex}</div></div>
+      <div class="axside r" id="pR"><h5>${a.R}</h5><div class="ex">${a.Rex}</div></div>
+    </div>
+    <div class="sliderwrap">
+      <div class="marks">${STOPS.map((_,i)=>`<i class="${i===CENTRO?'mid':''}"></i>`).join('')}</div>
+      <input type="range" min="0" max="8" step="1" value="${idx}" id="sl" aria-label="${a.L} ou ${a.R}">
+      <div class="readout ${cur?'':'idle'}" id="ro"></div>
+    </div>`;
+  stage.appendChild(w);
+
+  /* qualificadores invariáveis: os polos às vezes são substantivos (Dia/Noite),
+     então advérbio de grau quebraria a frase. */
+  const GRAU=['','leve','moderado','marcado','dominante'];
+  const sl=$('#sl',w),ro=$('#ro',w);
+  const paint=()=>{
+    const v=STOPS[+sl.value],isL=v<0,set=!!S.a[a.k],f=Math.abs(v);
+    $('#pL',w).className='axside'+(set?(isL?' lead':' dim'):'');
+    $('#pR',w).className='axside r'+(set?(isL?' dim':' lead'):'');
+    ro.className='readout'+(set?'':' idle');
+    ro.innerHTML=set
+      ? `<b>${isL?a.L:a.R}</b><span>${GRAU[f]}</span>`
+      : `<b>arraste para escolher um lado</b>`;
+    $('#nx').disabled=!set;
+  };
+  let ultimo=idx;
+  sl.addEventListener('input',()=>{
+    let v=+sl.value;
+    if(v===CENTRO){
+      // ainda não escolheu nada: segue no centro, sem resposta
+      if(!S.a[a.k]&&ultimo===CENTRO){paint();return}
+      // já escolheu: atravessa para o outro lado, nunca para no meio
+      v=CENTRO+(ultimo<CENTRO?1:-1);
+      sl.value=v;
+    }
+    ultimo=v;S.a[a.k]=STOPS[v];save();paint();
+  });
+
+  const back=el('button','btn ghost','Voltar');back.onclick=()=>go(S.i-1);foot.appendChild(back);
+  foot.appendChild(el('div','hint','Não existe meio — escolha um lado. Quanto mais para a ponta, mais esse lado rege a marca.'));
+  const nx=el('button','btn','Continuar');nx.id='nx';nx.onclick=()=>go(S.i+1);foot.appendChild(nx);
+  paint();
+}
+
+/* — arquétipo com fonte e ilustração própria — */
+function vArch(sc,stage,foot){
+  const list=archList(),w=el('div','screen');
+  w.innerHTML=`<span class="eyebrow">Personalidade</span>
+    <h2 class="q" style="max-width:26ch">Seus atributos já<br><em>apontam para um.</em></h2>
+    <p class="qsub">Os atributos vieram primeiro de propósito: assim o arquétipo é consequência deles, e não um rótulo que puxa os atributos depois. <b>${list[0].n}</b> lidera com ${list[0].pct}%.</p>
+    <div class="grid" id="g"></div>
+    <div class="caveat">O arquétipo dá ao time um <b>vocabulário único</b> para decidir tom de voz, foto, texto e atendimento — as escolhas do dia a dia que normalmente caem no gosto pessoal de quem está executando.</div>`;
+  stage.appendChild(w);
+  const g=$('#g',w);
+  list.forEach(a=>{
+    const c=el('button','arch'+(S.arch===a.id?' on':''));
+    c.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${ICON[a.id]}</svg>
+      <div class="arch-n" style="font-family:'${a.f}',var(--sans);font-weight:${a.w}">${a.n}</div>
+      <div class="arch-d">${a.d}</div>
+      <div class="arch-p"><span>${a.pct}%</span><i><b style="width:${a.pct}%"></b></i></div>`;
+    c.onclick=()=>{S.arch=a.id;save();render()};
+    g.appendChild(c);
+  });
+  const back=el('button','btn ghost','Voltar');back.onclick=()=>go(S.i-1);foot.appendChild(back);
+  foot.appendChild(el('div','hint',S.arch?'Escolhido: '+archOf(S.arch).n:'Escolha um — pode não ser o mais compatível'));
+  const nx=el('button','btn','Continuar');nx.disabled=!S.arch;nx.onclick=()=>go(S.i+1);foot.appendChild(nx);
+}
+
+/* — nomes: só a lista, focada — */
+function vNames(sc,stage,foot){
+  const w=el('div','screen'),full=S.names.length>=3;
+  w.innerHTML=`<span class="eyebrow">Etapa de nome</span>
+    <h2 class="q" style="max-width:24ch">Curta até <em>três.</em></h2>
+    <p class="qsub">Só territórios que a pesquisa achou vagos: nenhum é topônimo havaiano, nenhum leva “poke” no nome. Cada nome escolhido vira uma tela cheia na próxima etapa.</p>
+    <div id="gs"></div>`;
+  stage.appendChild(w);
+  const gs=$('#gs',w);
+  GROUPS.forEach(gr=>{
+    const b=el('div','group');
+    b.innerHTML=`<div class="group-h"><b>${gr.g}</b>${gr.vaga?'<span class="tag">vaga aberta</span>':''}<span>${gr.note}</span></div><div class="namegrid"></div>`;
+    const ng=$('.namegrid',b);
+    gr.names.forEach(x=>{
+      const on=S.names.includes(x.n);
+      const c=el('button','nm'+(on?' on':'')+(!on&&full?' off':''));
+      c.innerHTML=`<div class="nm-t"><span class="nm-n">${x.n}</span><span class="nm-o">${on?'escolhido':x.n.length+' letras'}</span></div><div class="nm-d">${x.d}</div>`;
+      c.onclick=()=>{
+        if(on)S.names=S.names.filter(y=>y!==x.n);
+        else if(S.names.length<3)S.names.push(x.n);
+        else return toast('Máximo de três — descurta um antes');
+        S.approved=null;save();render();
+      };
+      ng.appendChild(c);
+    });
+    gs.appendChild(b);
+  });
+  const back=el('button','btn ghost','Voltar');back.onclick=()=>go(S.i-1);foot.appendChild(back);
+  foot.appendChild(el('div','hint',`${S.names.length} de 3 · ${S.names.join(' · ')||'nenhum ainda'}`));
+  const nx=el('button','btn','Ver as telas');nx.disabled=!S.names.length;nx.onclick=()=>go(S.i+1);foot.appendChild(nx);
+}
+
+/* — KV em tela cheia, um nome por vez — */
+function vKv(sc,stage,foot){
+  const P=pal(),f=kvFont(sc.i),look=kvBg(sc.i,P);
+  const chars=Math.max(3,sc.n.length);
+  const size=`clamp(46px,${Math.min(21,150/chars)}vw,${Math.round(Math.min(210,1500/chars))}px)`;
+  const k=el('div','kv');
+  k.style.color=look.fg;
+  k.innerHTML=`
+    <div class="kv-bg" style="background:${look.bg}"></div>
+    <div class="kv-bg" style="background-image:${look.deco}"></div>
+    <div class="kv-noise" style="background-image:${NOISE};background-size:200px"></div>
+    <div class="kv-top"><span class="kv-lbl">Direção ${sc.i+1} de ${S.names.length}</span>
+      <div class="kv-dots">${S.names.map((_,j)=>`<b class="${j===sc.i?'on':''}"></b>`).join('')}</div></div>
+    <div class="kv-in">
+      <span class="kv-name js-fit" style="font-family:'${f.f}',var(--sans);font-weight:${f.w};letter-spacing:${f.tr};font-size:${size};${f.uni?'text-transform:uppercase':''}">${sc.n}</span>
+    </div>
+    <div class="kv-nav">
+      <button class="arrow" id="pv" aria-label="Anterior"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5l-7 7 7 7"/></svg></button>
+      <button class="arrow" id="nx2" aria-label="Próxima"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l7 7-7 7"/></svg></button>
+      <p class="kv-why"><b>${f.f}</b> — ${f.cls.toLowerCase()}. Características que o briefing pediu: ${f.tags.map(t=>'<b>'+t+'</b>').join(', ')}.</p>
+    </div>`;
+  document.body.appendChild(k);
+  $('#pv',k).onclick=()=>go(S.i-1);
+  $('#nx2',k).onclick=()=>go(S.i+1);
+  fit(k);
+  document.onkeydown=e=>{if(e.key==='ArrowRight')go(S.i+1);if(e.key==='ArrowLeft')go(S.i-1)};
+}
+
+/* o nome não pode ser cortado: mede e reduz até caber */
+function fit(root){
+  const run=()=>root.querySelectorAll('.js-fit').forEach(sp=>{
+    const host=sp.parentElement,cs=getComputedStyle(host);
+    const avail=host.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    if(!(avail>0))return;
+    for(let i=0;i<8;i++){
+      const wq=sp.getBoundingClientRect().width;
+      if(wq<=avail)break;
+      const cur=parseFloat(getComputedStyle(sp).fontSize);
+      const nx=Math.max(8,cur*(avail/wq)*.97);
+      if(Math.abs(nx-cur)<.2)break;
+      sp.style.fontSize=nx.toFixed(2)+'px';
+    }
+  });
+  run();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{run();setTimeout(run,220)});
+}
+
+/* — fecho: aprovar um — */
+function vEnd(sc,stage,foot){
+  document.onkeydown=null;
+  const P=pal(),a=archOf(S.arch),w=el('div','screen');
+  const rk=AXES.map(x=>({...x,f:force(x.k),nm:pole(x.k),op:val(x.k)<0?x.R:x.L})).sort((p,q)=>q.f-p.f);
+  w.innerHTML=`<span class="eyebrow">Direcionamento fechado</span>
+    <h2 class="q" style="max-width:24ch">Qual delas <em>vai virar marca?</em></h2>
+    <p class="qsub">Aprove uma. O que estiver aprovado aqui é o que a equipe usa como guia — e o resumo abaixo é o briefing.</p>
+    <div class="picks" id="ps"></div>
+    <div class="sum">
+      <div class="row"><div class="row-k">Regem a marca</div><div class="row-v">${rk.filter(x=>x.f===4).map(x=>'<b>'+x.nm+'</b>').join(', ')||'<b>'+rk[0].nm+'</b>'} — nível 4. Depois: ${rk.filter(x=>x.f===3).map(x=>x.nm).join(', ')||'—'}.</div></div>
+      <div class="row"><div class="row-k">Todos os atributos</div><div class="row-v">${rk.map(x=>`${x.nm} <b>${x.f}</b>`).join(' · ')}</div></div>
+      <div class="row"><div class="row-k">Arquétipo</div><div class="row-v"><b>${a.n}</b> · ${match(a.t).pct}% — ${a.d}</div></div>
+      <div class="row"><div class="row-k">Cor</div><div class="row-v">Matiz <b>${Math.round(P.hue)}°</b>, contraste de valor <b>${P.gap.toFixed(2)}</b>, esquema <b>${P.night?'escuro':'claro'}</b>. ${P.cliche?'<b>Atenção:</b> cai no quente, onde já estão 7 de 12 concorrentes.':'Fora do quente que ocupa 7 de 12 concorrentes.'}
+        <div class="sw"><i style="background:${P.bg}"></i><i style="background:${P.ink}"></i><i style="background:${P.key}"></i><i style="background:${P.acc}"></i></div></div></div>
+      ${S.names.map((n,i)=>{const f=kvFont(i);return `<div class="row"><div class="row-k">Letra · ${n}</div><div class="row-v"><b>${f.f}</b> — ${f.cls}. ${f.ficha}
+        <div class="tags">${f.tags.map(t=>`<i>${t}</i>`).join('')}</div>
+        <div class="drv">${f.hits.slice(0,3).map(h=>`${h.tags.map(t=>'<b>'+t+'</b>').join(', ')} ← ${pole(h.ax.k)} ${h.force}`).join(' · ')||'nenhum atributo dominante'}</div></div></div>`}).join('')}
+    </div>`;
+  stage.appendChild(w);
+
+  const ps=$('#ps',w);
+  S.names.forEach((n,i)=>{
+    const f=kvFont(i),look=kvBg(i,P);
+    const c=el('button','pick'+(S.approved===n?' on':''));
+    c.innerHTML=`<div class="pick-kv" style="background:${look.bg}">
+        <div class="kv-bg" style="background-image:${look.deco}"></div>
+        <span class="js-fit" style="position:relative;color:${look.fg};font-family:'${f.f}',var(--sans);font-weight:${f.w};letter-spacing:${f.tr};font-size:${Math.round(Math.min(52,320/Math.max(3,n.length)))}px;${f.uni?'text-transform:uppercase':''}">${n}</span>
+      </div>
+      <div class="pick-f"><b>${n}</b><i>${S.approved===n?'aprovado':'aprovar'}</i></div>`;
+    c.onclick=()=>{S.approved=S.approved===n?null:n;save();render()};
+    ps.appendChild(c);
+  });
+  fit(w);
+
+  const back=el('button','btn ghost','Rever telas');back.onclick=()=>go(S.i-1);foot.appendChild(back);
+  foot.appendChild(el('div','hint',S.approved?'Aprovado: '+S.approved:'Aprove uma direção antes de enviar'));
+  const send=el('button','btn','Enviar briefing');
+  send.disabled=!S.approved;
+  send.onclick=()=>enviar();
+  foot.appendChild(send);
+}
+
+/* Envio: abre o e-mail já preenchido para designer2@gruporagga.com.br e deixa o
+   texto completo na área de transferência como reserva. Arquivo estático não
+   consegue disparar e-mail sozinho — isso exige um endpoint no servidor. */
+const DEST='designer2@gruporagga.com.br';
+
+/* corpo curto para o e-mail: mailto tem teto de tamanho e clientes cortam o
+   excedente em silêncio. O completo vai para a área de transferência. */
+function mdCurto(){
+  const P=pal(),a=archOf(S.arch);
+  const rk=AXES.map(x=>({nm:pole(x.k),f:force(x.k)})).sort((p,q)=>q.f-p.f);
+  return [
+   `NOME APROVADO: ${S.approved}`,
+   `Finalistas: ${S.names.join(', ')}`,'',
+   `ATRIBUTOS (4 rege): ${rk.map(x=>x.nm+' '+x.f).join(' · ')}`,'',
+   `ARQUETIPO: ${a.n} (${match(a.t).pct}%)`,'',
+   `COR: matiz ${Math.round(P.hue)}deg · contraste de valor ${P.gap.toFixed(2)} · esquema ${P.night?'escuro':'claro'}`,
+   `Fundo ${P.bg} | Tinta ${P.ink} | Chave ${P.key} | Apoio ${P.acc}`,'',
+   `LETRA: ${S.names.map((n,i)=>`${n} = ${kvFont(i).f} (${kvFont(i).tags.join('/')})`).join(' | ')}`,'',
+   `A ficha completa esta na area de transferencia — cole abaixo desta linha.`
+  ].join('\n');
+}
+async function enviar(){
+  let copiou=false;
+  try{await navigator.clipboard.writeText(md());copiou=true}catch(e){}
+  const url=`mailto:${DEST}?subject=${encodeURIComponent('Briefing de marca · Poke · '+S.approved)}`
+    +`&body=${encodeURIComponent(mdCurto())}`;
+  const a=document.createElement('a');a.href=url;a.rel='noopener';a.click();
+  toast(copiou?`E-mail aberto para ${DEST} · ficha completa copiada`:`E-mail aberto para ${DEST}`);
+}
+
+function md(){
+  const P=pal(),a=archOf(S.arch),L=[];
+  const rk=AXES.map(x=>({nm:pole(x.k),f:force(x.k),op:val(x.k)<0?x.R:x.L})).sort((p,q)=>q.f-p.f);
+  L.push('# Direcionamento de marca · Poke · Grupo Ragga','');
+  L.push('## Nome aprovado',S.approved?`**${S.approved}**`:'_nenhum aprovado_','');
+  L.push('## Finalistas',...S.names.map((n,i)=>`- ${n} — ${kvFont(i).f}`),'');
+  L.push('## Tipografia · ficha por direção');
+  S.names.forEach((n,i)=>{const f=kvFont(i);
+    L.push(`### ${n} — ${f.f}`,`Classe: ${f.cls}`,`Características: ${f.tags.join(', ')}`,f.ficha,
+      `Puxada por: ${f.hits.slice(0,3).map(h=>`${pole(h.ax.k)} ${h.force} (${h.tags.join(', ')})`).join(' · ')||'—'}`,'');});
+  L.push('## Mapa de atributos',...rk.map(x=>`- ${x.nm} — nível ${x.f} (oposto: ${x.op})`),'');
+  L.push('## Arquétipo',`${a.n} — ${match(a.t).pct}% de compatibilidade com os atributos`,a.d,'');
+  L.push('## Cor',`Matiz ${Math.round(P.hue)}° · contraste de valor ${P.gap.toFixed(2)} · esquema ${P.night?'escuro':'claro'}`,
+    `- Fundo ${P.bg}`,`- Tinta ${P.ink}`,`- Chave ${P.key}`,`- Apoio ${P.acc}`,
+    P.cliche?'ATENÇÃO: matiz quente — 7 de 12 concorrentes já ocupam essa família.':'Fora do clichê quente.','');
+  L.push('## Como ler isto','Cor e letra não foram escolhidas: saíram dos atributos. Mudar a cor exige mudar Temperatura, Energia ou Luz no mapa.');
+  return L.join('\n');
+}
+
+/* boot */
+load();render();
+</script>
+</body>
+</html>
