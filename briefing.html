@@ -167,6 +167,12 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .pick-f{padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .pick-f b{font-size:13.5px}
 .pick-f i{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);font-style:normal}
+.kv-forma{width:clamp(46px,7vw,78px);height:auto;display:block;margin:0 auto 26px;opacity:.96}
+.formarow{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.fbig{width:76px;height:76px;flex-shrink:0;color:var(--ink)}
+.reduz{display:flex;align-items:flex-end;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule);color:var(--ink)}
+.reduz svg{flex-shrink:0}
+.reduz .av-l{margin-left:4px;padding-bottom:2px}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
 .tags i{font-style:normal;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
   padding:3px 8px;border-radius:999px;border:1px solid var(--rule-strong);color:var(--ink-soft)}
@@ -422,10 +428,138 @@ function pickFonts(n){
 }
 const kvFont=i=>{const p=pickFonts(Math.max(1,S.names.length));return p[i%p.length]};
 
+/* ── catálogo de FORMAS ──────────────────────────────────────────────────────
+   A forma vem antes da cor: só ~4% das cores testadas têm ligação exclusiva
+   com uma marca (Romaniuk), enquanto símbolo e forma são os ativos distintivos
+   de maior exclusividade. Então a forma-mãe é o resultado principal e a cor
+   entra como consequência.
+   Registros: ÍCONE (parece o objeto), ÍNDICE (indica o gesto sem mostrar o
+   objeto) e SÍMBOLO (significado por convenção e repetição).
+   ───────────────────────────────────────────────────────────────────────── */
+const PF={
+ temperatura:{L:['orgânica','massa'],               R:['geométrica','contorno','mínima']},
+ luz:        {L:['contorno','mínima'],              R:['massa','negativo']},
+ energia:    {L:['contorno','mínima'],              R:['massa','negativo']},
+ acesso:     {L:['ícone','massa'],                  R:['símbolo','monograma','mínima']},
+ tempo:      {L:['geométrica','mínima','monograma'],R:['orgânica','ícone']},
+ tom:        {L:['geométrica','mínima','símbolo'],  R:['orgânica','ícone','massa']},
+ metodo:     {L:['orgânica'],                       R:['geométrica','índice','negativo']},
+ materia:    {L:['orgânica','ícone'],               R:['geométrica','monograma','negativo']},
+ distancia:  {L:['orgânica','ícone'],               R:['símbolo','monograma','mínima']},
+};
+
+const FORMAS=[
+ {id:'corte',n:'O corte',reg:'Índice',vaga:true,
+  tags:['índice','geométrica','negativo','mínima','símbolo'],
+  ficha:'Um disco cortado na diagonal. Indica o gesto que dá nome ao prato sem desenhar o peixe — o registro que nenhum concorrente ocupa.',
+  svg:()=>`<circle cx="50" cy="50" r="33" fill="currentColor"/><rect x="2" y="45" width="96" height="10" rx="5" fill="var(--fbg)" transform="rotate(-28 50 50)"/>`},
+ {id:'bloco',n:'O bloco cortado',reg:'Símbolo',
+  tags:['símbolo','geométrica','massa','negativo','mínima'],
+  ficha:'Quadrado com um canto decepado. Forma cheia e fechada, altíssima pregnância; funciona como selo na embalagem.',
+  svg:()=>`<path d="M18 18h64v40L64 82H18z" fill="currentColor"/>`},
+ {id:'tigela',n:'A tigela',reg:'Ícone',
+  tags:['ícone','orgânica','massa','contorno'],
+  ficha:'Meia-lua com a boca aberta. Lê como tigela em qualquer tamanho e é o objeto que chega na mão do cliente.',
+  svg:()=>`<path d="M16 46a34 34 0 0 0 68 0z" fill="currentColor"/><rect x="10" y="36" width="80" height="8" rx="4" fill="currentColor"/>`},
+ {id:'grao',n:'O grão',reg:'Ícone',
+  tags:['ícone','orgânica','massa','mínima'],
+  ficha:'Uma semente inclinada. Forma única e orgânica: remete a arroz e gergelim sem virar ilustração.',
+  svg:()=>`<ellipse cx="50" cy="50" rx="19" ry="33" fill="currentColor" transform="rotate(22 50 50)"/>`},
+ {id:'arco',n:'O arco',reg:'Ícone',
+  tags:['ícone','contorno','orgânica','mínima'],
+  ficha:'Um traço curvo e grosso. Vive de espaço negativo, respira, e é a forma mais leve do conjunto.',
+  svg:()=>`<path d="M17 63a33 33 0 0 1 66 0" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round"/>`},
+ {id:'monograma',n:'O monograma',reg:'Símbolo',
+  tags:['símbolo','monograma','geométrica','mínima','negativo'],
+  ficha:'A inicial do nome num contêiner fechado. Vira convenção por repetição e resolve qualquer formato.',
+  svg:(nome,f)=>`<rect x="14" y="14" width="72" height="72" rx="10" fill="currentColor"/>`
+   +`<text x="50" y="50" fill="var(--fbg)" font-family="${f?f.f:'sans-serif'}" font-size="46" font-weight="700"`
+   +` text-anchor="middle" dominant-baseline="central">${(nome||'A')[0].toUpperCase()}</text>`},
+];
+
+function formaScore(f){
+  let s=0,hits=[];
+  AXES.forEach(a=>{
+    const v=val(a.k);if(!v)return;
+    const p=PF[a.k];if(!p)return;
+    const mine=v<0?p.L:p.R, other=v<0?p.R:p.L;
+    const m=f.tags.filter(t=>mine.includes(t));
+    const o=f.tags.filter(t=>other.includes(t));
+    s+=Math.abs(v)*m.length-Math.abs(v)*o.length*.5;
+    if(m.length)hits.push({ax:a,tags:m,force:Math.abs(v)});
+  });
+  if(f.vaga)s+=3;                       // prêmio pelo registro inexplorado
+  hits.sort((x,y)=>y.force*y.tags.length-x.force*x.tags.length);
+  return{s,hits};
+}
+const formaRank=()=>FORMAS.map(f=>({...f,...formaScore(f)})).sort((a,b)=>b.s-a.s);
+const forma=()=>formaRank()[0];
+
+/* ── sonoridade do nome · Klink (2000), sound symbolism ─────────────────────
+   Vogais frontais (i, e) evocam leveza e rapidez; posteriores (o, u) evocam
+   substância e calor. Plosiva inicial fixa melhor. Alvo: 4–8 letras, 1–2
+   sílabas. Serve para pontuar candidatos, não para vetar.
+   ───────────────────────────────────────────────────────────────────────── */
+function som(n){
+  const s=n.toLowerCase().replace(/[^a-záàâãéêíóôõúç]/g,'');
+  const sil=(s.match(/[aeiouáàâãéêíóôõú]+/g)||[]).length;
+  const plos=/^[ptkbdgq]/.test(s);
+  const fr=(s.match(/[ieíê]/g)||[]).length, po=(s.match(/[ouóôõú]/g)||[]).length;
+  const carga=fr>po?'leveza e frescor':po>fr?'substância e calor':'equilíbrio';
+  let nota=0;
+  nota+=(n.length>=4&&n.length<=8)?2:1;
+  nota+=sil<=2?2:sil===3?1:0;
+  nota+=plos?1:0;
+  return{sil,plos,carga,nota,letras:n.length,
+    txt:`${n.length} letras · ${sil} sílaba${sil>1?'s':''}${plos?' · plosiva inicial':''} · ${carga}`};
+}
+
+/* ── território competitivo · onliness de Neumeier, operado por cards ────── */
+const TERR=[
+ {k:'categoria',t:'Categoria',theme:'light',max:1,
+  q:'Em que categoria a marca <em>joga?</em>',
+  why:'Define contra quem ela é comparada na hora do pedido — input que toda metodologia de naming exige antes de gerar nome.',
+  opts:[
+   {n:'Poke especialista',d:'Só poke, feito por quem domina o corte e o arroz.'},
+   {n:'Bowl asiático',d:'Território maior: poke, donburi, wok — a tigela como formato.'},
+   {n:'Comida saudável',d:'Compete com salada e marmita fit, não com sushi.'},
+   {n:'Delivery premium',d:'Compete por cuidado e embalagem, não por preço.'},
+   {n:'Fast-casual',d:'Rápido sem ser fast food: monta, entrega, resolve.'},
+  ]},
+ {k:'diferencial',t:'Diferencial',theme:'dark',max:1,
+  q:'O que <em>só ela</em> faz?',
+  why:'O diferencial defensável. Sem ele o nome fica bonito e a marca fica substituível.',
+  opts:[
+   {n:'O corte',d:'Corte na hora, no ponto, como um itamae faria.'},
+   {n:'O molho da casa',d:'Um tarê próprio que ninguém consegue copiar.'},
+   {n:'Gramatura garantida',d:'O peso da proteína é sempre o mesmo, e está na etiqueta.'},
+   {n:'Montagem do cliente',d:'A tigela é do cliente: ele decide cada camada.'},
+   {n:'Origem do peixe',d:'Rastreabilidade e frescor declarados por lote.'},
+   {n:'A entrega íntegra',d:'Molho e crispy separados: chega como saiu da cozinha.'},
+  ]},
+ {k:'ocasiao',t:'Ocasião',theme:'warm',max:2,
+  q:'Quando alguém <em>lembra dela?</em>',
+  why:'A ocasião de consumo. Nome ancorado em momento é mais lembrado que nome genérico de categoria.',
+  opts:[
+   {n:'Almoço de semana',d:'Comer bem no meio do trabalho, sem perder a tarde.'},
+   {n:'Pós-treino',d:'Proteína depois da academia, sem pesar.'},
+   {n:'Jantar sem cozinhar',d:'Fim do dia, ninguém quer lavar panela.'},
+   {n:'Comer bem sem culpa',d:'Vontade de algo gostoso que não sabote a semana.'},
+   {n:'Pedido de madrugada',d:'Fome fora de hora, quando quase nada está aberto.'},
+  ]},
+];
+const terrSel=k=>(S.t&&S.t[k])||[];
+function onliness(){
+  const c=terrSel('categoria')[0],d=terrSel('diferencial')[0],o=terrSel('ocasiao');
+  if(!c||!d)return null;
+  return `A única marca de <b>${c.toLowerCase()}</b> de Londrina cujo diferencial é <b>${d.toLowerCase()}</b>`
+   +(o.length?`, para quem quer resolver <b>${o.map(x=>x.toLowerCase()).join('</b> e <b>')}</b>`:'')+'.';
+}
+
 const NOISE="url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
 /* ═══ estado ═══════════════════════════════════════════════════════════════ */
-const S={i:0,a:{},arch:null,names:[],approved:null};
+const S={i:0,a:{},arch:null,t:{categoria:[],diferencial:[],ocasiao:[]},names:[],approved:null};
 const save=()=>{try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}};
 const load=()=>{try{const r=localStorage.getItem(STORE);if(r){Object.assign(S,JSON.parse(r));return true}}catch(e){}return false};
 
@@ -482,6 +616,7 @@ function screens(){
   const s=[{id:'intro',theme:'light'}];
   AXES.forEach(a=>s.push({id:'ax',ax:a,theme:a.theme}));
   s.push({id:'arch',theme:'light'});
+  TERR.forEach(t=>s.push({id:'terr',tr:t,theme:t.theme}));
   s.push({id:'names',theme:'deep'});
   S.names.forEach((n,i)=>s.push({id:'kv',n,i,theme:'light'}));
   if(S.names.length)s.push({id:'end',theme:'light'});
@@ -494,8 +629,9 @@ const SC=()=>screens()[Math.min(S.i,screens().length-1)];
 const ETAPA={
   ax:'Montando o mapa de atributos',
   arch:'Cruzando seus atributos com os 12 arquétipos',
+  terr:'Abrindo o território competitivo',
   names:'Filtrando os territórios de nome',
-  kv:'Compondo as direções visuais',
+  kv:'Derivando a forma-mãe e compondo as direções',
   end:'Fechando o direcionamento',
 };
 const reduzido=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -532,7 +668,7 @@ function render(){
   $('#count').textContent=sc.id==='intro'?'':`${String(S.i).padStart(2,'0')} / ${String(all.length-1).padStart(2,'0')}`;
 
   document.querySelectorAll('.kv').forEach(k=>k.remove());
-  ({intro:vIntro,ax:vAx,arch:vArch,names:vNames,kv:vKv,end:vEnd})[sc.id](sc,stage,foot);
+  ({intro:vIntro,ax:vAx,arch:vArch,terr:vTerr,names:vNames,kv:vKv,end:vEnd})[sc.id](sc,stage,foot);
 }
 
 /* — abertura enxuta — */
@@ -622,6 +758,35 @@ function vArch(sc,stage,foot){
   const nx=el('button','btn','Continuar');nx.disabled=!S.arch;nx.onclick=()=>go(S.i+1);foot.appendChild(nx);
 }
 
+/* — território competitivo: um cartão por escolha — */
+function vTerr(sc,stage,foot){
+  const t=sc.tr,sel=terrSel(t.k),cheio=sel.length>=t.max;
+  const w=el('div','screen');
+  w.innerHTML=`<span class="eyebrow">Território · ${t.t}</span>
+    <h2 class="q">${t.q}</h2>
+    <p class="qsub">${t.why}</p>
+    <div class="namegrid" id="og"></div>`;
+  stage.appendChild(w);
+  const g=$('#og',w);
+  t.opts.forEach(o=>{
+    const on=sel.includes(o.n);
+    const b=el('button','nm'+(on?' on':'')+(!on&&cheio?' off':''));
+    b.innerHTML=`<div class="nm-t"><span class="nm-n" style="font-size:19px">${o.n}</span></div><div class="nm-d">${o.d}</div>`;
+    b.onclick=()=>{
+      const cur=terrSel(t.k);
+      if(on)S.t[t.k]=cur.filter(x=>x!==o.n);
+      else if(t.max===1)S.t[t.k]=[o.n];
+      else if(cur.length<t.max)S.t[t.k]=[...cur,o.n];
+      else return toast(`Máximo de ${t.max}`);
+      save();render();
+    };
+    g.appendChild(b);
+  });
+  const back=el('button','btn ghost','Voltar');back.onclick=()=>go(S.i-1);foot.appendChild(back);
+  foot.appendChild(el('div','hint',sel.length?sel.join(' · '):`Escolha ${t.max===1?'uma opção':'até '+t.max}`));
+  const nx=el('button','btn','Continuar');nx.disabled=!sel.length;nx.onclick=()=>go(S.i+1);foot.appendChild(nx);
+}
+
 /* — nomes: só a lista, focada — */
 function vNames(sc,stage,foot){
   const w=el('div','screen'),full=S.names.length>=3;
@@ -638,7 +803,9 @@ function vNames(sc,stage,foot){
     gr.names.forEach(x=>{
       const on=S.names.includes(x.n);
       const c=el('button','nm'+(on?' on':'')+(!on&&full?' off':''));
-      c.innerHTML=`<div class="nm-t"><span class="nm-n">${x.n}</span><span class="nm-o">${on?'escolhido':x.n.length+' letras'}</span></div><div class="nm-d">${x.d}</div>`;
+      const sm=som(x.n);
+      c.innerHTML=`<div class="nm-t"><span class="nm-n">${x.n}</span><span class="nm-o">${on?'escolhido':'som '+sm.nota+'/5'}</span></div>
+        <div class="nm-d">${x.d}</div><div class="drv">${sm.txt}</div>`;
       c.onclick=()=>{
         if(on)S.names=S.names.filter(y=>y!==x.n);
         else if(S.names.length<3)S.names.push(x.n);
@@ -656,7 +823,7 @@ function vNames(sc,stage,foot){
 
 /* — KV em tela cheia, um nome por vez — */
 function vKv(sc,stage,foot){
-  const P=pal(),f=kvFont(sc.i),look=kvBg(sc.i,P);
+  const P=pal(),f=kvFont(sc.i),look=kvBg(sc.i,P),F=forma();
   const chars=Math.max(3,sc.n.length);
   const size=`clamp(46px,${Math.min(21,150/chars)}vw,${Math.round(Math.min(210,1500/chars))}px)`;
   const k=el('div','kv');
@@ -668,12 +835,13 @@ function vKv(sc,stage,foot){
     <div class="kv-top"><span class="kv-lbl">Direção ${sc.i+1} de ${S.names.length}</span>
       <div class="kv-dots">${S.names.map((_,j)=>`<b class="${j===sc.i?'on':''}"></b>`).join('')}</div></div>
     <div class="kv-in">
+      <svg class="kv-forma" viewBox="0 0 100 100" style="--fbg:${look.bg};color:${look.fg}">${F.svg(sc.n,f)}</svg>
       <span class="kv-name js-fit" style="font-family:'${f.f}',var(--sans);font-weight:${f.w};letter-spacing:${f.tr};font-size:${size};${f.uni?'text-transform:uppercase':''}">${sc.n}</span>
     </div>
     <div class="kv-nav">
       <button class="arrow" id="pv" aria-label="Anterior"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5l-7 7 7 7"/></svg></button>
       <button class="arrow" id="nx2" aria-label="Próxima"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5l7 7-7 7"/></svg></button>
-      <p class="kv-why"><b>${f.f}</b> — ${f.cls.toLowerCase()}. Características que o briefing pediu: ${f.tags.map(t=>'<b>'+t+'</b>').join(', ')}.</p>
+      <p class="kv-why"><b>${F.n}</b> · registro de ${F.reg.toLowerCase()} — o ativo distintivo principal. Letra: <b>${f.f}</b> (${f.cls.toLowerCase()}). Cor entra por último, como consequência.</p>
     </div>`;
   document.body.appendChild(k);
   $('#pv',k).onclick=()=>go(S.i-1);
@@ -703,17 +871,33 @@ function fit(root){
 /* — fecho: aprovar um — */
 function vEnd(sc,stage,foot){
   document.onkeydown=null;
-  const P=pal(),a=archOf(S.arch),w=el('div','screen');
+  const P=pal(),a=archOf(S.arch),F=forma(),w=el('div','screen');
   const rk=AXES.map(x=>({...x,f:force(x.k),nm:pole(x.k),op:val(x.k)<0?x.R:x.L})).sort((p,q)=>q.f-p.f);
   w.innerHTML=`<span class="eyebrow">Direcionamento fechado</span>
     <h2 class="q" style="max-width:24ch">Qual delas <em>vai virar marca?</em></h2>
     <p class="qsub">Aprove uma. O que estiver aprovado aqui é o que a equipe usa como guia — e o resumo abaixo é o briefing.</p>
     <div class="picks" id="ps"></div>
     <div class="sum">
+      <div class="row"><div class="row-k">Forma-mãe<br><i style="font-style:normal;opacity:.6">ativo principal</i></div><div class="row-v">
+        <div class="formarow">
+          <svg class="fbig" viewBox="0 0 100 100" style="--fbg:var(--bg)">${F.svg(S.approved||S.names[0],kvFont(0))}</svg>
+          <div>
+            <b>${F.n}</b> · registro de <b>${F.reg}</b>${F.vaga?' <span class="tag">registro livre no mercado</span>':''}<br>
+            <span style="color:var(--ink-muted)">${F.ficha}</span>
+            <div class="tags">${F.tags.map(t=>`<i>${t}</i>`).join('')}</div>
+            <div class="drv">${F.hits.slice(0,3).map(h=>`${h.tags.map(t=>'<b>'+t+'</b>').join(', ')} ← ${pole(h.ax.k)} ${h.force}`).join(' · ')||'nenhum atributo dominante'}</div>
+          </div>
+        </div>
+        <div class="reduz">${[54,34,20,13].map(s=>`<svg viewBox="0 0 100 100" style="width:${s}px;height:${s}px;--fbg:var(--bg)">${F.svg(S.approved||S.names[0],kvFont(0))}</svg>`).join('')}
+          <span class="av-l">sobrevive reduzida</span></div>
+        <p class="drv" style="margin-top:10px">Forma e símbolo são os ativos de maior exclusividade documentada; cor sozinha é o mais fraco — só cerca de 4% das cores testadas se ligam a uma única marca. Por isso a forma é a decisão que o time protege, e a cor é a que pode mudar.</p>
+      </div></div>
+      ${onliness()?`<div class="row"><div class="row-k">Onliness</div><div class="row-v">${onliness()}
+        <div class="drv">Categoria, diferencial e ocasião definem contra quem a marca é comparada — e é o que impede o nome de ser bonito e substituível.</div></div></div>`:''}
       <div class="row"><div class="row-k">Regem a marca</div><div class="row-v">${rk.filter(x=>x.f===4).map(x=>'<b>'+x.nm+'</b>').join(', ')||'<b>'+rk[0].nm+'</b>'} — nível 4. Depois: ${rk.filter(x=>x.f===3).map(x=>x.nm).join(', ')||'—'}.</div></div>
       <div class="row"><div class="row-k">Todos os atributos</div><div class="row-v">${rk.map(x=>`${x.nm} <b>${x.f}</b>`).join(' · ')}</div></div>
       <div class="row"><div class="row-k">Arquétipo</div><div class="row-v"><b>${a.n}</b> · ${match(a.t).pct}% — ${a.d}</div></div>
-      <div class="row"><div class="row-k">Cor</div><div class="row-v">Matiz <b>${Math.round(P.hue)}°</b>, contraste de valor <b>${P.gap.toFixed(2)}</b>, esquema <b>${P.night?'escuro':'claro'}</b>. ${P.cliche?'<b>Atenção:</b> cai no quente, onde já estão 7 de 12 concorrentes.':'Fora do quente que ocupa 7 de 12 concorrentes.'}
+      <div class="row"><div class="row-k">Cor<br><i style="font-style:normal;opacity:.6">consequência</i></div><div class="row-v">Matiz <b>${Math.round(P.hue)}°</b>, contraste de valor <b>${P.gap.toFixed(2)}</b>, esquema <b>${P.night?'escuro':'claro'}</b>. ${P.cliche?'<b>Atenção:</b> cai no quente, onde já estão 7 de 12 concorrentes.':'Fora do quente que ocupa 7 de 12 concorrentes.'} O contraste é de valor, não de matiz — é o que faz a forma sobreviver reduzida e em preto e branco.
         <div class="sw"><i style="background:${P.bg}"></i><i style="background:${P.ink}"></i><i style="background:${P.key}"></i><i style="background:${P.acc}"></i></div></div></div>
       ${S.names.map((n,i)=>{const f=kvFont(i);return `<div class="row"><div class="row-k">Letra · ${n}</div><div class="row-v"><b>${f.f}</b> — ${f.cls}. ${f.ficha}
         <div class="tags">${f.tags.map(t=>`<i>${t}</i>`).join('')}</div>
@@ -727,7 +911,10 @@ function vEnd(sc,stage,foot){
     const c=el('button','pick'+(S.approved===n?' on':''));
     c.innerHTML=`<div class="pick-kv" style="background:${look.bg}">
         <div class="kv-bg" style="background-image:${look.deco}"></div>
-        <span class="js-fit" style="position:relative;color:${look.fg};font-family:'${f.f}',var(--sans);font-weight:${f.w};letter-spacing:${f.tr};font-size:${Math.round(Math.min(52,320/Math.max(3,n.length)))}px;${f.uni?'text-transform:uppercase':''}">${n}</span>
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <svg viewBox="0 0 100 100" style="width:26px;height:26px;--fbg:${look.bg};color:${look.fg}">${F.svg(n,f)}</svg>
+          <span class="js-fit" style="color:${look.fg};font-family:'${f.f}',var(--sans);font-weight:${f.w};letter-spacing:${f.tr};font-size:${Math.round(Math.min(46,290/Math.max(3,n.length)))}px;${f.uni?'text-transform:uppercase':''}">${n}</span>
+        </div>
       </div>
       <div class="pick-f"><b>${n}</b><i>${S.approved===n?'aprovado':'aprovar'}</i></div>`;
     c.onclick=()=>{S.approved=S.approved===n?null:n;save();render()};
@@ -754,8 +941,10 @@ function mdCurto(){
   const P=pal(),a=archOf(S.arch);
   const rk=AXES.map(x=>({nm:pole(x.k),f:force(x.k)})).sort((p,q)=>q.f-p.f);
   return [
-   `NOME APROVADO: ${S.approved}`,
+   `NOME APROVADO: ${S.approved} (som ${som(S.approved).nota}/5 — ${som(S.approved).txt})`,
    `Finalistas: ${S.names.join(', ')}`,'',
+   `FORMA-MAE: ${forma().n} — registro de ${forma().reg}. Ativo principal; a cor e consequencia.`,'',
+   `ONLINESS: ${(onliness()||'—').replace(/<\/?b>/g,'')}`,'',
    `ATRIBUTOS (4 rege): ${rk.map(x=>x.nm+' '+x.f).join(' · ')}`,'',
    `ARQUETIPO: ${a.n} (${match(a.t).pct}%)`,'',
    `COR: matiz ${Math.round(P.hue)}deg · contraste de valor ${P.gap.toFixed(2)} · esquema ${P.night?'escuro':'claro'}`,
@@ -778,7 +967,18 @@ function md(){
   const rk=AXES.map(x=>({nm:pole(x.k),f:force(x.k),op:val(x.k)<0?x.R:x.L})).sort((p,q)=>q.f-p.f);
   L.push('# Direcionamento de marca · Poke · Grupo Ragga','');
   L.push('## Nome aprovado',S.approved?`**${S.approved}**`:'_nenhum aprovado_','');
-  L.push('## Finalistas',...S.names.map((n,i)=>`- ${n} — ${kvFont(i).f}`),'');
+  const F=forma();
+  L.push('## Forma-mãe (ativo distintivo principal)',
+    `${F.n} — registro de ${F.reg}${F.vaga?' (registro livre no mercado)':''}`,F.ficha,
+    `Características: ${F.tags.join(', ')}`,
+    `Puxada por: ${F.hits.slice(0,3).map(h=>`${pole(h.ax.k)} ${h.force} (${h.tags.join(', ')})`).join(' · ')||'—'}`,
+    'Forma e simbolo sao os ativos de maior exclusividade documentada. Cor sozinha e o mais fraco: cerca de 4% das cores testadas se ligam a uma unica marca. A forma e o que o time protege; a cor pode mudar.','');
+  if(onliness())L.push('## Onliness',onliness().replace(/<\/?b>/g,'*'),'');
+  L.push('## Território competitivo',
+    `Categoria: ${terrSel('categoria').join(', ')||'—'}`,
+    `Diferencial: ${terrSel('diferencial').join(', ')||'—'}`,
+    `Ocasião: ${terrSel('ocasiao').join(', ')||'—'}`,'');
+  L.push('## Finalistas',...S.names.map((n,i)=>`- ${n} — ${kvFont(i).f} · som ${som(n).nota}/5 (${som(n).txt})`),'');
   L.push('## Tipografia · ficha por direção');
   S.names.forEach((n,i)=>{const f=kvFont(i);
     L.push(`### ${n} — ${f.f}`,`Classe: ${f.cls}`,`Características: ${f.tags.join(', ')}`,f.ficha,
