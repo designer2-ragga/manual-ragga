@@ -994,13 +994,12 @@ const BRANDS = [
     on:'#EAF0FF',
     desc:'Gestão e processo. O louro: tradição, base aromática, refinamento.',
     use:'Comunicação interna, RH, financeiro, operações e documentação de processo.' },
-  { id:'educacao',name:'Ragga Educação e Treinamento', role:'Vertical de Educação e Treinamento', spice:'Alecrim', index:'04',
+  { id:'educacao',name:'Ragga Educação & Treinamento', role:'Vertical de Educação & Treinamento', spice:'Alecrim', index:'04',
     spiceDesc:'alecrim, s.m. (Rosmarinus officinalis). Erva de aroma resinoso e permanente; associada à memória e ao aprendizado desde a Antiguidade.',
     hex:'#35632A', rgb:'53, 99, 42',        cmyk:'46%, 0%, 58%, 61%',   pantone:'a confirmar em guia',
     on:'#EEF7E9',
     desc:'Formação de gente. O alecrim: memória, fixação, aprendizado que permanece.',
-    use:'Cursos, treinamentos, capacitação de equipes, material didático e certificados.',
-    nota:'Vetor pendente: o export atual desta vertical saiu apenas em PNG. Para arte de impressão, peça o SVG antes de fechar.' },
+    use:'Cursos, treinamentos, capacitação de equipes, material didático e certificados.' },
   { id:'insumos', name:'Ragga Insumos',           role:'Vertical de Insumos',        spice:'Alho',       index:'05',
     spiceDesc:'alho, s.m. (Allium sativum). Bulbo de aroma intenso e sabor potente; presente na base de quase toda cozinha do mundo.',
     hex:'#D4A011', rgb:'212, 160, 17',      cmyk:'18%, 36%, 100%, 1%',  pantone:'1245 C / 7555 C',
@@ -1161,7 +1160,7 @@ const CHECKLIST = [
 // ─── Logo helpers (global) ───────────────────────────────────────────────────
 // Manifesto de marca — todas as versões oficiais por vertical (pasta assets-logos/marca/)
 const LOGO_BASE = 'assets-logos/marca/';
-// Reflete o export de 09/09/2026 (GRUPO RAGGA/Assets-Manual).
+// Reflete o export de 09/09/2026 (GRUPO RAGGA/Assets-Manual/SVG) — só vetor.
 const LOGO_FILES = {
   holding: { symbol:'Grupo_Icone.svg', horizontal:'Grupo_Horizontal.svg', variants:[
     { file:'Grupo_Icone.svg',               label:'Símbolo' },
@@ -1180,15 +1179,11 @@ const LOGO_FILES = {
     { file:'Gestao_Vertical.svg',   label:'Vertical' },
     { file:'Gestao_Horizontal.svg', label:'Horizontal', wide:true },
   ]},
-  // PENDENTE desde 21/08: o export de 09/09/2026 também saiu sem os SVGs desta
-  // vertical — só PNG. Aponta pro PNG para a vertical constar no manual; ao
-  // receber os vetores, troque as 4 extensões para .svg e remova a `nota` da
-  // entrada em BRANDS.
-  educacao: { symbol:'Educacao_Icone.png', horizontal:'Educacao_Horizontal.png', variants:[
-    { file:'Educacao_Icone.png',               label:'Símbolo' },
-    { file:'Educacao_Vertical.png',            label:'Vertical' },
-    { file:'Educacao_Horizontal_Compacto.png', label:'Horizontal · Compacto' },
-    { file:'Educacao_Horizontal.png',          label:'Horizontal', wide:true },
+  educacao: { symbol:'Educacao_Icone.svg', horizontal:'Educacao_Horizontal.svg', variants:[
+    { file:'Educacao_Icone.svg',               label:'Símbolo' },
+    { file:'Educacao_Vertical.svg',            label:'Vertical' },
+    { file:'Educacao_Horizontal_Compacto.svg', label:'Horizontal · Compacto' },
+    { file:'Educacao_Horizontal.svg',          label:'Horizontal', wide:true },
   ]},
   insumos: { symbol:'Insumos_Icone.svg', horizontal:'Insumos_Horizontal.svg', variants:[
     { file:'Insumos_Icone.svg',         label:'Símbolo' },
