@@ -1161,12 +1161,13 @@ const CHECKLIST = [
 // ─── Logo helpers (global) ───────────────────────────────────────────────────
 // Manifesto de marca — todas as versões oficiais por vertical (pasta assets-logos/marca/)
 const LOGO_BASE = 'assets-logos/marca/';
-// Reflete o export de 21/08/2026. O Grupo não tem mais símbolo isolado no
-// export — o ícone da holding cai no lockup horizontal.
+// Reflete o export de 09/09/2026 (GRUPO RAGGA/Assets-Manual).
 const LOGO_FILES = {
-  holding: { symbol:'Grupo_Horizontal.svg', horizontal:'Grupo_Horizontal.svg', variants:[
-    { file:'Grupo_Horizontal.svg',          label:'Horizontal', wide:true },
+  holding: { symbol:'Grupo_Icone.svg', horizontal:'Grupo_Horizontal.svg', variants:[
+    { file:'Grupo_Icone.svg',               label:'Símbolo' },
+    { file:'Grupo_Vertical.svg',            label:'Vertical' },
     { file:'Grupo_Vertical_Invertido.svg',  label:'Vertical · Invertido' },
+    { file:'Grupo_Horizontal.svg',          label:'Horizontal', wide:true },
   ]},
   foods: { symbol:'Restaurantes_Icone.svg', horizontal:'Restaurantes_Horizontal.svg', variants:[
     { file:'Restaurantes_Icone.svg',         label:'Símbolo' },
@@ -1179,9 +1180,10 @@ const LOGO_FILES = {
     { file:'Gestao_Vertical.svg',   label:'Vertical' },
     { file:'Gestao_Horizontal.svg', label:'Horizontal', wide:true },
   ]},
-  // PENDENTE: o export de 21/08/2026 saiu sem os SVGs desta vertical — só PNG.
-  // Aponta pro PNG para a vertical já constar no manual; ao receber os vetores,
-  // troque as 4 extensões para .svg e remova a `nota` da entrada em BRANDS.
+  // PENDENTE desde 21/08: o export de 09/09/2026 também saiu sem os SVGs desta
+  // vertical — só PNG. Aponta pro PNG para a vertical constar no manual; ao
+  // receber os vetores, troque as 4 extensões para .svg e remova a `nota` da
+  // entrada em BRANDS.
   educacao: { symbol:'Educacao_Icone.png', horizontal:'Educacao_Horizontal.png', variants:[
     { file:'Educacao_Icone.png',               label:'Símbolo' },
     { file:'Educacao_Vertical.png',            label:'Vertical' },
@@ -1608,16 +1610,27 @@ async function downloadBrandZip(b, btn) {
       // Variante pode estar cadastrada como PNG (vertical sem vetor exportado).
       // Ler PNG como texto escreveria binário corrompido dentro de RGB/SVG/.
       const ehSvg = /\.svg$/i.test(file);
+      let svgText = null;
       if (ehSvg) {
-        const svgText = await fetch(`${LOGO_BASE}${file}`).then(r => r.text());
+        svgText = await fetch(`${LOGO_BASE}${file}`).then(r => r.text());
         folder.file(`RGB/SVG/${file}`, svgText);                 // vetor RGB (tela)
         folder.file(`CMYK/SVG/${file}`, svgToCmyk(svgText));     // vetor CMYK (impressão)
       }
       const pngName = file.replace(/\.svg$/i, '.png');
+      let temPng = false;
       try {
         const pngResp = await fetch(`${LOGO_BASE}${pngName}`);
-        if (pngResp.ok) folder.file(`RGB/PNG/${pngName}`, await pngResp.blob());
-      } catch (e) { /* png ausente — ignora */ }
+        if (pngResp.ok) { folder.file(`RGB/PNG/${pngName}`, await pngResp.blob()); temPng = true; }
+      } catch (e) { /* png ausente — cai no fallback abaixo */ }
+      // Nem todo export traz PNG de todas as variantes (o de 09/09 veio sem
+      // nenhum PNG do Grupo). Rasterizar o vetor novo é melhor que entregar
+      // zip sem raster — e mais fiel que reaproveitar PNG de export anterior.
+      if (!temPng && svgText) {
+        try {
+          const gerado = await svgToPngBlob(svgText, 2000);
+          if (gerado) folder.file(`RGB/PNG/${pngName}`, gerado);
+        } catch (e) { console.warn('rasterização falhou para', file, e); }
+      }
     }
     if (!LOGO_FILES[b.id].variants.some(v => /\.svg$/i.test(v.file))) {
       folder.file('LEIA-ME.txt',
