@@ -1,5 +1,0 @@
-Fantasmagotchi usa:
-- Piper (rhasspy/piper) e a voz pt_BR-faber-medium — licença MIT. Modelos servidos por huggingface.co/diffusionstudio/piper-voices.
-- piper-phonemize WASM (@diffusionstudio/piper-wasm) — usa espeak-ng (GPL-3.0).
-- ONNX Runtime Web 1.18 (Microsoft) — licença MIT. vendor/ort.min.js
-- meSpeak.js / eSpeak (voz robô, voice.js) — GPL-3.0.
